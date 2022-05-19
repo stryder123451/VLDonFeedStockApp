@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:VLDonFeedStockApp.ViewModels"
+             x:Class="VLDonFeedStockApp.Views.DetailOrderPage">
+    <ContentPage.Content>
+        <RefreshView x:DataType="viewmodels:DetailOrderViewModel" Command="{Binding LoadOrdersCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+            <ScrollView>
+                <StackLayout Spacing="20" Padding="15">
+                    <Label Text="ID заказа:" FontSize="Medium"/>
+                    <Entry Text="{Binding Request.Id}" IsEnabled="False" FontSize="Small"/>
+                    <Label Text="Имя заказа:" FontSize="Medium" />
+                    <Entry Text="{Binding Request.Name}" FontSize="Small"/>
+                    <Label Text="Статус заказа:" FontSize="Medium" />
+                    <Entry Text="{Binding Request.RuState}" TextColor="Red" FontAttributes="Bold" IsEnabled="False" FontSize="Small"/>
+                    <Label Text="Материалы:" FontSize="Medium" />
+                    <Entry Text="{Binding Request.Materials}" FontSize="Small"/>
+                    <Label Text="Примечание:" FontSize="Medium" />
+                    <Entry Text="{Binding Request.Description}" FontSize="Small"/>
+                    <Label Text="Организация:" FontSize="Medium" />
+                    <Entry Text="{Binding Request.Organization}" IsEnabled="False" FontSize="Small"/>
+                    <Button Text="Изменить данные" Command="{Binding UpdateOrder}"></Button>
+                    <Button Text="Изменить статус" Command="{Binding UpdateState}"></Button>
+                </StackLayout>
+            </ScrollView>
+        </RefreshView>
+    </ContentPage.Content>
+</ContentPage>

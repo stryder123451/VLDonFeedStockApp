@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodels="clr-namespace:VLDonFeedStockApp.ViewModels"
+             mc:Ignorable="d"
+             x:Class="VLDonFeedStockApp.Views.LoginPage"
+             Shell.NavBarIsVisible="False">
+    <ContentPage.BindingContext>
+        <viewmodels:LoginViewModel/>
+    </ContentPage.BindingContext>
+    <ContentPage.Content>
+        <ScrollView>
+
+            <StackLayout Spacing="10" Margin="16,32" VerticalOptions="FillAndExpand">
+                <Image  Source="logoTrans.png"></Image>
+                <Entry Text="{Binding Username}"
+                   Placeholder="Логин..." />
+                <Entry Text="{Binding Password}"
+                   Placeholder="Пароль..."
+                   IsPassword="True" />
+                <Button Text="Вход"
+                HorizontalOptions="Center" CornerRadius="5" WidthRequest="150"
+                IsEnabled="{Binding IsLogging}"
+                    Command="{Binding LoginCommand}">
+                    <Button.Background>
+                        <LinearGradientBrush EndPoint="1,0">
+                            <GradientStop Color="#48c6ef" Offset="0.1" />
+                            <GradientStop Color="#6f86d6" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Button.Background>
+                </Button>
+                <Button Text="Регистрация" WidthRequest="150"
+                HorizontalOptions="Center"  CornerRadius="5"
+                IsEnabled="{Binding IsLogging}"
+                Command="{Binding RegisterCommand}">
+                    <Button.Background>
+                        <LinearGradientBrush EndPoint="1,0">
+                            <GradientStop Color="#48c6ef" Offset="0.1" />
+                            <GradientStop Color="#6f86d6" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Button.Background>
+                </Button>
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

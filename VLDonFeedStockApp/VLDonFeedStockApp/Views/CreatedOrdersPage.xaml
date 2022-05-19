@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:VLDonFeedStockApp.ViewModels" xmlns:model="clr-namespace:VLDonFeedStockApp.Models"
+             x:Class="VLDonFeedStockApp.Views.CreatedOrdersPage">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Создать" Command="{Binding AddItemCommand}" />
+        <ToolbarItem>
+        </ToolbarItem>
+    </ContentPage.ToolbarItems>
+    <ContentPage.Content>
+        <RefreshView x:DataType="viewmodels:CreatedOrdersViewModel" Command="{Binding LoadOrdersCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+            <ScrollView>
+                <ListView x:Name="OrderItems" ItemsSource="{Binding OrdersList}" SeparatorVisibility="Default" ItemTapped="OrderItems_ItemTapped" HasUnevenRows="True" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ViewCell>
+
+                                <!--<ViewCell.ContextActions>
+                                    <MenuItem
+                                        x:Name="EditBtn"
+                                        Text="Редактировать"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CreatedOrdersViewModel}}, Path=EditOrder}"		
+                                        CommandParameter="{Binding .}">
+                                    </MenuItem>
+                                </ViewCell.ContextActions>-->
+                                <StackLayout Margin="6,4,6,4" x:DataType="model:Request">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition></ColumnDefinition>
+                                            <ColumnDefinition></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition></RowDefinition>
+                                            <RowDefinition></RowDefinition>
+                                            <RowDefinition></RowDefinition>
+                                            <RowDefinition></RowDefinition>
+                                        </Grid.RowDefinitions>
+                                    <Label Grid.Row="0" TextColor="Green" HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding Name}"></Label>
+                                    <Label Grid.Row="1" TextColor="Green" HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding RuState}"></Label>
+                                    <Label Grid.Row="2" TextColor="Green" HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding Materials}"></Label>
+                                    <Label Grid.Row="3" TextColor="Green" HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding Description}"></Label>
+                                    <Label Grid.Row="0" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Имя заказа:"></Label>
+                                    <Label Grid.Row="1" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Статус заказа:"></Label>
+                                    <Label Grid.Row="2" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Материалы:"></Label>
+                                    <Label Grid.Row="3" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Описание:"></Label>
+                                    </Grid>
+                                    <StackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer 
+                                         NumberOfTapsRequired="1"
+                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CreatedOrdersViewModel}}, Path=EditOrder}"		
+                                         CommandParameter="{Binding .}">
+                                        </TapGestureRecognizer>
+                                    </StackLayout.GestureRecognizers>
+                                </StackLayout>
+                            </ViewCell>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </ScrollView>
+        </RefreshView>
+    </ContentPage.Content>
+</ContentPage>

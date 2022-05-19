@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="VLDonFeedStockApp.Views.AboutPage"
+             xmlns:vm="clr-namespace:VLDonFeedStockApp.ViewModels"
+             Title="{Binding Title}">
+    
+    <ContentPage.BindingContext>
+        <vm:AboutViewModel />
+    </ContentPage.BindingContext>
+    
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="Accent">#96d1ff</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <RefreshView x:DataType="vm:AboutViewModel" Command="{Binding LoadItemsCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+
+        <ScrollView>
+            <Grid>
+
+                <Grid.RowDefinitions VerticalOptions="FillAndExpand">
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <!--<RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>-->
+
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Frame Grid.Row="0" BorderColor="LightGray" HasShadow="True" CornerRadius="15" Grid.ColumnSpan="3" >
+                    <Frame.Background>
+                        <LinearGradientBrush EndPoint="1,0">
+                            <GradientStop Color="White" Offset="0.1" />
+                            <GradientStop Color="LightBlue" Offset="1" />
+                        </LinearGradientBrush>
+                    </Frame.Background>
+                    <StackLayout>
+                        <Label IsVisible="False" Grid.Row="0" TextColor="Black" Grid.Column="0" FontSize="Title" FontAttributes="Bold"  Text="ФИО:" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+                        <Label Grid.Row="0" TextColor="Black" Grid.Column="1"  Grid.ColumnSpan="2" FontSize="Title" FontAttributes="Bold"  Text="{Binding User.Name}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+
+                        <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />
+                        <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />
+                        <Label Grid.Row="0" TextColor="Black" Grid.ColumnSpan="3" Text="Система управления показаниями ЖКХ" FontSize="Small" HorizontalOptions="CenterAndExpand"  />
+                    </StackLayout>
+                </Frame>
+                <Image Source="logotype" Grid.ColumnSpan="3" Grid.Row="1"   Opacity="1"></Image>
+                <Frame Grid.Row="2" Grid.RowSpan="2" BorderColor="LightGray" HasShadow="True" CornerRadius="15" Grid.ColumnSpan="3" >
+                    <Frame.Background>
+                        <LinearGradientBrush>
+                            <GradientStop Color="White" Offset="0.1" />
+                            <GradientStop Color="#26a0da" Offset="1" />
+
+                        </LinearGradientBrush>
+                    </Frame.Background>
+                    <StackLayout>
+                        <Label Grid.Row="1" TextColor="Black" Grid.Column="0" FontSize="Body" FontAttributes="Bold"  Text="Логин:" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+                        <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />
+                        <Label Grid.Row="1" TextColor="Black" Grid.Column="1" Grid.ColumnSpan="2" FontSize="Body" FontAttributes="Bold"   Text="{Binding User.Login}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+
+                        <Label Grid.Row="2" TextColor="Black" Grid.Column="0" FontSize="Body" FontAttributes="Bold"  Text="Роль:" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+                        <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />
+                        <Label Grid.Row="2" TextColor="Black" Grid.Column="1" Grid.ColumnSpan="2" FontSize="Body" FontAttributes="Bold"   Text="{Binding User.Role}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+
+                        <Label Grid.Row="3" TextColor="Black" Grid.Column="0" FontSize="Body" FontAttributes="Bold"  Text="Организация:" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+                        <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />
+                        <Label Grid.Row="3" TextColor="Black" Grid.Column="1" Grid.ColumnSpan="2" FontSize="Body" FontAttributes="Bold"   Text="{Binding User.Organization}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+                        <!--<Label Grid.Row="4" TextColor="Black" Grid.Column="0" FontSize="Body" FontAttributes="Bold"  Text="Дом:" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+                        <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />-->
+                        <!--<Label Grid.Row="4" TextColor="Black" Grid.Column="1" Grid.ColumnSpan="2" FontSize="Body" FontAttributes="Bold"   Text="{Binding User.HouseNumber}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+                        <Label Grid.Row="5" TextColor="Black" Grid.Column="0" FontSize="Body" FontAttributes="Bold"  Text="Квартира:" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+                        <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />
+                        <Label Grid.Row="5" TextColor="Black" Grid.Column="1" Grid.ColumnSpan="2" FontSize="Body" FontAttributes="Bold"   Text="{Binding User.FlatNumber}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+                        <Label Grid.Row="6" TextColor="Black" Grid.Column="0" FontSize="Body" FontAttributes="Bold"  Text="№ Счетчика:" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+                        <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />
+                        <Label Grid.Row="6" TextColor="Black" Grid.Column="1" Grid.ColumnSpan="2" FontSize="Body" FontAttributes="Bold"   Text="{Binding User.Counter}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+
+                        <Label Grid.Row="7" TextColor="Black" Grid.Column="0" FontSize="Body" FontAttributes="Bold"  Text="№ Счетчика ХВС:" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+                        <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />
+                        <Label Grid.Row="7" TextColor="Black" Grid.Column="1" Grid.ColumnSpan="2" FontSize="Body" FontAttributes="Bold"   Text="{Binding User.WaterCounter}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+
+                        <Label Grid.Row="8" TextColor="Black" Grid.Column="0" FontSize="Body" FontAttributes="Bold"  Text="№ Счетчика ХВС2:" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+                        <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />
+                        <Label Grid.Row="8" TextColor="Black" Grid.Column="1" Grid.ColumnSpan="2" FontSize="Body" FontAttributes="Bold"   Text="{Binding User.WaterCounter2}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+
+                        <Label Grid.Row="9" TextColor="Black" Grid.Column="0" FontSize="Body" FontAttributes="Bold"  Text="№ Счетчика ГВС:" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+                        <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />
+                        <Label Grid.Row="9" TextColor="Black" Grid.Column="1" Grid.ColumnSpan="2" FontSize="Body" FontAttributes="Bold"   Text="{Binding User.HotWaterCounter}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+
+                        <Label Grid.Row="10" TextColor="Black" Grid.Column="0" FontSize="Body" FontAttributes="Bold"  Text="№ Счетчика ГВС2:" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+                        <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />
+                        <Label Grid.Row="10" TextColor="Black" Grid.Column="1" Grid.ColumnSpan="2" FontSize="Body" FontAttributes="Bold"   Text="{Binding User.HotWaterCounter2}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>-->
+                    </StackLayout>
+                </Frame>
+            </Grid>
+        </ScrollView>
+    </RefreshView>
+
+</ContentPage>
