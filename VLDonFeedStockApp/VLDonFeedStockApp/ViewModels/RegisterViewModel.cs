@@ -21,7 +21,9 @@ namespace VLDonFeedStockApp.ViewModels
     public class RegisterViewModel : BaseViewModel
     {
         public ObservableCollection<Organizations> Organizations { get; }
+        public ObservableCollection<Stores> Stores { get; }
         public Command RegisterCommand { get; }
+        public Command BackCommand { get; }
         public Command Return { get; }
         public Command LoadItemsCommand { get; }
         private string _login;
@@ -29,10 +31,12 @@ namespace VLDonFeedStockApp.ViewModels
         private string _role;
         private string _organization;
         private string _name;
+        private string _address;
         public IAlertService alertService;
         public RegisterViewModel()
         {
             Organizations = new ObservableCollection<Organizations>();
+            Stores = new ObservableCollection<Stores>();
             LoadItemsCommand = new Command(async () => await GetRegisterData());
             RegisterCommand = new Command(OnRegisterClicked);
             alertService = DependencyService.Resolve<IAlertService>();
@@ -40,6 +44,12 @@ namespace VLDonFeedStockApp.ViewModels
             {
                 PropertyNameCaseInsensitive = true,
             };
+            BackCommand = new Command(OnCancel);
+        }
+
+        private async void OnCancel()
+        {
+            await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
         }
 
         public void OnAppearing()
@@ -63,7 +73,11 @@ namespace VLDonFeedStockApp.ViewModels
             get => _login;
             set => SetProperty(ref _login, value);
         }
-
+        public string Address
+        {
+            get => _address;
+            set => SetProperty(ref _address, value);
+        }
         public string Password
         {
             get => _password;
@@ -109,7 +123,8 @@ namespace VLDonFeedStockApp.ViewModels
                     Login = Login,
                     Password = Password,
                     Organization = Organization,
-                    Role = "Employee",
+                    Role = "Сотрудник",
+                    Address = Address,
                 };
                 await AddNewUser(user);
 

@@ -23,8 +23,8 @@
                 <Grid.RowDefinitions VerticalOptions="FillAndExpand">
                     <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
-                    <!--<RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>
+                   <!-- <RowDefinition></RowDefinition>
                     <RowDefinition></RowDefinition>-->
 
                 </Grid.RowDefinitions>
@@ -47,7 +47,7 @@
 
                         <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />
                         <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />
-                        <Label Grid.Row="0" TextColor="Black" Grid.ColumnSpan="3" Text="Система управления показаниями ЖКХ" FontSize="Small" HorizontalOptions="CenterAndExpand"  />
+                        <Label Grid.Row="0" TextColor="Black" Grid.ColumnSpan="3" Text="{Binding User.Address}" FontSize="Small" HorizontalOptions="CenterAndExpand"  />
                     </StackLayout>
                 </Frame>
                 <Image Source="logotype" Grid.ColumnSpan="3" Grid.Row="1"   Opacity="1"></Image>
@@ -71,10 +71,10 @@
                         <Label Grid.Row="3" TextColor="Black" Grid.Column="0" FontSize="Body" FontAttributes="Bold"  Text="Организация:" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
                         <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />
                         <Label Grid.Row="3" TextColor="Black" Grid.Column="1" Grid.ColumnSpan="2" FontSize="Body" FontAttributes="Bold"   Text="{Binding User.Organization}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
-                        <!--<Label Grid.Row="4" TextColor="Black" Grid.Column="0" FontSize="Body" FontAttributes="Bold"  Text="Дом:" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
-                        <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />-->
-                        <!--<Label Grid.Row="4" TextColor="Black" Grid.Column="1" Grid.ColumnSpan="2" FontSize="Body" FontAttributes="Bold"   Text="{Binding User.HouseNumber}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
-                        <Label Grid.Row="5" TextColor="Black" Grid.Column="0" FontSize="Body" FontAttributes="Bold"  Text="Квартира:" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+                        <!-- <Label Grid.Row="4" TextColor="Black" Grid.Column="0" FontSize="Body" FontAttributes="Bold"  Text="Магазин:" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+                        <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />
+                        <Label Grid.Row="4" TextColor="Black" Grid.Column="1" Grid.ColumnSpan="2" FontSize="Body" FontAttributes="Bold"   Text="{Binding User.Address}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+                       <Label Grid.Row="5" TextColor="Black" Grid.Column="0" FontSize="Body" FontAttributes="Bold"  Text="Квартира:" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
                         <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />
                         <Label Grid.Row="5" TextColor="Black" Grid.Column="1" Grid.ColumnSpan="2" FontSize="Body" FontAttributes="Bold"   Text="{Binding User.FlatNumber}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
                         <Label Grid.Row="6" TextColor="Black" Grid.Column="0" FontSize="Body" FontAttributes="Bold"  Text="№ Счетчика:" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>

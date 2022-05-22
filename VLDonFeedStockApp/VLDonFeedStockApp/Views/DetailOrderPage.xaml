@@ -5,21 +5,49 @@
     <ContentPage.Content>
         <RefreshView x:DataType="viewmodels:DetailOrderViewModel" Command="{Binding LoadOrdersCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
             <ScrollView>
-                <StackLayout Spacing="20" Padding="15">
+                <StackLayout Spacing="5" Padding="15">
                     <Label Text="ID заказа:" FontSize="Medium"/>
                     <Entry Text="{Binding Request.Id}" IsEnabled="False" FontSize="Small"/>
-                    <Label Text="Имя заказа:" FontSize="Medium" />
-                    <Entry Text="{Binding Request.Name}" FontSize="Small"/>
+                    <Label IsVisible="False" Text="Имя заказа:" FontSize="Medium" />
+                    <Entry IsVisible="False" Text="{Binding Request.Name}" FontSize="Small"/>
                     <Label Text="Статус заказа:" FontSize="Medium" />
                     <Entry Text="{Binding Request.RuState}" TextColor="Red" FontAttributes="Bold" IsEnabled="False" FontSize="Small"/>
                     <Label Text="Материалы:" FontSize="Medium" />
-                    <Entry Text="{Binding Request.Materials}" FontSize="Small"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition Width="0"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                       
+                        <Switch Grid.Column="1" Toggled="isPlenka_Toggled" IsToggled="{Binding IsPlenka}" Grid.Row="0" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" x:Name="isPlenka"></Switch>
+                        <Label Grid.Column="0"  Grid.Row="0" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="Пленка"></Label>
+                        <Entry Grid.Column="2" x:Name="PlenkaEntry" IsEnabled="{Binding IsPlenka}" Grid.Row="0" VerticalOptions="CenterAndExpand" Text="{Binding PlenkaAmount}" HorizontalOptions="FillAndExpand" Unfocused="PlenkaEntry_Unfocused" Keyboard="Numeric"></Entry>
+                        <Entry Grid.Column="3" x:Name="PlenkaEntryHidden" Grid.Row="0" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Keyboard="Numeric" Text="{Binding Plenka}"></Entry>
+                       
+                        <Switch Grid.Column="1" IsToggled="{Binding IsCarton}" Toggled="isCarton_Toggled" Grid.Row="1" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" x:Name="isCarton"></Switch>
+                        <Label Grid.Column="0"  Grid.Row="1" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="Картон" ></Label>
+                        <Entry Grid.Column="2" IsEnabled="{Binding IsCarton}" x:Name="CartonEntry" Grid.Row="1" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Text="{Binding CartonAmount}" Unfocused="CartonEntry_Unfocused" Keyboard="Numeric"></Entry>
+                        <Entry Grid.Column="3" x:Name="CartonEntryHidden" Grid.Row="1" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Keyboard="Numeric" Text="{Binding Carton}"></Entry>
+                        
+                        <Switch Grid.Column="1" IsToggled="{Binding IsPoddon}"  Toggled="isPoddon_Toggled" Grid.Row="2" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"  x:Name="isPoddon"></Switch>
+                        <Label Grid.Column="0"  Grid.Row="2" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"  Text="Поддон"></Label>
+                        <Entry Grid.Column="2" IsEnabled="{Binding IsPoddon}" x:Name="PoddonEntry"  Grid.Row="2" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Text="{Binding PoddonAmount}" Unfocused="PoddonEntry_Unfocused" Keyboard="Numeric"></Entry>
+                        <Entry Grid.Column="3" x:Name="PoddonEntryHidden"  Grid.Row="2" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Keyboard="Numeric" Text="{Binding Poddon}"></Entry>
+                    </Grid>
+                    <Entry IsVisible="False" Text="{Binding Request.Materials}" FontSize="Small"/>
                     <Label Text="Примечание:" FontSize="Medium" />
                     <Entry Text="{Binding Request.Description}" FontSize="Small"/>
-                    <Label Text="Организация:" FontSize="Medium" />
-                    <Entry Text="{Binding Request.Organization}" IsEnabled="False" FontSize="Small"/>
-                    <Button Text="Изменить данные" Command="{Binding UpdateOrder}"></Button>
-                    <Button Text="Изменить статус" Command="{Binding UpdateState}"></Button>
+                    <Label IsVisible="False" Text="Организация:" FontSize="Medium" />
+                    <Entry IsVisible="False" Text="{Binding Request.Organization}" IsEnabled="False" FontSize="Small"/>
+                    <Button Text="Изменить данные" IsEnabled="{Binding CanUpdate}" Command="{Binding UpdateOrder}"></Button>
+                    <Button Text="Изменить статус"  Command="{Binding UpdateState}"></Button>
                 </StackLayout>
             </ScrollView>
         </RefreshView>

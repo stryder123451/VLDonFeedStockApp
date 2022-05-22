@@ -27,5 +27,7 @@ namespace VLDonFeedStockApp.Models
         public int OrganizationId { get; set; }
         [JsonProperty("token")]
         public string Token { get; set; }
+        [JsonProperty("address")]
+        public string Address { get; set; }
     }
 }

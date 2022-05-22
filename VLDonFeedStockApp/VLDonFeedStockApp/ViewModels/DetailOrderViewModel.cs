@@ -17,19 +17,29 @@ namespace VLDonFeedStockApp.ViewModels
     public class DetailOrderViewModel : BaseViewModel
     {
         private int _id;
-        //private string _name;
-        //private string _description;
-        //private string _state;
-        //private string _materials;
+        private Workers _user;
+        private string _carton;
+        private string _plenka;
+        private string _poddon;
+        private bool _isCarton;
+        private bool _isPlenka;
+        private bool _isPoddon;
+        private string _cartonAmount;
+        private string _plenkaAmount;
+        private string _poddonAmount;
         private IAlertService alertService;
+        private bool _canUpdate;
         private Request _request;
+        public ObservableCollection<Workers> Users { get; }
         public Command LoadOrdersCommand { get; }
         public Command UpdateOrder { get; }
         public Command UpdateState { get; }
+
         public ObservableCollection<Request> Requests { get; }
         public DetailOrderViewModel()
         {
             Requests = new ObservableCollection<Request>();
+            Users = new ObservableCollection<Workers>();
             Title = $"Данные о заявке";
             alertService = DependencyService.Resolve<IAlertService>();
             LoadOrdersCommand = new Command(async () => await GetUserData());
@@ -49,6 +59,64 @@ namespace VLDonFeedStockApp.ViewModels
 
 
         }
+        public string Plenka
+        {
+            get => _plenka;
+            set => SetProperty(ref _plenka, value);
+        }
+        public string Poddon
+        {
+            get => _poddon;
+            set => SetProperty(ref _poddon, value);
+        }
+        public string Carton
+        {
+            get => _carton;
+            set => SetProperty(ref _carton, value);
+        }
+        //
+        public string PlenkaAmount
+        {
+            get => _plenkaAmount;
+            set => SetProperty(ref _plenkaAmount, value);
+        }
+        public string PoddonAmount
+        {
+            get => _poddonAmount;
+            set => SetProperty(ref _poddonAmount, value);
+        }
+        public string CartonAmount
+        {
+            get => _cartonAmount;
+            set => SetProperty(ref _cartonAmount, value);
+        }
+        //
+        public bool IsCarton
+        {
+            get => _isCarton;
+            set => SetProperty(ref _isCarton, value);
+        }
+        public bool IsPoddon
+        {
+            get => _isPoddon;
+            set => SetProperty(ref _isPoddon, value);
+        }
+        public bool IsPlenka
+        {
+            get => _isPlenka;
+            set => SetProperty(ref _isPlenka, value);
+        }
+        public bool CanUpdate
+        {
+            get => _canUpdate;
+            set => SetProperty(ref _canUpdate, value);
+        }
+
+        public Workers User
+        {
+            get => _user;
+            set => SetProperty(ref _user, value);
+        }
         private async void OnStateEditClicked(object obj)
         {
             try
@@ -66,7 +134,18 @@ namespace VLDonFeedStockApp.ViewModels
         {
             try
             {
-                //alertService.ShowToast("Получение данных о заказе...", 1f);
+                Users.Clear();
+                alertService.ShowToast("Загрузка...", 1f);
+
+                var list = await App.Database.GetUsersAsync();
+                if (list.Count > 0)
+                {
+                    foreach (var user in list)
+                    {
+                        Users.Add(user);
+                    }
+                    User = Users[0];
+                }
                 Requests.Clear();
                 HttpClient _tokenclient = new HttpClient();
                 var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/order/get/{Id}");
@@ -74,8 +153,11 @@ namespace VLDonFeedStockApp.ViewModels
                 _jsonResults.RuState = RuState(_jsonResults.State);
                 Requests.Add(_jsonResults);
                 Request = Requests[0];
+                GetMaterialsInfo();
+                
+                
                 alertService.ShowToast("Данные получены...", 1f);
-               
+
             }
             catch (Exception ex)
             {
@@ -85,6 +167,42 @@ namespace VLDonFeedStockApp.ViewModels
             {
                 IsBusy = false;
             }
+        }
+
+        private void GetMaterialsInfo()
+        {
+            IsPoddon = CheckMaterial(Request.Materials, "Поддоны");
+            IsCarton = CheckMaterial(Request.Materials, "Картон");
+            IsPlenka = CheckMaterial(Request.Materials, "Пленка");
+            PlenkaAmount = CheckMaterialAmount(Request.Materials, 1);
+            CartonAmount = CheckMaterialAmount(Request.Materials, 3);
+            PoddonAmount = CheckMaterialAmount(Request.Materials, 5);
+        }
+
+        bool CheckMaterial(string _data, string _pattern)
+        {
+            bool res = false;
+            var _separatedData = _data.Split(':', ';');
+            foreach (var x in _separatedData)
+            {
+                if (x == _pattern)
+                {
+                    res = true;
+                    break;
+                }
+            }
+            return res;
+        }
+
+        string CheckMaterialAmount(string _data,int index)
+        {
+            var res = string.Empty;
+            var _separatedData = _data.Split(':', ';');
+            if (_separatedData.Count() == 7)
+            {
+                res = _separatedData[index];
+            }
+            return res;
         }
 
         string RuState(string data)
@@ -119,26 +237,7 @@ namespace VLDonFeedStockApp.ViewModels
             get=> _id;
             set=> SetProperty(ref _id, value);
         }
-        //public string Name
-        //{
-        //    get => _name;
-        //    set => SetProperty(ref _name, value);
-        //}
-        //public string Description
-        //{
-        //    get => _name;
-        //    set => SetProperty(ref _name, value);
-        //}
-        //public string State
-        //{
-        //    get => _state;
-        //    set => SetProperty(ref _state, value);
-        //}
-        //public string Materials
-        //{
-        //    get => _materials;
-        //    set => SetProperty(ref _materials, value);
-        //}
+
 
         internal void OnAppear()
         {
@@ -147,27 +246,50 @@ namespace VLDonFeedStockApp.ViewModels
 
         public async Task<Request> UpdateIndicationsAsync(Request indications)
         {
-            alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
-            IsBusy = true;
-            HttpClient client = new HttpClient();
-            var response = await client.PutAsync($"{GlobalSettings.HostUrl}api/order",
-            new StringContent(System.Text.Json.JsonSerializer.Serialize(indications),
-            Encoding.UTF8, "application/json"));
-            if (response.StatusCode != HttpStatusCode.OK)
+            if (User.Role == "admin" && User.Role == "root")
             {
-                alertService.ShowToast("Ошибка при обновлении... Попробуйте позже...", 1);
-                return null;
+                indications.Materials = $"{Validator(Plenka, PlenkaAmount)}{Validator(Carton, CartonAmount)}{Validator(Poddon, PoddonAmount)}";
+                alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
+                IsBusy = true;
+
+                HttpClient client = new HttpClient();
+                var response = await client.PutAsync($"{GlobalSettings.HostUrl}api/order/{User.Token}",
+                new StringContent(System.Text.Json.JsonSerializer.Serialize(indications),
+                Encoding.UTF8, "application/json"));
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    alertService.ShowToast("Ошибка при обновлении... Попробуйте позже...", 1);
+                    return null;
+                }
+                else
+                {
+                    var res = JsonConvert.DeserializeObject<Request>(response.Content.ReadAsStringAsync().Result);
+                    res.RuState = RuState(res.State);
+                    Request = res;
+                    GetMaterialsInfo();
+                    //await Shell.Current.GoToAsync($"//{nameof(LightIndicationsPage)}");
+                    return null;
+                }
             }
             else
             {
-                var res = JsonConvert.DeserializeObject<Request>(response.Content.ReadAsStringAsync().Result);
-                res.RuState = RuState(res.State);
-                Request = res;
-                //await Shell.Current.GoToAsync($"//{nameof(LightIndicationsPage)}");
+                alertService.ShowToast("У вас недостаточно прав!!!", 1);
                 return null;
             }
         }
 
+        public string Validator(string _data, string _amount)
+        {
+            if (String.IsNullOrEmpty(_data))
+            {
+                return ":;";
+            }
+            else
+            {
+              
+                return $"{_data}:{_amount};";
+            }
+        }
         public async Task<Request> UpdateStateAsync(Request indications)
         {
             alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);

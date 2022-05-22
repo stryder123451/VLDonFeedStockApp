@@ -19,6 +19,12 @@ namespace VLDonFeedStockApp.ViewModels
         IAlertService alertService;
         private Request _newOrder;
         private Workers _user;
+        private string _carton;
+        private string _plenka;
+        private string _poddon;
+        private string _cartonAmount;
+        private string _plenkaAmount;
+        private string _poddonAmount;
         public ObservableCollection<Workers> Users { get; }
         
         public Command LoadItemsCommand { get; }
@@ -84,6 +90,35 @@ namespace VLDonFeedStockApp.ViewModels
 
         }
 
+        public string Validator(string _data, string _amount)
+        {
+            if (String.IsNullOrEmpty(_data))
+            {
+                return ":;";
+            }
+            else
+            {
+
+                return $"{_data}:{_amount};";
+            }
+        }
+
+        public string Plenka
+        {
+            get => _plenka;
+            set => SetProperty(ref _plenka, value);
+        }
+        public string Poddon
+        {
+            get => _poddon;
+            set => SetProperty(ref _poddon, value);
+        }
+        public string Carton
+        {
+            get => _carton;
+            set => SetProperty(ref _carton, value);
+        }
+
         private async Task GetUserData()
         {
             try
@@ -119,12 +154,30 @@ namespace VLDonFeedStockApp.ViewModels
             }
         }
 
+        public string PlenkaAmount
+        {
+            get => _plenkaAmount;
+            set => SetProperty(ref _plenkaAmount, value);
+        }
+        public string PoddonAmount
+        {
+            get => _poddonAmount;
+            set => SetProperty(ref _poddonAmount, value);
+        }
+        public string CartonAmount
+        {
+            get => _cartonAmount;
+            set => SetProperty(ref _cartonAmount, value);
+        }
+
         public async Task<Request> CreateRequest(Request indications)
         {
+            indications.Address = User.Address;
+            indications.Materials = $"{Validator(Plenka, PlenkaAmount)}{Validator(Carton, CartonAmount)}{Validator(Poddon, PoddonAmount)}";
             alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
             IsBusy = true;
             HttpClient client = new HttpClient();
-            var response = await client.PostAsync($"{GlobalSettings.HostUrl}api/order",
+            var response = await client.PostAsync($"{GlobalSettings.HostUrl}api/order/{User.Token}",
             new StringContent(System.Text.Json.JsonSerializer.Serialize(indications),
             Encoding.UTF8, "application/json"));
             if (response.StatusCode != HttpStatusCode.OK)

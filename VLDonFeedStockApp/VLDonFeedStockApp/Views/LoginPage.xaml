@@ -4,16 +4,15 @@
              xmlns:d="http://xamarin.com/schemas/2014/forms/design"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:viewmodels="clr-namespace:VLDonFeedStockApp.ViewModels"
              mc:Ignorable="d"
-             x:Class="VLDonFeedStockApp.Views.LoginPage"
-             Shell.NavBarIsVisible="False">
+             x:Class="VLDonFeedStockApp.Views.LoginPage">
     <ContentPage.BindingContext>
         <viewmodels:LoginViewModel/>
     </ContentPage.BindingContext>
     <ContentPage.Content>
         <ScrollView>
 
-            <StackLayout Spacing="10" Margin="16,32" VerticalOptions="FillAndExpand">
-                <Image  Source="logoTrans.png"></Image>
+            <StackLayout Spacing="5" Margin="16,32" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+                <Image  Source="logoNewTrans.png"></Image>
                 <Entry Text="{Binding Username}"
                    Placeholder="Логин..." />
                 <Entry Text="{Binding Password}"
@@ -36,8 +35,8 @@
                 Command="{Binding RegisterCommand}">
                     <Button.Background>
                         <LinearGradientBrush EndPoint="1,0">
-                            <GradientStop Color="#48c6ef" Offset="0.1" />
-                            <GradientStop Color="#6f86d6" Offset="1.0" />
+                            <GradientStop Color="#FF512F" Offset="0.1" />
+                            <GradientStop Color="#F09819" Offset="1.0" />
                         </LinearGradientBrush>
                     </Button.Background>
                 </Button>

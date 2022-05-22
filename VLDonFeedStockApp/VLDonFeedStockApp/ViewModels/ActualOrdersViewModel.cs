@@ -17,24 +17,37 @@ namespace VLDonFeedStockApp.ViewModels
     public class ActualOrdersViewModel : BaseViewModel
     {
         public Command LoadOrdersCommand { get; }
-        public Command<Request> EditOrder { get; }
+        public Command<Order> EditOrder { get; }
         public ObservableCollection<Request> OrdersList { get; }
+        public ObservableCollection<Order> EasyOrdersList { get; }
         public ObservableCollection<Workers> Workers { get; }
         private IAlertService alertService;
-        private Request _selectedOrder;
+        private Order _selectedOrder;
         public Command AddItemCommand { get; }
         public ActualOrdersViewModel()
         {
             OrdersList = new ObservableCollection<Request>();
+            EasyOrdersList = new ObservableCollection<Order>();
             Workers = new ObservableCollection<Workers>();
             Title = $"Созданные заявки,{DateTime.Now.Month}, {DateTime.Now.Year}г";
             alertService = DependencyService.Resolve<IAlertService>();
             LoadOrdersCommand = new Command(async () => await GetUserData());
-            EditOrder = new Command<Request>(OnItemSelected);
+            EditOrder = new Command<Order>(OnItemSelected);
             AddItemCommand = new Command(OnAddItem);
         }
+        private async void OnAddItem(object obj)
+        {
+            if (Workers[0].Role == "admin" || Workers[0].Role == "root")
+            {
+                await Shell.Current.GoToAsync(nameof(NewItemPage));
+            }
+            else
+            {
+                alertService.ShowToast("У вас недостатно прав!!!", 1f);
+            }
+        }
 
-        public Request SelectedOrder
+        public Order SelectedOrder
         {
             get => _selectedOrder;
             set
@@ -43,12 +56,7 @@ namespace VLDonFeedStockApp.ViewModels
                 OnItemSelected(value);
             }
         }
-
-        private async void OnAddItem(object obj)
-        {
-            await Shell.Current.GoToAsync(nameof(NewItemPage));
-        }
-        async void OnItemSelected(Request item)
+        async void OnItemSelected(Order item)
         {
             if (item == null)
                 return;
@@ -61,6 +69,7 @@ namespace VLDonFeedStockApp.ViewModels
             {
                 alertService.ShowToast("Получение показаний...", 1f);
                 OrdersList.Clear();
+                EasyOrdersList.Clear();
                 Workers.Clear();
                 var list = await App.Database.GetUsersAsync();
                 if (list.Count > 0)
@@ -70,12 +79,25 @@ namespace VLDonFeedStockApp.ViewModels
                         Workers.Add(user);
                     }
                     HttpClient _tokenclient = new HttpClient();
-                    var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/order/active/{Workers[0].Login}");
+                    var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/order/active/{Workers[0].Login}/{Workers[0].Token}");
                     var _jsonResults = JsonConvert.DeserializeObject<List<Request>>(_responseToken);
                     foreach (var x in _jsonResults)
                     {
                         x.RuState = RuState(x.State);
                         OrdersList.Add(x);
+                    }
+                    foreach (var x in _jsonResults)
+                    {
+                        EasyOrdersList.Add(new Order()
+                        {
+                            Id = x.Id,
+                            Description = x.Description,
+                            State = x.RuState,
+                            Paper = CheckMaterial(x.Materials, "Пленка"),
+                            Carton = CheckMaterial(x.Materials, "Картон"),
+                            Poddon = CheckMaterial(x.Materials, "Поддоны"),
+                            Address = x.Address,
+                        });
                     }
                     alertService.ShowToast("Данные получены...", 1f);
                 }
@@ -95,6 +117,23 @@ namespace VLDonFeedStockApp.ViewModels
             }
         }
 
+
+        bool CheckMaterial(string _data, string _pattern)
+        {
+            bool res = false;
+            var _separatedData = _data.Split(':', ';');
+            foreach (var x in _separatedData)
+            {
+                if (x == _pattern)
+                {
+                    res = true;
+                    break;
+                }
+            }
+            return res;
+        }
+
+
         string RuState(string data)
         {
             var res = string.Empty;
@@ -104,7 +143,7 @@ namespace VLDonFeedStockApp.ViewModels
                     res = "Создан";
                     break;
                 case "actual":
-                    res = "Активен";
+                    res = "Вывезен";
                     break;
                 case "weighted":
                     res = "Взвешен";
@@ -121,6 +160,5 @@ namespace VLDonFeedStockApp.ViewModels
             IsBusy = true;
         }
 
-       
     }
 }
