@@ -79,25 +79,24 @@ namespace VLDonFeedStockApp.ViewModels
                     }
                     HttpClient _tokenclient = new HttpClient();
                     var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/order/created/{Workers[0].Login}/{Workers[0].Token}");
-                    var _jsonResults = JsonConvert.DeserializeObject<List<Request>>(_responseToken);
+                    var _jsonResults = JsonConvert.DeserializeObject<List<Order>>(_responseToken);
                     foreach (var x in _jsonResults)
                     {
-                        x.RuState = RuState(x.State);
-                        OrdersList.Add(x);
+                        EasyOrdersList.Add(x);
                     }
-                    foreach (var x in _jsonResults)
-                    {
-                        EasyOrdersList.Add(new Order()
-                        {
-                            Id = x.Id,
-                            Description = x.Description,
-                            State = x.RuState,
-                            Paper = CheckMaterial(x.Materials, "Пленка"),
-                            Carton = CheckMaterial(x.Materials,"Картон"),
-                            Poddon = CheckMaterial(x.Materials,"Поддоны"),
-                            Address = x.Address,
-                        }) ;
-                    }
+                    //foreach (var x in _jsonResults)
+                    //{
+                    //    EasyOrdersList.Add(new Order()
+                    //    {
+                    //        Id = x.Id,
+                    //        Description = x.Description,
+                    //        State = x.RuState,
+                    //        Paper = CheckMaterial(x.Materials, "Пленка"),
+                    //        Carton = CheckMaterial(x.Materials,"Картон"),
+                    //        Poddon = CheckMaterial(x.Materials,"Поддоны"),
+                    //        Address = x.Address,
+                    //    }) ;
+                    //}
                     alertService.ShowToast("Данные получены...", 1f);
                 }
                 else

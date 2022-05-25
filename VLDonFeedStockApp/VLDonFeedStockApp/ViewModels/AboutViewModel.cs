@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Plugin.FirebasePushNotification;
+using System;
 using System.Collections.ObjectModel;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using VLDonFeedStockApp.Models;
@@ -45,24 +47,26 @@ namespace VLDonFeedStockApp.ViewModels
                     {
                         Users.Add(user);
                     }
+                    Users[0].RuRole = SetRole(Users[0].Role);
                     User = Users[0];
                 }
+
                 else
                 {
                     await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
                 }
                 alertService.ShowToast($"Здравствуйте, {Users[0].Name}!!!", 1f);
-                //HttpClient _tokenclientDiff = new HttpClient();
-                //var _responseTokenDiff = await _tokenclientDiff.GetStringAsync($"http://velikihs-001-site1.dtempurl.com/api/user/{Users[0].City}/{Users[0].Street}/{Users[0].HouseNumber}/{Users[0].Login}");
-                //if (CrossFirebasePushNotification.Current.SubscribedTopics.Length > 0)
-                //{
-                //    CrossFirebasePushNotification.Current.UnsubscribeAll();
-                //    CrossFirebasePushNotification.Current.Subscribe(_responseTokenDiff);
-                //}
-                //if (CrossFirebasePushNotification.Current.SubscribedTopics.Length == 0)
-                //{
-                //    CrossFirebasePushNotification.Current.Subscribe(_responseTokenDiff);
-                //}
+                HttpClient _tokenclientDiff = new HttpClient();
+                var _responseTokenDiff = await _tokenclientDiff.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/store/{User.Organization}/{User.Address}");
+                if (CrossFirebasePushNotification.Current.SubscribedTopics.Length > 0)
+                {
+                    CrossFirebasePushNotification.Current.UnsubscribeAll();
+                    CrossFirebasePushNotification.Current.Subscribe($"{_responseTokenDiff}");
+                }
+                if (CrossFirebasePushNotification.Current.SubscribedTopics.Length == 0)
+                {
+                    CrossFirebasePushNotification.Current.Subscribe(_responseTokenDiff);
+                }
 
                 //CrossFirebasePushNotification.Current.Subscribe("all");
             }
@@ -76,7 +80,22 @@ namespace VLDonFeedStockApp.ViewModels
 
             }
         }
-
+        public string SetRole(string _data)
+        {
+            switch (_data)
+            {
+                case "admin":
+                    _data = "Директор";
+                    break;
+                case "root":
+                    _data = "Администратор";
+                    break;
+                default: 
+                    _data = "КонтрАгент";
+                        break;
+            }
+            return _data;
+        }
         public ICommand OpenWebCommand { get; }
         public Command LoadItemsCommand { get; }
         internal void OnAppearing()

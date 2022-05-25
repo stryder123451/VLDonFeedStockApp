@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Plugin.FirebasePushNotification;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -77,8 +79,14 @@ namespace VLDonFeedStockApp.ViewModels
                     NewOrder.RelatedOperator = User.Login;
                     NewOrder.RelatedOrganizationId = User.OrganizationId;
                     NewOrder.Organization = User.Organization;
-                    NewOrder.Data = NewOrder.Data.Split(' ')[0].ToString();
-                    
+                    if (NewOrder.Data != null)
+                    {
+                        NewOrder.Data = NewOrder.Data.Split(' ')[0].ToString();
+                    }
+                    else
+                    {
+                        NewOrder.Data = DateTime.Now.ToString().Split(' ')[0].ToString();
+                    }
                     await CreateRequest(NewOrder);
                 }
             }
@@ -172,6 +180,7 @@ namespace VLDonFeedStockApp.ViewModels
 
         public async Task<Request> CreateRequest(Request indications)
         {
+            indications.Id = 0;
             indications.Address = User.Address;
             indications.Materials = $"{Validator(Plenka, PlenkaAmount)}{Validator(Carton, CartonAmount)}{Validator(Poddon, PoddonAmount)}";
             alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
@@ -187,11 +196,17 @@ namespace VLDonFeedStockApp.ViewModels
             }
             else
             {
-                await alertService.ShowMessage("Заявка","Успешно создано!!!");
+                var res = JsonConvert.DeserializeObject<Request>(response.Content.ReadAsStringAsync().Result);
+                HttpClient _tokenclientDiff = new HttpClient();
+                var _responseTokenDiff = await _tokenclientDiff.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/store/{User.Organization}/{User.Address}");
+                CrossFirebasePushNotification.Current.Subscribe($"{_responseTokenDiff}_{res.Id}");
+                await alertService.ShowMessage("Заявка", "Успешно создано!!!");
+                
                 await Shell.Current.GoToAsync("..");
                 return null;
             }
         }
+    
 
 
         private async void OnCancel()

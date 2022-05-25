@@ -1,4 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using FirebaseAdmin;
+using FirebaseAdmin.Messaging;
+using Google.Apis.Auth.OAuth2;
+using Newtonsoft.Json;
+using Plugin.FirebasePushNotification;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -29,6 +33,9 @@ namespace VLDonFeedStockApp.ViewModels
         private string _poddonAmount;
         private IAlertService alertService;
         private bool _canUpdate;
+        private bool _isTaken;
+        private bool _isWeighted;
+        private bool _isFinished;
         private Request _request;
         public ObservableCollection<Workers> Users { get; }
         public Command LoadOrdersCommand { get; }
@@ -111,6 +118,21 @@ namespace VLDonFeedStockApp.ViewModels
             get => _canUpdate;
             set => SetProperty(ref _canUpdate, value);
         }
+        public bool IsTaken
+        {
+            get => _isTaken;
+            set => SetProperty(ref _isTaken, value);
+        }
+        public bool IsWeighted
+        {
+            get => _isWeighted;
+            set => SetProperty(ref _isWeighted, value);
+        }
+        public bool IsFinished
+        {
+            get => _isFinished;
+            set => SetProperty(ref _isFinished, value);
+        }
 
         public Workers User
         {
@@ -154,7 +176,7 @@ namespace VLDonFeedStockApp.ViewModels
                 Requests.Add(_jsonResults);
                 Request = Requests[0];
                 GetMaterialsInfo();
-                
+                CheckUserRights();
                 
                 alertService.ShowToast("Данные получены...", 1f);
 
@@ -169,6 +191,73 @@ namespace VLDonFeedStockApp.ViewModels
             }
         }
 
+        private void CheckUserRights()
+        {
+            if (User.Role=="root")
+            {
+                switch (Request.RuState)
+                {
+                    case "Создан":
+                        IsTaken = true;
+                        IsWeighted = false;
+                        IsFinished = false;
+                        break;
+                    case "Вывезен":
+                        IsTaken = false;
+                        IsWeighted = true;
+                        IsFinished = false;
+                        break;
+                    case "Взвешен":
+                        IsTaken = false;
+                        IsWeighted = false;
+                        IsFinished = true;
+                        break;
+                }
+            }
+            if (User.Role == "admin")
+            {
+                switch (Request.RuState)
+                {
+                    case "Создан":
+                        IsTaken = true;
+                        IsWeighted = false;
+                        IsFinished = false;
+                        break;
+                    case "Вывезен":
+                        IsTaken = false;
+                        IsWeighted = true;
+                        IsFinished = false;
+                        break;
+                    case "Взвешен":
+                        IsTaken = false;
+                        IsWeighted = false;
+                        IsFinished = false;
+                        break;
+                }
+            }
+            if (User.Role != "admin" && User.Role!="root")
+            {
+                switch (Request.RuState)
+                {
+                    case "Создан":
+                        IsTaken = true;
+                        IsWeighted = false;
+                        IsFinished = false;
+                        break;
+                    case "Вывезен":
+                        IsTaken = false;
+                        IsWeighted = true;
+                        IsFinished = false;
+                        break;
+                    case "Взвешен":
+                        IsTaken = false;
+                        IsWeighted = false;
+                        IsFinished = false;
+                        break;
+                }
+            }
+        }
+
         private void GetMaterialsInfo()
         {
             IsPoddon = CheckMaterial(Request.Materials, "Поддоны");
@@ -177,7 +266,9 @@ namespace VLDonFeedStockApp.ViewModels
             PlenkaAmount = CheckMaterialAmount(Request.Materials, 1);
             CartonAmount = CheckMaterialAmount(Request.Materials, 3);
             PoddonAmount = CheckMaterialAmount(Request.Materials, 5);
+            
         }
+
 
         bool CheckMaterial(string _data, string _pattern)
         {
@@ -212,15 +303,19 @@ namespace VLDonFeedStockApp.ViewModels
             {
                 case "created":
                     res = "Создан";
+                  
                     break;
                 case "actual":
-                    res = "Активен";
+                    res = "Вывезен";
+                   
                     break;
                 case "weighted":
                     res = "Взвешен";
+                    
                     break;
                 case "finished":
                     res = "Завершен";
+                    
                     break;
             }
             return res;
@@ -239,6 +334,9 @@ namespace VLDonFeedStockApp.ViewModels
         }
 
 
+       
+
+
         internal void OnAppear()
         {
             IsBusy = true;
@@ -246,7 +344,7 @@ namespace VLDonFeedStockApp.ViewModels
 
         public async Task<Request> UpdateIndicationsAsync(Request indications)
         {
-            if (User.Role == "admin" && User.Role == "root")
+            if (User.Role == "admin" || User.Role == "root")
             {
                 indications.Materials = $"{Validator(Plenka, PlenkaAmount)}{Validator(Carton, CartonAmount)}{Validator(Poddon, PoddonAmount)}";
                 alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
@@ -267,6 +365,7 @@ namespace VLDonFeedStockApp.ViewModels
                     res.RuState = RuState(res.State);
                     Request = res;
                     GetMaterialsInfo();
+                    
                     //await Shell.Current.GoToAsync($"//{nameof(LightIndicationsPage)}");
                     return null;
                 }
@@ -308,6 +407,7 @@ namespace VLDonFeedStockApp.ViewModels
                 var res = JsonConvert.DeserializeObject<Request>(response.Content.ReadAsStringAsync().Result);
                 res.RuState = RuState(res.State);
                 Request = res;
+                CheckUserRights();
                 //await Shell.Current.GoToAsync($"//{nameof(LightIndicationsPage)}");
                 return null;
             }

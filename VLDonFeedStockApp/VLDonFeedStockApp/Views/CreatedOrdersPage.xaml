@@ -8,13 +8,14 @@
         </ToolbarItem>
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
-        <RefreshView x:DataType="viewmodels:CreatedOrdersViewModel" Command="{Binding LoadOrdersCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+        <RefreshView x:DataType="viewmodels:CreatedOrdersViewModel" Command="{Binding LoadOrdersCommand}"  IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
             <ScrollView>
-                <ListView x:Name="OrderItems" ItemsSource="{Binding EasyOrdersList}" SeparatorVisibility="Default" ItemTapped="OrderItems_ItemTapped" HasUnevenRows="True" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+                <ListView x:Name="OrderItems" ItemsSource="{Binding EasyOrdersList}"  SeparatorVisibility="None" ItemTapped="OrderItems_ItemTapped" HasUnevenRows="True" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <ViewCell>
-
+                            
+                            <ViewCell Height="150">
+                              
                                 <!--<ViewCell.ContextActions>
                                     <MenuItem
                                         x:Name="EditBtn"
@@ -23,7 +24,8 @@
                                         CommandParameter="{Binding .}">
                                     </MenuItem>
                                 </ViewCell.ContextActions>-->
-                                <StackLayout Margin="6,4,6,4" x:DataType="model:Order">
+                                <StackLayout   Padding="0"  x:DataType="model:Order">
+                                    <Frame BorderColor="Red">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition></ColumnDefinition>
@@ -35,25 +37,39 @@
                                             <RowDefinition></RowDefinition>
                                             <RowDefinition></RowDefinition>
                                             <RowDefinition></RowDefinition>
-                                            <RowDefinition></RowDefinition>
-                                            <RowDefinition></RowDefinition>
+                                            <!--<RowDefinition></RowDefinition>
+                                            <RowDefinition></RowDefinition>-->
                                         </Grid.RowDefinitions>
                                     <Label Grid.Row="0" TextColor="Green" HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding Id}"></Label>
                                     <Label Grid.Row="1" TextColor="Green" HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding State}"></Label>
-                                    <CheckBox Grid.Row="2" IsEnabled="False" HorizontalOptions="CenterAndExpand" Grid.Column="1" IsChecked="{Binding Paper}"></CheckBox>
-                                    <CheckBox Grid.Row="3" IsEnabled="False" HorizontalOptions="CenterAndExpand" Grid.Column="1" IsChecked="{Binding Carton}"></CheckBox>
-                                    <CheckBox Grid.Row="4" IsEnabled="False" HorizontalOptions="CenterAndExpand" Grid.Column="1" IsChecked="{Binding Poddon}"></CheckBox>
-                                    <Label Grid.Row="5" IsEnabled="False"  HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding Description}"></Label>
-                                    <Label Grid.Row="6" IsEnabled="False"  HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding Address}"></Label>
+                                        <Grid Grid.Row="2" Grid.RowSpan="2"  Grid.Column="1">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition></ColumnDefinition>
+                                                <ColumnDefinition></ColumnDefinition>
+                                                <ColumnDefinition></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition></RowDefinition>
+                                                <RowDefinition></RowDefinition>
+                                            </Grid.RowDefinitions>
+                                            <Label Grid.Row="0" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Пленка:"></Label>
+                                            <Label Grid.Row="0" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="Картон:"></Label>
+                                            <Label Grid.Row="0" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="2" Text="Поддоны:"></Label>
+                                            <CheckBox Grid.Row="1"  IsEnabled="False" HorizontalOptions="CenterAndExpand" Grid.Column="0" IsChecked="{Binding Paper}"></CheckBox>
+                                            <CheckBox Grid.Row="1" IsEnabled="False" HorizontalOptions="CenterAndExpand" Grid.Column="1" IsChecked="{Binding Carton}"></CheckBox>
+                                            <CheckBox Grid.Row="1" IsEnabled="False" HorizontalOptions="CenterAndExpand" Grid.Column="2" IsChecked="{Binding Poddon}"></CheckBox>
+                                        </Grid>
+                                        <Label Grid.Row="2" TextColor="Black"  HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Материалы:"></Label>
+                                        <!--<Label Grid.Row="3" IsEnabled="False"  HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding Description}"></Label>-->
+                                    <Label Grid.Row="4"   HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding Address}"></Label>
                                    
                                     <Label Grid.Row="0" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="ID заказа:"></Label>
                                     <Label Grid.Row="1" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Статус заказа:"></Label>
-                                    <Label Grid.Row="2" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Пленка:"></Label>
-                                    <Label Grid.Row="3" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Картон:"></Label>
-                                    <Label Grid.Row="4" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Поддоны:"></Label>
-                                    <Label Grid.Row="5" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Описание:"></Label>
-                                    <Label Grid.Row="6" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Адрес:"></Label>
+                                   
+                                    <!--<Label Grid.Row="3" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Описание:"></Label>-->
+                                    <Label Grid.Row="4" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Адрес:"></Label>
                                     </Grid>
+                                    </Frame>
                                     <StackLayout.GestureRecognizers>
                                         <TapGestureRecognizer 
                                          NumberOfTapsRequired="1"
@@ -63,6 +79,7 @@
                                     </StackLayout.GestureRecognizers>
                                 </StackLayout>
                             </ViewCell>
+                            
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>

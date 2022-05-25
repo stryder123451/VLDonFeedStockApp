@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "201547876696",
+    "project_id": "vldonfeedstock",
+    "storage_bucket": "vldonfeedstock.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:201547876696:android:fbaab466464c7d2cfa3d2d",
+        "android_client_info": {
+          "package_name": "com.companyname.vldonfeedstockapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "201547876696-mfl77vu84av4he40f9cigpufjq91jkcj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHB74h1oWnZ6EiNvXVUc5C19WHj0KGKhU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "201547876696-mfl77vu84av4he40f9cigpufjq91jkcj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

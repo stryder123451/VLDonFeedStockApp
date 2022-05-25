@@ -15,23 +15,27 @@ namespace VLDonFeedStockApp.Views
         {
             InitializeComponent();
             BindingContext = _NewItemViewModel = new NewItemViewModel();
+            DataPicker.Date = DateTime.Now;
         }
 
         protected override void OnAppearing()
         {
             base.OnAppearing();
             _NewItemViewModel.OnAppearing();
+            
         }
 
         private void isPlenka_Toggled(object sender, ToggledEventArgs e)
         {
             if (isPlenka.IsToggled)
             {
+                PlenkaEntry.IsEnabled = true;
                 PlenkaEntryHidden.IsEnabled = true;
                 PlenkaEntryHidden.Text = "Пленка";
             }
             else
             {
+                PlenkaEntry.IsEnabled = false;
                 PlenkaEntryHidden.IsEnabled = false;
                 PlenkaEntryHidden.Text = string.Empty;
             }
@@ -42,11 +46,13 @@ namespace VLDonFeedStockApp.Views
         {
             if (isCarton.IsToggled)
             {
+                CartonEntry.IsEnabled = true;
                 CartonEntryHidden.IsEnabled = true;
                 CartonEntryHidden.Text = "Картон";
             }
             else
             {
+                CartonEntry.IsEnabled = false;
                 CartonEntryHidden.IsEnabled = false;
                 CartonEntryHidden.Text = string.Empty;
             }
@@ -57,11 +63,13 @@ namespace VLDonFeedStockApp.Views
         {
             if (isPoddon.IsToggled)
             {
+                PoddonEntry.IsEnabled = true;
                 PoddonEntryHidden.IsEnabled = true;
                 PoddonEntryHidden.Text = "Поддоны";
             }
             else
             {
+                PoddonEntry.IsEnabled = false;
                 PoddonEntryHidden.IsEnabled = false;
                 PoddonEntryHidden.Text = string.Empty;
             }

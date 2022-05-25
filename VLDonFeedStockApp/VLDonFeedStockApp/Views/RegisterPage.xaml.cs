@@ -117,5 +117,32 @@ namespace VLDonFeedStockApp.Views
 
         }
 
+        private async void loginEntry_Unfocused_1(object sender, FocusEventArgs e)
+        {
+            try
+            {
+                if (loginEntry.Text != null)
+                {
+                    HttpClient client = new HttpClient();
+
+                    var response = await client.GetAsync($"{GlobalSettings.HostUrl}api/auth/{loginEntry.Text}");
+                    if (response != null)
+                    {
+                        if (response.StatusCode != HttpStatusCode.OK)
+                        {
+
+                        }
+                        else
+                        {
+                            loginEntry.Text = "Такой логин уже существует!!!";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+            }
+        }
     }
 }

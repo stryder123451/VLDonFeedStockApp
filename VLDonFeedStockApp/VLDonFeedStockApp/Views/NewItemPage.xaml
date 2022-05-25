@@ -16,8 +16,8 @@
         </RefreshView>-->
         <ScrollView>
             <StackLayout Spacing="5" Padding="15">
-                <Label IsVisible="False" Text="Имя заказа:" FontSize="Medium" />
-                <Entry IsVisible="False" Text="{Binding NewOrder.Name}" FontSize="Small"/>
+                <!--<Label IsVisible="False" Text="Имя заказа:" FontSize="Medium" />-->
+                <!--<Entry IsVisible="False" Text="{Binding NewOrder.Name}" FontSize="Small"/>-->
                 <Label Text="Материалы:" FontSize="Medium" />
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -33,20 +33,20 @@
                     </Grid.RowDefinitions>
                     <Switch Grid.Column="1" Toggled="isPlenka_Toggled" Grid.Row="0" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" x:Name="isPlenka"></Switch>
                     <Label Grid.Column="0"  Grid.Row="0" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="Пленка"></Label>
-                    <Entry Grid.Column="2" x:Name="PlenkaEntry" Grid.Row="0" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Unfocused="PlenkaEntry_Unfocused" Text="{Binding PlenkaAmount}" Keyboard="Numeric"></Entry>
+                    <Entry Grid.Column="2" x:Name="PlenkaEntry" Grid.Row="0" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Unfocused="PlenkaEntry_Unfocused" IsEnabled="False" Text="{Binding PlenkaAmount}" Keyboard="Numeric"></Entry>
                     <Entry Grid.Column="3" x:Name="PlenkaEntryHidden" Grid.Row="0" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Keyboard="Numeric" Text="{Binding Plenka}"></Entry>
                     <Switch Grid.Column="1" Toggled="isCarton_Toggled" Grid.Row="1" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" x:Name="isCarton"></Switch>
                     <Label Grid.Column="0"  Grid.Row="1" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="Картон" ></Label>
-                    <Entry Grid.Column="2" x:Name="CartonEntry" Grid.Row="1" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Unfocused="CartonEntry_Unfocused" Text="{Binding CartonAmount}" Keyboard="Numeric"></Entry>
+                    <Entry Grid.Column="2" x:Name="CartonEntry" Grid.Row="1" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Unfocused="CartonEntry_Unfocused" IsEnabled="False" Text="{Binding CartonAmount}" Keyboard="Numeric"></Entry>
                     <Entry Grid.Column="3" x:Name="CartonEntryHidden" Grid.Row="1" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Keyboard="Numeric" Text="{Binding Carton}"></Entry>
                     <Switch Grid.Column="1" Toggled="isPoddon_Toggled" Grid.Row="2" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"  x:Name="isPoddon"></Switch>
                     <Label Grid.Column="0"  Grid.Row="2" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"  Text="Поддон"></Label>
-                    <Entry Grid.Column="2" x:Name="PoddonEntry"  Grid.Row="2" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Unfocused="PoddonEntry_Unfocused" Text="{Binding PoddonAmount}" Keyboard="Numeric"></Entry>
+                    <Entry Grid.Column="2" x:Name="PoddonEntry"  Grid.Row="2" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Unfocused="PoddonEntry_Unfocused" IsEnabled="False" Text="{Binding PoddonAmount}" Keyboard="Numeric"></Entry>
                     <Entry Grid.Column="3" x:Name="PoddonEntryHidden"  Grid.Row="2" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Keyboard="Numeric" Text="{Binding Poddon}"></Entry>
                 </Grid>
                 <Entry IsVisible="False" Text="{Binding NewOrder.Materials}" FontSize="Small"/>
                 <Label Text="Дата:" FontSize="Medium" />
-                <DatePicker Date="{Binding NewOrder.Data}" FontSize="Small"/>
+                <DatePicker x:Name="DataPicker" Date="{Binding NewOrder.Data}" FontSize="Small"/>
                 <Label Text="Примечание:" FontSize="Medium" />
                 <Entry Text="{Binding NewOrder.Description}" FontSize="Small"/>
                 <Label IsVisible="False" Text="Адрес:" FontSize="Medium" />

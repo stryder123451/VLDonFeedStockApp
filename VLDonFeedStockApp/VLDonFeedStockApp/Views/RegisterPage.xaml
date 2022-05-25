@@ -14,7 +14,7 @@
                     <Entry PlaceholderColor="Black" x:Name="storeEntry"  Text="{Binding Address}"   Placeholder="ФИО..." IsVisible="False"  FontSize="Medium" Margin="0" />
                     
                     <Entry PlaceholderColor="Black" x:Name="fioEntry"  Text="{Binding Name}"   Placeholder="ФИО..."   FontSize="Medium" Margin="0" />
-                    <Entry PlaceholderColor="Black" x:Name="loginEntry" Unfocused="loginEntry_Unfocused" Text="{Binding Login}" Keyboard="Telephone"  Placeholder="Номер телефона..."   FontSize="Medium" Margin="0">
+                    <Entry PlaceholderColor="Black" x:Name="loginEntry" Unfocused="loginEntry_Unfocused_1" Text="{Binding Login}" Keyboard="Telephone"  Placeholder="Номер телефона..."   FontSize="Medium" Margin="0">
 
                     </Entry>
                     <Entry PlaceholderColor="Black" x:Name="passwordEntry" Text="{Binding Password}" Placeholder="Пароль..."   FontSize="Medium" Margin="0" />

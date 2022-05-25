@@ -46,8 +46,10 @@
                     <Entry Text="{Binding Request.Description}" FontSize="Small"/>
                     <Label IsVisible="False" Text="Организация:" FontSize="Medium" />
                     <Entry IsVisible="False" Text="{Binding Request.Organization}" IsEnabled="False" FontSize="Small"/>
-                    <Button Text="Изменить данные" IsEnabled="{Binding CanUpdate}" Command="{Binding UpdateOrder}"></Button>
-                    <Button Text="Изменить статус"  Command="{Binding UpdateState}"></Button>
+                    <Button Text="Товар вывезен" IsVisible="{Binding IsTaken}" BackgroundColor="#FFD400" IsEnabled="{Binding CanUpdate}" Command="{Binding UpdateState}"></Button>
+                    <Button Text="Товар взвешен" IsVisible="{Binding IsWeighted}" BackgroundColor="#FF8500" IsEnabled="{Binding CanUpdate}" Command="{Binding UpdateState}"></Button>
+                    <Button Text="Заявка закрыта" IsVisible="{Binding IsFinished}" BackgroundColor="Red" IsEnabled="{Binding CanUpdate}" Command="{Binding UpdateState}"></Button>
+                    <Button Text="Изменить данные"  Command="{Binding UpdateOrder}"></Button>
                 </StackLayout>
             </ScrollView>
         </RefreshView>

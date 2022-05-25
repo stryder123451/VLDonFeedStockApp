@@ -66,7 +66,7 @@
 
                         <Label Grid.Row="2" TextColor="Black" Grid.Column="0" FontSize="Body" FontAttributes="Bold"  Text="Роль:" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
                         <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />
-                        <Label Grid.Row="2" TextColor="Black" Grid.Column="1" Grid.ColumnSpan="2" FontSize="Body" FontAttributes="Bold"   Text="{Binding User.Role}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+                        <Label Grid.Row="2" TextColor="Black" Grid.Column="1" Grid.ColumnSpan="2" FontSize="Body" FontAttributes="Bold"   Text="{Binding User.RuRole}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
 
                         <Label Grid.Row="3" TextColor="Black" Grid.Column="0" FontSize="Body" FontAttributes="Bold"  Text="Организация:" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
                         <BoxView Color="Red"  HeightRequest="2" HorizontalOptions="Fill" />
