@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:VLDonFeedStockApp.ViewModels" xmlns:model="clr-namespace:VLDonFeedStockApp.Models"
-             x:Class="VLDonFeedStockApp.Views.WeightedOrdersPage">
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:VLDonFeedStockApp.ViewModels" xmlns:model="clr-namespace:VLDonFeedStockApp.Models" x:DataType="viewmodels:WeightedOrdersViewModel"
+             x:Class="VLDonFeedStockApp.Views.WeightedOrdersPage"
+             Title="{Binding Title}">
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Создать" Command="{Binding AddItemCommand}" />
 
@@ -13,7 +14,7 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
 
-                            <ViewCell Height="150">
+                            <ViewCell Height="170">
 
                                 <!--<ViewCell.ContextActions>
                                     <MenuItem
@@ -27,8 +28,11 @@
                                     <Frame BorderColor="Red">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition></ColumnDefinition>
-                                                <ColumnDefinition Width="2*"></ColumnDefinition>
+                                                <ColumnDefinition ></ColumnDefinition>
+                                                <ColumnDefinition ></ColumnDefinition>
+                                                <ColumnDefinition ></ColumnDefinition>
+                                                <ColumnDefinition ></ColumnDefinition>
+                                                
                                             </Grid.ColumnDefinitions>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition></RowDefinition>
@@ -39,9 +43,11 @@
                                                 <!--<RowDefinition></RowDefinition>
                                             <RowDefinition></RowDefinition>-->
                                             </Grid.RowDefinitions>
+                                            <Label Grid.Row="0" TextColor="Red" HorizontalOptions="CenterAndExpand" FontAttributes="Bold" Grid.Column="3" Text="{Binding TotalPrice}"></Label>
+                                            <Label Grid.Row="0" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="2" Text="Стоимость:"></Label>
                                             <Label Grid.Row="0" TextColor="Green" HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding Id}"></Label>
-                                            <Label Grid.Row="1" TextColor="Green" HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding State}"></Label>
-                                            <Grid Grid.Row="2" Grid.RowSpan="2"  Grid.Column="1">
+                                            <Label Grid.Row="1" TextColor="DarkRed" FontAttributes="Bold" HorizontalOptions="CenterAndExpand" Grid.ColumnSpan="3" Grid.Column="1" Text="{Binding State}"></Label>
+                                            <Grid Grid.Row="2" Grid.RowSpan="2" Grid.ColumnSpan="3"  Grid.Column="1">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition></ColumnDefinition>
                                                     <ColumnDefinition></ColumnDefinition>
@@ -58,15 +64,19 @@
                                                 <CheckBox Grid.Row="1" IsEnabled="False" HorizontalOptions="CenterAndExpand" Grid.Column="1" IsChecked="{Binding Carton}"></CheckBox>
                                                 <CheckBox Grid.Row="1" IsEnabled="False" HorizontalOptions="CenterAndExpand" Grid.Column="2" IsChecked="{Binding Poddon}"></CheckBox>
                                             </Grid>
-                                            <Label Grid.Row="2" TextColor="Black"  HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Материалы:"></Label>
+                                            <Label Grid.Row="2" TextColor="Black"  HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Заказ:"></Label>
                                             <!--<Label Grid.Row="3" IsEnabled="False"  HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding Description}"></Label>-->
-                                            <Label Grid.Row="4"   HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding Address}"></Label>
+                                            <Label Grid.Row="4" TextColor="Red"   HorizontalOptions="CenterAndExpand" Grid.ColumnSpan="3" Grid.Column="1" Text="{Binding Address}"></Label>
 
                                             <Label Grid.Row="0" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="ID заказа:"></Label>
-                                            <Label Grid.Row="1" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Статус заказа:"></Label>
+                                            <Label Grid.Row="1" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Статус:"></Label>
 
                                             <!--<Label Grid.Row="3" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Описание:"></Label>-->
                                             <Label Grid.Row="4" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Адрес:"></Label>
+                                            <Label Grid.Row="5" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Взвешен:"></Label>
+                                            <Label Grid.Row="5" TextColor="Red" HorizontalOptions="CenterAndExpand"  Grid.Column="1" Text="{Binding TakenData}"></Label>
+                                            <Label Grid.Row="5" TextColor="Green" HorizontalOptions="CenterAndExpand" Grid.Column="3" Text="{Binding CreatedData}"></Label>
+                                            <Label Grid.Row="5" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="2" Text="Создан"></Label>
                                         </Grid>
                                     </Frame>
                                     <StackLayout.GestureRecognizers>

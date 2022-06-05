@@ -19,5 +19,10 @@ namespace VLDonFeedStockApp.Models
         public string Address { get; set; }
         [JsonProperty("relatedorganization")]
         public string RelatedOrganization { get; set; }
+        [JsonProperty("relatedcontragent")]
+        public string RelatedContrAgent { get; set; }
+        [JsonProperty("storetopicid")]
+        public string StoreTopicId { get; set; }
+
     }
 }

@@ -50,6 +50,10 @@ namespace VLDonFeedStockApp.Views
                             loginEntry.Text = "Такой логин уже существует!!!";
                         }
                     }
+                    if (loginEntry.Text.Length != 11)
+                    {
+                        loginEntry.Text = "Номер состоит из 11 цифр!!!";
+                    }
                 }
             }
             catch (Exception ex)
@@ -79,11 +83,58 @@ namespace VLDonFeedStockApp.Views
             }
         }
 
-        private void CitiesPicker_SelectedIndexChanged(object sender, EventArgs e)
+        private async void CitiesPicker_SelectedIndexChanged(object sender, EventArgs e)
         {
-            organizationEntry.Text = CitiesPicker.Items[CitiesPicker.SelectedIndex];
-            GetOrganizationsAsync();
+            try
+            {
+                organizationEntry.Text = CitiesPicker.Items[CitiesPicker.SelectedIndex];
+                var role = await DetectRole();
+                if (role == "director")
+                {
+                    roleEntry.Text = "admin";
+                    StoresPicker.IsEnabled = true;
+                    GetOrganizationsAsync();
+                }
+                else
+                {
+                    roleEntry.Text = "employee";
+                    StoresPicker.IsEnabled = false;
+                    StoresPicker.SelectedIndex = -1;
+                    storeEntry.Text = string.Empty;
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("er", ex.Message, "ok");
+            }           
         }
+
+        public async Task<string> DetectRole()
+        {
+            HttpClient _tokenclientDiff = new HttpClient();
+            var _responseTokenDiff = await _tokenclientDiff.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/role/{organizationEntry.Text}");
+            await DisplayAlert("Регистрация",$"Вы будете зарегистрированы как: {SetRole(_responseTokenDiff)}" , "ОК");
+            return _responseTokenDiff;
+        }
+
+        public string SetRole(string _data)
+        {
+            switch (_data)
+            {
+                case "director":
+                    _data = "Директор";
+                    break;
+                case "root":
+                    _data = "Администратор";
+                    break;
+                default:
+                    _data = "КонтрАгент";
+                    break;
+            }
+            return _data;
+        }
+
 
         private void StoresPicker_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -123,18 +174,29 @@ namespace VLDonFeedStockApp.Views
             {
                 if (loginEntry.Text != null)
                 {
-                    HttpClient client = new HttpClient();
-
-                    var response = await client.GetAsync($"{GlobalSettings.HostUrl}api/auth/{loginEntry.Text}");
-                    if (response != null)
+                    if (loginEntry.Text.Length != 11)
                     {
-                        if (response.StatusCode != HttpStatusCode.OK)
-                        {
+                        loginEntry.PlaceholderColor = Color.Red;
+                        loginEntry.Placeholder = "Номер состоит из 11 цифр!!!";
+                        loginEntry.Text = string.Empty;
+                    }
+                    else
+                    {
+                        HttpClient client = new HttpClient();
 
-                        }
-                        else
+                        var response = await client.GetAsync($"{GlobalSettings.HostUrl}api/auth/{loginEntry.Text}");
+                        if (response != null)
                         {
-                            loginEntry.Text = "Такой логин уже существует!!!";
+                            if (response.StatusCode != HttpStatusCode.OK)
+                            {
+
+                            }
+                            else
+                            {
+                                loginEntry.PlaceholderColor = Color.Red;
+                                loginEntry.Placeholder = "Такой логин уже существует!!!";
+                                loginEntry.Text = string.Empty;
+                            }
                         }
                     }
                 }
@@ -143,6 +205,11 @@ namespace VLDonFeedStockApp.Views
             {
                 Debug.WriteLine(ex);
             }
+        }
+
+        private void RolesPicker_Unfocused(object sender, FocusEventArgs e)
+        {
+
         }
     }
 }

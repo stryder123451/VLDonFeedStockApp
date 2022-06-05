@@ -13,7 +13,7 @@ using VLDonFeedStockApp.Droid;
 
 namespace ShellApp.Droid
 {
-    [Activity(Label = "VLDonFeedApp", Icon = "@mipmap/vl", Theme = "@style/Theme.Splash", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize,NoHistory =true)]
+    [Activity(Label = "Втор.Сырье", Icon = "@mipmap/vl_house", Theme = "@style/Theme.Splash", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize,NoHistory =true)]
     public class SplashActivity : Activity
     {
         protected override void OnCreate(Bundle savedInstanceState)

@@ -23,5 +23,15 @@ namespace VLDonFeedStockApp.Models
         public bool Poddon { get; set; }
         [JsonProperty("address")]
         public string Address { get; set; }
+        [JsonProperty("createddata")]
+        public string CreatedData { get; set; }
+        [JsonProperty("takendata")]
+        public string TakenData { get; set; }
+        [JsonProperty("weighteddata")]
+        public string WeightedData { get; set; }
+        [JsonProperty("finisheddata")]
+        public string FinishedData { get; set; }
+        [JsonProperty("totalprice")]
+        public string TotalPrice { get; set; }
     }
 }

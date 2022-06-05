@@ -2,43 +2,78 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:VLDonFeedStockApp.ViewModels"
              x:Class="VLDonFeedStockApp.Views.RegisterPage"
-             Shell.NavBarIsVisible="True">
+             Shell.NavBarIsVisible="True"
+             Shell.TabBarIsVisible="False">
     <ContentPage.Content>
         <RefreshView x:DataType="viewmodels:RegisterViewModel" Command="{Binding LoadItemsCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
             <ScrollView>
                 <StackLayout Spacing="8"
                      Margin="16,3" VerticalOptions="FillAndExpand">
-                    <Picker FontSize="Medium" SelectedIndex="0" ItemsSource="{Binding Organizations}" ItemDisplayBinding="{Binding Organization}" Unfocused="CitiesPicker_Unfocused" SelectedIndexChanged="CitiesPicker_SelectedIndexChanged" x:Name="CitiesPicker" Title="Организация..." ></Picker>
-                    <Picker FontSize="Medium" SelectedIndex="0" ItemDisplayBinding="{Binding Organization}" Unfocused="StoresPicker_Unfocused"  SelectedIndexChanged="StoresPicker_SelectedIndexChanged" x:Name="StoresPicker" Title="Магазин..." ></Picker>
-                    <Entry PlaceholderColor="Black" x:Name="organizationEntry"  Text="{Binding Organization}"   Placeholder="ФИО..." IsVisible="False"  FontSize="Medium" Margin="0" />
-                    <Entry PlaceholderColor="Black" x:Name="storeEntry"  Text="{Binding Address}"   Placeholder="ФИО..." IsVisible="False"  FontSize="Medium" Margin="0" />
+                    <Frame BorderColor="Red" CornerRadius="5">
+                        <Frame.Background>
+                            <LinearGradientBrush EndPoint="1,0">
+                                <GradientStop Color="White" Offset="0.1" />
+                                <GradientStop Color="LightBlue" Offset="1" />
+                            </LinearGradientBrush>
+                        </Frame.Background>
+                        <Picker TextColor="Black" TitleColor="Black" FontSize="Medium"  SelectedIndex="0" ItemsSource="{Binding Organizations}" ItemDisplayBinding="{Binding Organization}" Unfocused="CitiesPicker_Unfocused" SelectedIndexChanged="CitiesPicker_SelectedIndexChanged" x:Name="CitiesPicker"  Title="Организация..." ></Picker>
+                    </Frame>
+                    <Frame BorderColor="Red" CornerRadius="5">
+                        <Frame.Background>
+                            <LinearGradientBrush EndPoint="1,0">
+                                <GradientStop Color="White" Offset="0.1" />
+                                <GradientStop Color="LightBlue" Offset="1" />
+                            </LinearGradientBrush>
+                        </Frame.Background>
+                        <Picker TextColor="Black" TitleColor="Black" FontSize="Medium" SelectedIndex="0" ItemDisplayBinding="{Binding Organization}" Unfocused="StoresPicker_Unfocused"  SelectedIndexChanged="StoresPicker_SelectedIndexChanged" x:Name="StoresPicker" Title="Магазин..." ></Picker>
+                    </Frame>
+
+                    <Frame BorderColor="Red" CornerRadius="5">
+                        <Frame.Background>
+                            <LinearGradientBrush EndPoint="1,0">
+                                <GradientStop Color="White" Offset="0.1" />
+                                <GradientStop Color="LightBlue" Offset="1" />
+                            </LinearGradientBrush>
+                        </Frame.Background>
+                        <Entry Visual="Material" TextColor="Black"  PlaceholderColor="Black"  x:Name="fioEntry"  Text="{Binding Name}"   Placeholder="ФИО..."   FontSize="Medium" Margin="0" />
+                    </Frame>
+                    <Frame BorderColor="Red" CornerRadius="5">
+                        <Frame.Background>
+                            <LinearGradientBrush EndPoint="1,0">
+                                <GradientStop Color="White" Offset="0.1" />
+                                <GradientStop Color="LightBlue" Offset="1" />
+                            </LinearGradientBrush>
+                        </Frame.Background>
+                        <Entry Visual="Material" TextColor="Black" PlaceholderColor="Black" x:Name="loginEntry" Unfocused="loginEntry_Unfocused_1" Text="{Binding Login}" Keyboard="Telephone"  Placeholder="Номер телефона..."   FontSize="Medium" Margin="0">
+
+                        </Entry>
+                    </Frame>
+                    <Frame BorderColor="Red" CornerRadius="5">
+                        <Frame.Background>
+                            <LinearGradientBrush EndPoint="1,0">
+                                <GradientStop Color="White" Offset="0.1" />
+                                <GradientStop Color="LightBlue" Offset="1" />
+                            </LinearGradientBrush>
+                        </Frame.Background>
+                        <Entry TextColor="Black" PlaceholderColor="Black" x:Name="passwordEntry" Text="{Binding Password}" Placeholder="Пароль..."   FontSize="Medium" Margin="0" />
+                    </Frame>
                     
-                    <Entry PlaceholderColor="Black" x:Name="fioEntry"  Text="{Binding Name}"   Placeholder="ФИО..."   FontSize="Medium" Margin="0" />
-                    <Entry PlaceholderColor="Black" x:Name="loginEntry" Unfocused="loginEntry_Unfocused_1" Text="{Binding Login}" Keyboard="Telephone"  Placeholder="Номер телефона..."   FontSize="Medium" Margin="0">
-
-                    </Entry>
-                    <Entry PlaceholderColor="Black" x:Name="passwordEntry" Text="{Binding Password}" Placeholder="Пароль..."   FontSize="Medium" Margin="0" />
-                    <!--<Entry PlaceholderColor="Black" x:Name="cityEntry" Text="{Binding City}"   Placeholder="Город..." IsVisible="False"   FontSize="Medium" Margin="0" />
-                    <Entry PlaceholderColor="Black" x:Name="streetEntry" Text="{Binding Street}" Keyboard="Telephone"  Placeholder="Улица..."  IsVisible="False" FontSize="Medium" Margin="0" />
-                    <Entry PlaceholderColor="Black" x:Name="homeEntry" Text="{Binding House}" Keyboard="Telephone" IsVisible="False"  Placeholder="Дом..."  FontSize="Medium" Margin="0" />
-                    <Entry PlaceholderColor="Black" x:Name="flatEntry" Text="{Binding Flat}"  Keyboard="Numeric"   Placeholder="Квартира..."   FontSize="Medium" Margin="0" />
-                    <Entry PlaceholderColor="Black" x:Name="counterEntry" Text="{Binding Counter}"  Keyboard="Numeric"   Placeholder="№ Счетчика..."   FontSize="Medium" Margin="0" />-->
-
-
-                    <Grid Grid.Row="7">
+                    <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
-                            <RowDefinition></RowDefinition>
+                           
                         </Grid.RowDefinitions>
                         
-                        <Button Grid.Row="2" Grid.Column="0" TextColor="White" CornerRadius="5" BorderColor="Blue" BorderWidth="1.5"  BackgroundColor="Blue" Text="Отменить"  x:Name="CancelButton" Command="{Binding BackCommand}"  HorizontalOptions="Center"></Button>
-                        <Button Grid.Row="2" Grid.Column="1" IsEnabled="False"   TextColor="White" CornerRadius="5" BorderColor="Blue" BorderWidth="1.5"  BackgroundColor="Blue" Text="Сохранить" x:Name="RegisterButton" Command="{Binding RegisterCommand}"  HorizontalOptions="Center"></Button>
+                        <Button Grid.Row="0" Grid.Column="0" TextColor="White" CornerRadius="5" BorderColor="Blue" BorderWidth="1.5"  BackgroundColor="Blue" Text="Отменить"  x:Name="CancelButton" Command="{Binding BackCommand}"  HorizontalOptions="Center"></Button>
+                        <Button Grid.Row="0" Grid.Column="1" IsEnabled="False"   TextColor="White" CornerRadius="5" BorderColor="Blue" BorderWidth="1.5"  BackgroundColor="Blue" Text="Сохранить" x:Name="RegisterButton" Command="{Binding RegisterCommand}"  HorizontalOptions="Center"></Button>
                     </Grid>
+                    <Entry TextColor="Black" PlaceholderColor="Black" x:Name="organizationEntry"  Text="{Binding Organization}"   Placeholder="ФИО..." IsVisible="False"  FontSize="Medium" Margin="0" />
+                    <Entry TextColor="Black" Visual="Material" PlaceholderColor="Black" x:Name="roleEntry"  Text="{Binding Role}"  IsVisible="false"   Placeholder="ФИО..."  FontSize="Medium" Margin="0" />
+                    <Entry TextColor="Black" Visual="Material" PlaceholderColor="Black" x:Name="storeEntry"  Text="{Binding Address}"   Placeholder="ФИО..." IsVisible="False"  FontSize="Medium" Margin="0" />
                 </StackLayout>
             </ScrollView>
         </RefreshView>

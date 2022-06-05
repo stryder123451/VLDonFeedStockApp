@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Shell xmlns="http://xamarin.com/schemas/2014/forms" 
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-       xmlns:local="clr-namespace:VLDonFeedStockApp.Views"
+       xmlns:local="clr-namespace:VLDonFeedStockApp.Views" 
+       xmlns:xct="http://xamarin.com/schemas/2020/toolkit"
+       xmlns:viewmodels="clr-namespace:VLDonFeedStockApp.ViewModels" x:DataType="viewmodels:AboutViewModel"
        Title="VLDonFeedStockApp"
-       x:Class="VLDonFeedStockApp.AppShell">
+       x:Class="VLDonFeedStockApp.AppShell"
+       
+       >
 
     <!--
         The overall app visual hierarchy is defined here, along with navigation.
@@ -11,7 +15,14 @@
         https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/
     -->
 
+    <Shell.BindingContext>
+        <viewmodels:AboutViewModel></viewmodels:AboutViewModel>
+    </Shell.BindingContext>
+    
     <Shell.Resources>
+        
+        
+        
         <ResourceDictionary>
             <Style x:Key="BaseStyle" TargetType="Element">
                 <Setter Property="Shell.BackgroundColor" Value="{StaticResource Primary}" />
@@ -23,10 +34,11 @@
                 <Setter Property="Shell.TabBarForegroundColor" Value="White"/>
                 <Setter Property="Shell.TabBarUnselectedColor" Value="#95FFFFFF"/>
                 <Setter Property="Shell.TabBarTitleColor" Value="White"/>
+               
             </Style>
             <Style TargetType="TabBar" BasedOn="{StaticResource BaseStyle}" />
             <Style TargetType="FlyoutItem" BasedOn="{StaticResource BaseStyle}" />
-
+            
             <!--
             Default Styles for all Flyout Items
             https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/flyout#flyoutitem-and-menuitem-style-classes
@@ -93,7 +105,12 @@
     <FlyoutItem Title="Завершенные заказы" Icon="icon_feed.png">
         <ShellContent Route="FinishedOrdersPage" ContentTemplate="{DataTemplate local:FinishedOrdersPage}" />
     </FlyoutItem>
-
+    <FlyoutItem Title="О программе" Icon="icon_feed.png">
+        <ShellContent Route="Organization" ContentTemplate="{DataTemplate local:Organization}" />
+    </FlyoutItem>
+    <FlyoutItem  x:Name="AdminPage" IsVisible="{Binding IsAdmin}"  Title="Магазины" Icon="icon_feed.png">
+        <ShellContent  Route="StoresPage" ContentTemplate="{DataTemplate local:StoresPage}" />
+    </FlyoutItem>
     <!-- When the Flyout is visible this will be a menu item you can tie a click behavior to  -->
     <MenuItem Text="Выход" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuItemClicked">
     </MenuItem>
@@ -108,18 +125,15 @@
     <TabBar>
         <ShellContent Route="LoginPage" ContentTemplate="{DataTemplate local:LoginPage}" />
         <ShellContent Route="RegisterPage" ContentTemplate="{DataTemplate local:RegisterPage}" />
+        <ShellContent Route="MoneyCourse" ContentTemplate="{DataTemplate local:MoneyCourse}" />
     </TabBar>
 
     <!-- Optional Templates 
     // These may be provided inline as below or as separate classes.
 
     // This header appears at the top of the Flyout.
-    // https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/flyout#flyout-header
-    <Shell.FlyoutHeaderTemplate>
-        <DataTemplate>
-            <Grid>ContentHere</Grid>
-        </DataTemplate>
-    </Shell.FlyoutHeaderTemplate>
+     https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/flyout#flyout-header
+   
 
     // ItemTemplate is for ShellItems as displayed in a Flyout
     // https://docs.microsoft.com/xamarin/xamarin-forms/app-fundamentals/shell/flyout#define-flyoutitem-appearance
@@ -142,5 +156,12 @@
     </Shell.MenuItemTemplate>
 
     -->
+
+
+    <Shell.FlyoutHeaderTemplate>
+        <DataTemplate>
+            <Label Text="{Binding User.Name}"></Label>
+        </DataTemplate>
+    </Shell.FlyoutHeaderTemplate>
 
 </Shell>

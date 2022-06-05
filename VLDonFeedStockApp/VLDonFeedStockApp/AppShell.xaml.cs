@@ -8,8 +8,11 @@ namespace VLDonFeedStockApp
 {
     public partial class AppShell : Xamarin.Forms.Shell
     {
+        AboutViewModel _aboutViewModel;
+        
         public AppShell()
         {
+            BindingContext = _aboutViewModel = new AboutViewModel();
             InitializeComponent();
             Routing.RegisterRoute(nameof(ItemDetailPage), typeof(ItemDetailPage));
             Routing.RegisterRoute(nameof(NewItemPage), typeof(NewItemPage));
@@ -19,11 +22,21 @@ namespace VLDonFeedStockApp
             Routing.RegisterRoute(nameof(DetailOrderPage), typeof(DetailOrderPage));
             Routing.RegisterRoute(nameof(WeightedOrdersPage), typeof(WeightedOrdersPage));
             Routing.RegisterRoute(nameof(FinishedOrdersPage), typeof(FinishedOrdersPage));
+            Routing.RegisterRoute(nameof(Organization), typeof(Organization));
+            Routing.RegisterRoute(nameof(StoresPage), typeof(StoresPage));
+            Routing.RegisterRoute(nameof(StoreEditPage), typeof(StoreEditPage));
+            Routing.RegisterRoute(nameof(MoneyCourse), typeof(MoneyCourse));
         }
 
         private async void OnMenuItemClicked(object sender, EventArgs e)
         {
             await Shell.Current.GoToAsync("//LoginPage");
         }
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            _aboutViewModel.OnAppearing();
+        }
+
     }
 }

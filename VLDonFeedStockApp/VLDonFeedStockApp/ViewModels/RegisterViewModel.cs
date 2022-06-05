@@ -123,7 +123,6 @@ namespace VLDonFeedStockApp.ViewModels
                     Login = Login,
                     Password = Password,
                     Organization = Organization,
-                    Role = "Сотрудник",
                     Address = Address,
                 };
                 await AddNewUser(user);
@@ -142,6 +141,7 @@ namespace VLDonFeedStockApp.ViewModels
 
         public async Task<Workers> AddNewUser(Workers user)
         {
+            user.Role = Role;
             HttpClient client = new HttpClient();
             var response = await client.PostAsync($"{GlobalSettings.HostUrl}api/auth",
                 new StringContent(

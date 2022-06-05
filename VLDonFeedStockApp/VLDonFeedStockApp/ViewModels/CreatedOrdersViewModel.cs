@@ -25,10 +25,11 @@ namespace VLDonFeedStockApp.ViewModels
         public Command AddItemCommand { get; }
         public CreatedOrdersViewModel()
         {
+            Title = "Созданные";
             OrdersList = new ObservableCollection<Request>();
             EasyOrdersList = new ObservableCollection<Order>();
             Workers = new ObservableCollection<Workers>();
-            Title = $"Созданные заявки,{DateTime.Now.Month}, {DateTime.Now.Year}г";
+            //Title = $"Созданные заявки,{DateTime.Now.Month}, {DateTime.Now.Year}г";
             alertService = DependencyService.Resolve<IAlertService>();
             LoadOrdersCommand = new Command(async () => await GetUserData());
             EditOrder = new Command<Order>(OnItemSelected);

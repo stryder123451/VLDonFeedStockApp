@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:VLDonFeedStockApp.ViewModels" xmlns:model="clr-namespace:VLDonFeedStockApp.Models" x:DataType="viewmodels:StoresViewModel"
+             x:Class="VLDonFeedStockApp.Views.StoresPage">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Изменить цены" Command="{Binding ChangeMoneyCourse}" />
+        <ToolbarItem>
+        </ToolbarItem>
+    </ContentPage.ToolbarItems>
+    <ContentPage.Content>
+        <RefreshView x:DataType="viewmodels:StoresViewModel" Command="{Binding LoadStoresCommand}"  IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+            <ScrollView>
+                <ListView x:Name="StoreItems" ItemsSource="{Binding StoresList}"  SeparatorVisibility="None"  HasUnevenRows="True" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+
+                            <ViewCell Height="150">
+
+                                <!--<ViewCell.ContextActions>
+                                    <MenuItem
+                                        x:Name="EditBtn"
+                                        Text="Редактировать"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CreatedOrdersViewModel}}, Path=EditOrder}"		
+                                        CommandParameter="{Binding .}">
+                                    </MenuItem>
+                                </ViewCell.ContextActions>-->
+                                <StackLayout   Padding="0"  x:DataType="model:Stores">
+                                    <Frame BorderColor="Red">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition></ColumnDefinition>
+                                                <ColumnDefinition Width="2*"></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition></RowDefinition>
+                                                <RowDefinition></RowDefinition>
+                                                <RowDefinition></RowDefinition>
+                                                <!--<RowDefinition></RowDefinition>
+                                                <RowDefinition></RowDefinition>-->
+                                                <!--<RowDefinition></RowDefinition>
+                                            <RowDefinition></RowDefinition>-->
+                                            </Grid.RowDefinitions>
+                                            
+                                           
+                                            <Label Grid.Row="0" TextColor="Black"  HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Адрес:"></Label>
+                                            <Label Grid.Row="0" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding Address}"></Label>
+                                            
+                                            <Label Grid.Row="1" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Организация:"></Label>
+                                            <Label Grid.Row="1" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding RelatedOrganization}"></Label>
+                                            
+                                            <Label Grid.Row="2" TextColor="Black"  HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding RelatedContrAgent}"></Label>
+                                            <Label Grid.Row="2" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="КонтрАгент:"></Label>
+
+                                           
+                                            
+
+                                            <!--<Label Grid.Row="3" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Описание:"></Label>-->
+                                            <!--<Label Grid.Row="4" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Адрес:"></Label>-->
+                                        </Grid>
+                                    </Frame>
+                                    <StackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer 
+                                         NumberOfTapsRequired="1"
+                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:StoresViewModel}}, Path=EditStore}"		
+                                         CommandParameter="{Binding .}">
+                                        </TapGestureRecognizer>
+                                    </StackLayout.GestureRecognizers>
+                                </StackLayout>
+                            </ViewCell>
+
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </ScrollView>
+        </RefreshView>
+    </ContentPage.Content>
+</ContentPage>

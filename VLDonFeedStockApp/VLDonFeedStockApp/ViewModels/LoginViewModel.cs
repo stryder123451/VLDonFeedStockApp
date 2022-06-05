@@ -20,7 +20,8 @@ namespace VLDonFeedStockApp.ViewModels
         private string _username;
         private string _password;
         private string _token;
-        public bool IsLogging { get; set; }
+        private bool _isLoggedIn;
+        private bool _isLogging;
         public string Username
         {
             get => _username;
@@ -33,11 +34,23 @@ namespace VLDonFeedStockApp.ViewModels
             set => SetProperty(ref _password, value);
         }
 
+        public bool IsLoggedIn
+        {
+            get => _isLoggedIn;
+            set => SetProperty(ref _isLoggedIn, value);
+        }
+        public bool IsLogging
+        {
+            get => _isLogging;
+            set => SetProperty(ref _isLogging, value);
+        }
         public LoginViewModel()
         {
             LoginCommand = new Command(OnLoginClicked);
             RegisterCommand = new Command(OnRegisterClicked);
             alertService = DependencyService.Resolve<IAlertService>();
+            IsLogging = true;
+            IsLoggedIn = false;
         }
 
         private async void OnLoginClicked(object obj)
@@ -57,10 +70,11 @@ namespace VLDonFeedStockApp.ViewModels
         {
             try
             {
-
+                IsLoggedIn = true;
+                IsLogging = false;
                 if (!String.IsNullOrWhiteSpace(Username) && !String.IsNullOrWhiteSpace(Password))
                 {
-                    IsLogging = false;
+                    
                     alertService.ShowToast("Идентификация...Пожалуйста, подождите...", 2f);
                     HttpClient client = new HttpClient();
                     var response = await client.GetAsync($"{GlobalSettings.HostUrl}api/auth/{Username}/{Password}");
@@ -79,14 +93,19 @@ namespace VLDonFeedStockApp.ViewModels
                                     var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/{Username}/{Password}/{_token}");
                                     var _jsonResults = JsonConvert.DeserializeObject<Workers>(_responseToken);
                                     //await alertService.ShowMessage("Аутентификация", $"Здравствуйте, {_jsonResults.FullName}!!!");
-                                    IsLogging = true;
+                                    
                                     await App.Database.Login(_jsonResults);
+                                    IsLoggedIn = false;
+                                    IsLogging = true;
+                                    MessagingCenter.Send<LoginViewModel>(this, _jsonResults.Role);
                                     await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
+                                    
                                     // await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
                                 }
                                 catch (Exception ex)
                                 {
                                     await alertService.ShowMessage("Аутентификация", ex.Message);
+                                    IsLoggedIn = false;
                                     IsLogging = true;
                                 }
                             }
@@ -96,6 +115,7 @@ namespace VLDonFeedStockApp.ViewModels
                     {
                         _token = null;
                         alertService.ShowToast("Введите корректные данные...", 2f);
+                        IsLoggedIn = false;
                         IsLogging = true;
                     }
 
@@ -104,11 +124,15 @@ namespace VLDonFeedStockApp.ViewModels
                 else
                 {
                     alertService.ShowToast("Введите корректные данные...", 2f);
+                    IsLoggedIn = false;
+                    IsLogging = true;
                 }
             }
             catch (Exception ex)
             {
                 await alertService.ShowMessage("Аутентификация", ex.Message);
+                IsLoggedIn = false;
+                IsLogging = true;
             }
         }
     }

@@ -81,12 +81,14 @@ namespace VLDonFeedStockApp.ViewModels
                     NewOrder.Organization = User.Organization;
                     if (NewOrder.Data != null)
                     {
-                        NewOrder.Data = NewOrder.Data.Split(' ')[0].ToString();
+                        NewOrder.Data = DateFormat(NewOrder.Data.Split(' ')[0].ToString());
                     }
                     else
                     {
                         NewOrder.Data = DateTime.Now.ToString().Split(' ')[0].ToString();
                     }
+                    
+
                     await CreateRequest(NewOrder);
                 }
             }
@@ -97,6 +99,21 @@ namespace VLDonFeedStockApp.ViewModels
 
 
         }
+
+        string DateFormat(string _data)
+        {
+            if (_data != null)
+            {
+                var mass = _data.Replace('/', '.').Split('.');
+
+                return $"{mass[1]}.{mass[0]}.{mass[2]}";
+            }
+            else
+            {
+                return "-";
+            }
+        }
+
 
         public string Validator(string _data, string _amount)
         {
@@ -199,7 +216,7 @@ namespace VLDonFeedStockApp.ViewModels
                 var res = JsonConvert.DeserializeObject<Request>(response.Content.ReadAsStringAsync().Result);
                 HttpClient _tokenclientDiff = new HttpClient();
                 var _responseTokenDiff = await _tokenclientDiff.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/store/{User.Organization}/{User.Address}");
-                CrossFirebasePushNotification.Current.Subscribe($"{_responseTokenDiff}_{res.Id}");
+                CrossFirebasePushNotification.Current.Subscribe($"{_responseTokenDiff}");
                 await alertService.ShowMessage("Заявка", "Успешно создано!!!");
                 
                 await Shell.Current.GoToAsync("..");

@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="com.companyname.vldonfeedstockapp">
-    <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="31" />
-    <application android:label="VLDonFeedStockApp.Android" android:theme="@style/MainTheme">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="com.companyname.vldonfeedstockapp" android:installLocation="auto">
+	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="31" />
+	<application android:label="VLDonFeedStockApp.Android" android:theme="@style/MainTheme">
 		<service android:enabled="true" android:name=".CustomFirebaseMessagingService" android:exported="false">
 			<intent-filter>
-				<action android:name="com.companyname.vldonfeedstockapp.MESSAGING_EVENT"/>
+				<action android:name="com.companyname.vldonfeedstockapp.MESSAGING_EVENT" />
 			</intent-filter>
 		</service>
 	</application>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
 </manifest>

@@ -22,12 +22,16 @@ namespace VLDonFeedStockApp.ViewModels
     {
         private int _id;
         private Workers _user;
+        private Prices _prices;
         private string _carton;
         private string _plenka;
         private string _poddon;
         private bool _isCarton;
         private bool _isPlenka;
         private bool _isPoddon;
+        private bool _isCartonCanChanged;
+        private bool _isPlenkaCanChanged;
+        private bool _isPoddonCanChanged;
         private string _cartonAmount;
         private string _plenkaAmount;
         private string _poddonAmount;
@@ -37,6 +41,7 @@ namespace VLDonFeedStockApp.ViewModels
         private bool _isWeighted;
         private bool _isFinished;
         private Request _request;
+        private bool _canEdit;
         public ObservableCollection<Workers> Users { get; }
         public Command LoadOrdersCommand { get; }
         public Command UpdateOrder { get; }
@@ -65,6 +70,11 @@ namespace VLDonFeedStockApp.ViewModels
             }
 
 
+        }
+        public bool CanEdit
+        {
+            get => _canEdit;
+            set => SetProperty(ref _canEdit, value);
         }
         public string Plenka
         {
@@ -113,6 +123,21 @@ namespace VLDonFeedStockApp.ViewModels
             get => _isPlenka;
             set => SetProperty(ref _isPlenka, value);
         }
+        public bool IsCartonCanChanged
+        {
+            get => _isCartonCanChanged;
+            set => SetProperty(ref _isCartonCanChanged, value);
+        }
+        public bool IsPoddonCanChanged
+        {
+            get => _isPoddonCanChanged;
+            set => SetProperty(ref _isPoddonCanChanged, value);
+        }
+        public bool IsPlenkaCanChanged
+        {
+            get => _isPlenkaCanChanged;
+            set => SetProperty(ref _isPlenkaCanChanged, value);
+        }
         public bool CanUpdate
         {
             get => _canUpdate;
@@ -138,6 +163,11 @@ namespace VLDonFeedStockApp.ViewModels
         {
             get => _user;
             set => SetProperty(ref _user, value);
+        }
+        public Prices Prices
+        {
+            get => _prices;
+            set => SetProperty(ref _prices, value);
         }
         private async void OnStateEditClicked(object obj)
         {
@@ -173,11 +203,20 @@ namespace VLDonFeedStockApp.ViewModels
                 var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/order/get/{Id}");
                 var _jsonResults = JsonConvert.DeserializeObject<Request>(_responseToken);
                 _jsonResults.RuState = RuState(_jsonResults.State);
+                //
+                HttpClient _tokenClientPrice = new HttpClient();
+                var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/price");
+                var _jsonResultsPrice = JsonConvert.DeserializeObject<Prices>(_responseTokenPrice);
+                Prices = _jsonResultsPrice;
+                //
                 Requests.Add(_jsonResults);
                 Request = Requests[0];
+                CanEdit = AllowEdit(Request,User);
+                //
+                
                 GetMaterialsInfo();
                 CheckUserRights();
-                
+
                 alertService.ShowToast("Данные получены...", 1f);
 
             }
@@ -193,7 +232,7 @@ namespace VLDonFeedStockApp.ViewModels
 
         private void CheckUserRights()
         {
-            if (User.Role=="root")
+            if (User.Role == "root")
             {
                 switch (Request.RuState)
                 {
@@ -235,7 +274,7 @@ namespace VLDonFeedStockApp.ViewModels
                         break;
                 }
             }
-            if (User.Role != "admin" && User.Role!="root")
+            if (User.Role != "admin" && User.Role != "root")
             {
                 switch (Request.RuState)
                 {
@@ -266,7 +305,18 @@ namespace VLDonFeedStockApp.ViewModels
             PlenkaAmount = CheckMaterialAmount(Request.Materials, 1);
             CartonAmount = CheckMaterialAmount(Request.Materials, 3);
             PoddonAmount = CheckMaterialAmount(Request.Materials, 5);
-            
+            if (IsPoddon)
+            {
+                Poddon = $"Поддоны:{PoddonAmount};";
+            }
+            if (IsCarton)
+            {
+                Carton = $"Картон:{CartonAmount};";
+            }
+            if (IsPlenka)
+            {
+                Plenka = $"Пленка:{PlenkaAmount};";
+            }
         }
 
 
@@ -285,7 +335,7 @@ namespace VLDonFeedStockApp.ViewModels
             return res;
         }
 
-        string CheckMaterialAmount(string _data,int index)
+        string CheckMaterialAmount(string _data, int index)
         {
             var res = string.Empty;
             var _separatedData = _data.Split(':', ';');
@@ -303,19 +353,19 @@ namespace VLDonFeedStockApp.ViewModels
             {
                 case "created":
                     res = "Создан";
-                  
+
                     break;
                 case "actual":
                     res = "Вывезен";
-                   
+
                     break;
                 case "weighted":
                     res = "Взвешен";
-                    
+
                     break;
                 case "finished":
                     res = "Завершен";
-                    
+
                     break;
             }
             return res;
@@ -329,12 +379,12 @@ namespace VLDonFeedStockApp.ViewModels
 
         public int Id
         {
-            get=> _id;
-            set=> SetProperty(ref _id, value);
+            get => _id;
+            set => SetProperty(ref _id, value);
         }
 
 
-       
+
 
 
         internal void OnAppear()
@@ -344,36 +394,132 @@ namespace VLDonFeedStockApp.ViewModels
 
         public async Task<Request> UpdateIndicationsAsync(Request indications)
         {
-            if (User.Role == "admin" || User.Role == "root")
+            if (indications.State.Length == "created".Length && (User.Role.Length == "admin".Length || User.Role.Length == "root".Length))
             {
-                indications.Materials = $"{Validator(Plenka, PlenkaAmount)}{Validator(Carton, CartonAmount)}{Validator(Poddon, PoddonAmount)}";
-                alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
-                IsBusy = true;
 
-                HttpClient client = new HttpClient();
-                var response = await client.PutAsync($"{GlobalSettings.HostUrl}api/order/{User.Token}",
-                new StringContent(System.Text.Json.JsonSerializer.Serialize(indications),
-                Encoding.UTF8, "application/json"));
-                if (response.StatusCode != HttpStatusCode.OK)
-                {
-                    alertService.ShowToast("Ошибка при обновлении... Попробуйте позже...", 1);
-                    return null;
-                }
-                else
-                {
-                    var res = JsonConvert.DeserializeObject<Request>(response.Content.ReadAsStringAsync().Result);
-                    res.RuState = RuState(res.State);
-                    Request = res;
-                    GetMaterialsInfo();
-                    
-                    //await Shell.Current.GoToAsync($"//{nameof(LightIndicationsPage)}");
-                    return null;
-                }
+                return await ChangeData(indications);
+            }
+            if (indications.State.Length == "actual".Length && (User.Role.Length == "employeе".Length || User.Role.Length == "root".Length))
+            {
+                return await ChangeData(indications);
+            }
+            if ((indications.State.Length == "weighted".Length || indications.State.Length == "finished".Length) && User.Role.Length == "root".Length)
+            {
+                return await ChangeData(indications);
             }
             else
             {
                 alertService.ShowToast("У вас недостаточно прав!!!", 1);
                 return null;
+            }
+        }
+
+
+      
+
+        private async Task<Request> ChangeData(Request indications)
+        {
+            if (indications.State == "created")
+            {
+                indications.WhoTook = User.Name;
+                indications.TakenData = DateTime.Now.ToString().Split(' ')[0].ToString();
+            }
+            if (indications.State == "actual")
+            {
+                indications.WhoWeighed = User.Name;
+                indications.WeightData = DateTime.Now.ToString().Split(' ')[0].ToString();
+            }
+            if (indications.State == "weighted")
+            {
+                indications.WhoClosed = User.Name;
+                indications.FinishedData = DateTime.Now.ToString().Split(' ')[0].ToString();
+            }
+
+            
+            
+
+                if (CheckAmount(indications.State, IsPlenka, Plenka, PlenkaAmount) && CheckAmount(indications.State, IsPoddon, Poddon, PoddonAmount)
+                && CheckAmount(indications.State, IsCarton, Carton, CartonAmount))
+                {
+                    
+                    indications.LastModified = DateTime.Now.ToString().Split(' ')[0].ToString();
+
+                    indications.Materials = $"{Validator(Plenka, PlenkaAmount)}{Validator(Carton, CartonAmount)}{Validator(Poddon, PoddonAmount)}";
+                    alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
+                    IsBusy = true;
+                    HttpClient client = new HttpClient();
+                    var response = await client.PutAsync($"{GlobalSettings.HostUrl}api/order/{User.Token}",
+                    new StringContent(System.Text.Json.JsonSerializer.Serialize(indications),
+                    Encoding.UTF8, "application/json"));
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        alertService.ShowToast("Ошибка при обновлении... Попробуйте позже...", 1);
+                        return null;
+                    }
+                    else
+                    {
+                        var res = JsonConvert.DeserializeObject<Request>(response.Content.ReadAsStringAsync().Result);
+                        res.RuState = RuState(res.State);
+                        Request = res;
+                        GetMaterialsInfo();
+
+                        //await Shell.Current.GoToAsync($"//{nameof(LightIndicationsPage)}");
+                        return null;
+                    }
+                }
+            
+            else
+            {
+                alertService.ShowToast("Активные материалы не заполнены!!!", 1f);
+                return indications;
+            }
+
+        }
+
+        bool AllowEdit(Request request, Workers workers)
+        {
+            if (request.WeightData != null && request.TakenData != null)
+            {
+                TimeSpan diff = TimeSpan.FromDays(float.Parse(request.WeightData.Split('.')[0]) - float.Parse(request.TakenData.Split('.')[0]));
+                if (diff.Days <= 1 && workers.Role.Length=="employee".Length && request.State.Length=="weighted".Length)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool CheckAmount(string state,bool _isToggle,string _data, string _amount)
+        {
+           
+            if (_isToggle)
+            {
+                if (!String.IsNullOrEmpty(_data) && !String.IsNullOrEmpty(_amount))
+                {
+                    return true;
+                }
+                else
+                {
+                    if (state.Length == "created".Length)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                return true;
             }
         }
 
@@ -386,30 +532,96 @@ namespace VLDonFeedStockApp.ViewModels
             else
             {
               
-                return $"{_data}:{_amount};";
+                //return $"{_data}:{_amount};";
+                return $"{_data}";
             }
         }
         public async Task<Request> UpdateStateAsync(Request indications)
         {
-            alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
-            IsBusy = true;
-            HttpClient client = new HttpClient();
-            var response = await client.PostAsync($"{GlobalSettings.HostUrl}api/order/update_state/{indications.Id}",
-            new StringContent(System.Text.Json.JsonSerializer.Serialize(indications),
-            Encoding.UTF8, "application/json"));
-            if (response.StatusCode != HttpStatusCode.OK)
+            
+           
+            indications.LastModified = DateTime.Now.ToString().Split(' ')[0].ToString();
+            if (indications.State.Length == "created".Length)
             {
-                alertService.ShowToast("Ошибка при обновлении... Попробуйте позже...", 1);
-                return null;
+                await ChangeData(indications);
+                return await ChangeState(indications);
+            }
+            if ((indications.State.Length == "actual".Length) && (User.Role.Length=="admin".Length||User.Role.Length == "employee".Length || User.Role.Length == "root".Length))
+            {
+                await ChangeData(indications);
+                return await ChangeState(indications);
+            }
+            if ((indications.State.Length == "weighted".Length) && (User.Role.Length == "employee".Length || User.Role.Length == "root".Length))
+            {
+                await ChangeData(indications);
+                return await ChangeState(indications);
             }
             else
             {
-                var res = JsonConvert.DeserializeObject<Request>(response.Content.ReadAsStringAsync().Result);
-                res.RuState = RuState(res.State);
-                Request = res;
-                CheckUserRights();
-                //await Shell.Current.GoToAsync($"//{nameof(LightIndicationsPage)}");
-                return null;
+                alertService.ShowToast("Недостаточно прав!!!", 1);
+                return indications;
+            }
+
+           
+        }
+
+        private async Task<Request> ChangeState(Request indications)
+        {
+            
+
+
+            if (CheckAmount(indications.State, IsPlenka, Plenka, PlenkaAmount) && CheckAmount(indications.State, IsPoddon, Poddon, PoddonAmount)
+                && CheckAmount(indications.State, IsCarton, Carton, CartonAmount))
+            {
+                alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
+                IsBusy = true;
+                HttpClient client = new HttpClient();
+                var response = await client.PostAsync($"{GlobalSettings.HostUrl}api/order/update_state/{indications.Id}",
+                new StringContent(System.Text.Json.JsonSerializer.Serialize(indications),
+                Encoding.UTF8, "application/json"));
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    alertService.ShowToast("Ошибка при обновлении... Попробуйте позже...", 1);
+                    return null;
+                }
+                else
+                {
+                    var res = JsonConvert.DeserializeObject<Root>(response.Content.ReadAsStringAsync().Result);
+                    
+                    Request = new Request()
+                    {
+                        Id = res.Result.Id,
+                         Address = res.Result.Address,
+                          Data = res.Result.Data,
+                           Description = res.Result.Description,
+                            Materials = res.Result.Materials,
+                             Name = res.Result.Name,
+                              Organization = res.Result.Organization,
+                               RelatedOperator = res.Result.RelatedOperator,
+                                RelatedOrganizationId = res.Result.RelatedOrganizationId,
+                                 RuState = RuState(res.Result.State),
+                                  State = res.Result.State,
+                                   TakenData = res.Result.TakenData,
+                                    FinishedData = res.Result.FinishedData,
+                                     LastModified = res.Result.LastModified,
+                                      Price = res.Result.Price,
+                                       WeightData = res.Result.WeightData,
+                                        WhoClosed = res.Result.WhoClosed,
+                                         WhoTook = res.Result.WhoTook,
+                                          WhoWeighed = res.Result.WhoWeighed,
+                    };
+                    
+                   
+                   
+                    CheckUserRights();
+                    //await Shell.Current.GoToAsync($"//{nameof(LightIndicationsPage)}");
+                    return null;
+                }
+            }
+            else
+            {
+                alertService.ShowToast("Активные материалы не заполнены!!!", 1);
+                return indications;
             }
         }
     }

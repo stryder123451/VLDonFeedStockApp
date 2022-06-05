@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:VLDonFeedStockApp.ViewModels"
+             x:Class="VLDonFeedStockApp.Views.StoreEditPage">
+    <ContentPage.Content>
+        <RefreshView x:DataType="viewmodels:StoreEditViewModel" Command="{Binding LoadOrdersCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+           
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition Height="8*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Button Grid.Row="0" Text="Изменить данные"  Command="{Binding UpdateOrder}"></Button>
+                <ScrollView Grid.Row="1">
+                    <StackLayout  Spacing="5" Padding="15">
+                        <Label TextColor="Black" Text="ID магазина:" FontSize="Medium"/>
+
+                        <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Red" CornerRadius="5">
+                            <Frame.Background>
+                                <LinearGradientBrush EndPoint="1,0">
+                                    <GradientStop Color="White" Offset="0.1" />
+                                    <GradientStop Color="LightBlue" Offset="1" />
+                                </LinearGradientBrush>
+                            </Frame.Background>
+                            <Entry TextColor="Red" Text="{Binding Store.Id}" IsReadOnly="True" FontSize="Small"/>
+                        </Frame>
+
+                        <Label TextColor="Black" IsVisible="False" Text="Имя заказа:" FontSize="Medium" />
+                        <Label TextColor="Black" Text="Адрес магазина:" FontSize="Medium" />
+                        <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Red" CornerRadius="5">
+                            <Frame.Background>
+                                <LinearGradientBrush EndPoint="1,0">
+                                    <GradientStop Color="White" Offset="0.1" />
+                                    <GradientStop Color="LightBlue" Offset="1" />
+                                </LinearGradientBrush>
+                            </Frame.Background>
+                            <Entry  Text="{Binding Store.Address}" TextColor="Red" FontAttributes="Bold" IsReadOnly="True" FontSize="Small"/>
+                        </Frame>
+                        <Label TextColor="Black" Text="Организация:" FontSize="Medium" />
+                        <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Red" CornerRadius="5">
+                            <Frame.Background>
+                                <LinearGradientBrush EndPoint="1,0">
+                                    <GradientStop Color="White" Offset="0.1" />
+                                    <GradientStop Color="LightBlue" Offset="1" />
+                                </LinearGradientBrush>
+                            </Frame.Background>
+                            <Entry  Text="{Binding Store.RelatedOrganization}" TextColor="Red" FontAttributes="Bold" IsReadOnly="True" FontSize="Small"/>
+                        </Frame>
+                        <Entry TextColor="Black" IsVisible="False" Text="{Binding Store.StoreTopicId}" FontSize="Small"/>
+
+
+
+                        <Label TextColor="Black" Text="КонтрАгент:" FontSize="Medium" />
+                        <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Red" CornerRadius="5">
+                            <Frame.Background>
+                                <LinearGradientBrush EndPoint="1,0">
+                                    <GradientStop Color="White" Offset="0.1" />
+                                    <GradientStop Color="LightBlue" Offset="1" />
+                                </LinearGradientBrush>
+                            </Frame.Background>
+                            <Picker TextColor="Black" TitleColor="Black" FontSize="Medium"  SelectedIndex="{Binding Store.RelatedContrAgent}" ItemsSource="{Binding ContrAgents}"  Unfocused="AgentsPicker_Unfocused" SelectedIndexChanged="AgentsPicker_SelectedIndexChanged" x:Name="AgentsPicker"  Title="КонтрАгент..." ></Picker>
+                        </Frame>
+                        <Entry TextColor="Black" IsVisible="false" x:Name="ContrAgentEntry" Text="{Binding Store.RelatedContrAgent}" FontSize="Small"/>
+
+
+                    </StackLayout>
+                </ScrollView>
+            </Grid>
+                
+           
+        </RefreshView>
+    </ContentPage.Content>
+</ContentPage>

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace VLDonFeedStockApp.Models
 {
-    public class Request
+    public class Result
     {
         [JsonProperty("id")]
         public int Id { get; set; }
@@ -47,4 +47,5 @@ namespace VLDonFeedStockApp.Models
         public string Price { get; set; }
         public string RuState { get; set; }
     }
+
 }
