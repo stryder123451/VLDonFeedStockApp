@@ -90,29 +90,32 @@
         FlyoutDisplayOptions="AsMultipleItems" will create a separate flyout item for each child element    
         https://docs.microsoft.com/dotnet/api/xamarin.forms.shellgroupitem.flyoutdisplayoptions?view=xamarin-forms
     -->
-    <FlyoutItem Title="Сотрудник" Icon="icon_about.png">
+    <FlyoutItem Title="Сотрудник" Icon="user.png">
         <ShellContent Route="AboutPage" ContentTemplate="{DataTemplate local:AboutPage}" />
     </FlyoutItem>
-    <FlyoutItem Title="Созданные заказы" Icon="icon_feed.png">
+    <FlyoutItem Title="Созданные заказы" Icon="order.png">
         <ShellContent Route="CreatedOrdersPage" ContentTemplate="{DataTemplate local:CreatedOrdersPage}" />
     </FlyoutItem>
-    <FlyoutItem Title="Вывезенные заказы" Icon="icon_feed.png">
+    <FlyoutItem Title="Вывезенные заказы" Icon="taken.png">
         <ShellContent Route="ActualOrdersPage" ContentTemplate="{DataTemplate local:ActualOrdersPage}" />
     </FlyoutItem>
-    <FlyoutItem Title="Взвешенные заказы" Icon="icon_feed.png">
+    <FlyoutItem Title="Взвешенные заказы" Icon="weight.png">
         <ShellContent Route="WeightedOrdersPage" ContentTemplate="{DataTemplate local:WeightedOrdersPage}" />
     </FlyoutItem>
-    <FlyoutItem Title="Завершенные заказы" Icon="icon_feed.png">
+    <FlyoutItem Title="Завершенные заказы" Icon="finished.png">
         <ShellContent Route="FinishedOrdersPage" ContentTemplate="{DataTemplate local:FinishedOrdersPage}" />
     </FlyoutItem>
-    <FlyoutItem Title="О программе" Icon="icon_feed.png">
+    <FlyoutItem Title="О программе" Icon="infoNew.png">
         <ShellContent Route="Organization" ContentTemplate="{DataTemplate local:Organization}" />
     </FlyoutItem>
-    <FlyoutItem  x:Name="AdminPage" IsVisible="{Binding IsAdmin}"  Title="Магазины" Icon="icon_feed.png">
+    <FlyoutItem  x:Name="AdminPage" IsVisible="True"  Title="Магазины" Icon="stores.png">
         <ShellContent  Route="StoresPage" ContentTemplate="{DataTemplate local:StoresPage}" />
     </FlyoutItem>
+    <FlyoutItem  IsVisible="True"  Title="Пользователи" Icon="stores.png">
+        <ShellContent  Route="UsersPage" ContentTemplate="{DataTemplate local:UsersPage}" />
+    </FlyoutItem>
     <!-- When the Flyout is visible this will be a menu item you can tie a click behavior to  -->
-    <MenuItem Text="Выход" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuItemClicked">
+    <MenuItem IconImageSource="exit.png" Text="Выход" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuItemClicked">
     </MenuItem>
 
     <!--
@@ -158,10 +161,12 @@
     -->
 
 
-    <Shell.FlyoutHeaderTemplate>
-        <DataTemplate>
-            <Label Text="{Binding User.Name}"></Label>
-        </DataTemplate>
-    </Shell.FlyoutHeaderTemplate>
+    <Shell.FlyoutHeader>
+        <StackLayout Orientation="Vertical"  BackgroundColor="White" Padding="10">
+            <Label Text="Специально для:" TextColor="Black" FontSize="Body" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></Label>
+            <Image HeightRequest="100" Source="your_house.png" />
+            
+        </StackLayout>
+    </Shell.FlyoutHeader>
 
 </Shell>

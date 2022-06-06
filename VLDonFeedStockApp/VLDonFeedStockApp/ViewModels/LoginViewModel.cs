@@ -51,6 +51,7 @@ namespace VLDonFeedStockApp.ViewModels
             alertService = DependencyService.Resolve<IAlertService>();
             IsLogging = true;
             IsLoggedIn = false;
+            
         }
 
         private async void OnLoginClicked(object obj)
@@ -70,6 +71,7 @@ namespace VLDonFeedStockApp.ViewModels
         {
             try
             {
+                //MessagingCenter.Unsubscribe<LoginViewModel>(this, "admin");
                 IsLoggedIn = true;
                 IsLogging = false;
                 if (!String.IsNullOrWhiteSpace(Username) && !String.IsNullOrWhiteSpace(Password))
@@ -97,7 +99,10 @@ namespace VLDonFeedStockApp.ViewModels
                                     await App.Database.Login(_jsonResults);
                                     IsLoggedIn = false;
                                     IsLogging = true;
-                                    MessagingCenter.Send<LoginViewModel>(this, _jsonResults.Role);
+                                    //if (_jsonResults.Role == "root")
+                                    //{
+                                    //    MessagingCenter.Send<LoginViewModel>(this, "root");
+                                    //}
                                     await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
                                     
                                     // await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");

@@ -29,6 +29,8 @@ namespace VLDonFeedStockApp.Models
         public string Token { get; set; }
         [JsonProperty("address")]
         public string Address { get; set; }
+        [JsonProperty("isaccepted")]
+        public bool IsAccepted { get; set; }
         public string RuRole { get; set; }
         public string OrganizationCodeTopic { get; set; }
     }

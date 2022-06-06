@@ -9,7 +9,7 @@ namespace VLDonFeedStockApp
     public partial class AppShell : Xamarin.Forms.Shell
     {
         AboutViewModel _aboutViewModel;
-        
+        public bool AdminButton;
         public AppShell()
         {
             BindingContext = _aboutViewModel = new AboutViewModel();
@@ -26,10 +26,12 @@ namespace VLDonFeedStockApp
             Routing.RegisterRoute(nameof(StoresPage), typeof(StoresPage));
             Routing.RegisterRoute(nameof(StoreEditPage), typeof(StoreEditPage));
             Routing.RegisterRoute(nameof(MoneyCourse), typeof(MoneyCourse));
+            Routing.RegisterRoute(nameof(UsersPage), typeof(UsersPage));
         }
 
         private async void OnMenuItemClicked(object sender, EventArgs e)
         {
+            
             await Shell.Current.GoToAsync("//LoginPage");
         }
         protected override void OnAppearing()

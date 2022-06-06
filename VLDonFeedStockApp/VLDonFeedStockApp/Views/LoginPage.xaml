@@ -16,7 +16,7 @@
 
             <ScrollView>
             <StackLayout Spacing="5" Margin="16,32" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
-                <Image  Source="logoNewTrans.png"></Image>
+                <Image HeightRequest="200" WidthRequest="200"  Source="logoClear.png"></Image>
                 <Frame BorderColor="Red" CornerRadius="5">
                     <Frame.Background>
                         <LinearGradientBrush EndPoint="1,0">

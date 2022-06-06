@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:VLDonFeedStockApp.ViewModels" xmlns:model="clr-namespace:VLDonFeedStockApp.Models"
+             x:Class="VLDonFeedStockApp.Views.UsersPage">
+    <ContentPage.Content>
+        <RefreshView x:DataType="viewmodels:UsersViewModel" Command="{Binding LoadUsersCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+            <ScrollView>
+                <ListView x:Name="OrderItems" ItemsSource="{Binding RegisteredUsers}" SeparatorVisibility="Default" HasUnevenRows="True" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+
+                            <ViewCell Height="170">
+
+                                <!--<ViewCell.ContextActions>
+                                    <MenuItem
+                                        x:Name="EditBtn"
+                                        Text="Редактировать"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CreatedOrdersViewModel}}, Path=EditOrder}"		
+                                        CommandParameter="{Binding .}">
+                                    </MenuItem>
+                                </ViewCell.ContextActions>-->
+                                <StackLayout   Padding="0"  x:DataType="model:Workers">
+                                    <Frame BorderColor="Red">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition ></ColumnDefinition>
+                                               
+                                                <!--<ColumnDefinition ></ColumnDefinition>
+                                                <ColumnDefinition ></ColumnDefinition>-->
+
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition></RowDefinition>
+                                                <RowDefinition></RowDefinition>
+                                                <!--<RowDefinition></RowDefinition>
+                                                <RowDefinition></RowDefinition>
+                                                <RowDefinition></RowDefinition>-->
+                                                <!--<RowDefinition></RowDefinition>
+                                            <RowDefinition></RowDefinition>-->
+                                            </Grid.RowDefinitions>
+                                            <StackLayout>
+                                                <!--<StackLayout Orientation="Vertical">
+                                                <Label FontSize="Small" TextColor="Red"  FontFamily="DeusEx" HorizontalOptions="CenterAndExpand" Text="ID:"></Label>
+                                                    <Label FontFamily="DeusEx" TextColor="Black" FontSize="Small" HorizontalTextAlignment="Center" HorizontalOptions="CenterAndExpand" Text="{Binding Id}"></Label>
+                                                </StackLayout>-->
+                                                
+                                                <StackLayout Orientation="Vertical">
+                                                <Label FontSize="Small" TextColor="Red"  FontFamily="DeusEx" HorizontalOptions="CenterAndExpand" Text="Пользователь:"></Label>
+                                                    <Label FontFamily="DeusEx" TextColor="Black" FontSize="Small" HorizontalTextAlignment="Center" HorizontalOptions="CenterAndExpand" Text="{Binding Name}"></Label>
+                                                </StackLayout>
+                                                    <StackLayout Orientation="Horizontal">
+                                                    <Label FontSize="Small" TextColor="Red" VerticalOptions="CenterAndExpand" FontFamily="DeusEx" HorizontalOptions="CenterAndExpand" Text="Аккаунт подтвержен:"></Label>
+                                                    <CheckBox HorizontalOptions="CenterAndExpand" IsChecked="{Binding IsAccepted}" IsEnabled="False" Color="Green" VerticalOptions="CenterAndExpand"></CheckBox>
+                                                </StackLayout>
+                                                <StackLayout Orientation="Vertical">
+                                                    <Label FontSize="Small" TextColor="Red"  FontFamily="DeusEx" HorizontalOptions="CenterAndExpand" Text="Организация:"></Label>
+                                                    <Label FontFamily="DeusEx" FontSize="Small" TextColor="Black" HorizontalTextAlignment="Center" HorizontalOptions="CenterAndExpand" Text="{Binding Organization}"></Label>
+                                               
+                                                </StackLayout>
+                                            </StackLayout>
+                                        </Grid>
+                                    </Frame>
+                                    <StackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer 
+                                         NumberOfTapsRequired="2"
+                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:UsersViewModel}}, Path=EditOrder}"		
+                                         CommandParameter="{Binding .}">
+                                        </TapGestureRecognizer>
+                                    </StackLayout.GestureRecognizers>
+                                </StackLayout>
+                            </ViewCell>
+
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </ScrollView>
+        </RefreshView>
+    </ContentPage.Content>
+</ContentPage>

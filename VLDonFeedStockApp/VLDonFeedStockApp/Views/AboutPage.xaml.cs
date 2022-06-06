@@ -4,6 +4,8 @@ using VLDonFeedStockApp.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
+
+
 namespace VLDonFeedStockApp.Views
 {
     public partial class AboutPage : ContentPage

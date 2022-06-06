@@ -10,13 +10,18 @@ using Xamarin.Forms.Xaml;
 namespace VLDonFeedStockApp.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class LoginPage : ContentPage
+    public partial class UsersPage : ContentPage
     {
-        public LoginPage()
+        UsersViewModel _usersViewModel;
+        public UsersPage()
         {
             InitializeComponent();
-            this.BindingContext = new LoginViewModel();
-           
+            BindingContext = _usersViewModel = new UsersViewModel();
+        }
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            _usersViewModel.OnAppearing();
         }
     }
 }

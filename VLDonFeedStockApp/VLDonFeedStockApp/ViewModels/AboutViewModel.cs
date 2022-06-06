@@ -20,6 +20,7 @@ namespace VLDonFeedStockApp.ViewModels
 
         private Workers _user;
         private bool _isAdmin;
+        private string _status;
         public ObservableCollection<Workers> Users { get; }
         public Workers User
         {
@@ -33,24 +34,27 @@ namespace VLDonFeedStockApp.ViewModels
             OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://aka.ms/xamarin-quickstart"));
             Users = new ObservableCollection<Workers>();
             LoadItemsCommand = new Command(async () => await GetUserData());
-            MessagingCenter.Subscribe<LoginViewModel>(this, "root", (sender) =>
-            {
-                  IsAdmin = true;
-            });
-            MessagingCenter.Subscribe<LoginViewModel>(this, "employee", (sender) =>
-            {
-                IsAdmin = false;
-            });
-            MessagingCenter.Subscribe<LoginViewModel>(this, "admin", (sender) =>
-            {
-                IsAdmin = false;
-            });
+            
+        }
+        public AboutViewModel(bool _isAdmin)
+        {
+            alertService = DependencyService.Resolve<IAlertService>();
+            Title = "Данные о пользователе";
+            OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://aka.ms/xamarin-quickstart"));
+            Users = new ObservableCollection<Workers>();
+            LoadItemsCommand = new Command(async () => await GetUserData());
+            
         }
 
         public bool IsAdmin
         {
             get => _isAdmin;
             set => SetProperty(ref _isAdmin, value);
+        }
+        public string Status
+        {
+            get => _status;
+            set => SetProperty(ref _status, value);
         }
         private async Task GetUserData()
         {
@@ -68,6 +72,14 @@ namespace VLDonFeedStockApp.ViewModels
                     }
                     Users[0].RuRole = SetRole(Users[0].Role);
                     User = Users[0];
+                    if (User.IsAccepted)
+                    {
+                        Status = "Подтвержден";
+                    }
+                    else
+                    {
+                        Status = "Не подтвержден";
+                    }
                 }
 
                 else
@@ -87,11 +99,21 @@ namespace VLDonFeedStockApp.ViewModels
                         break;
                     case "Администратор":
                         await RootLogin();
-                        
                         break;
                 }
+                //MessagingCenter.Subscribe<LoginViewModel>(this, "root", (sender) =>
+                //{
+                //    IsAdmin = true;
+                //});
+                //MessagingCenter.Subscribe<LoginViewModel>(this, "employee", (sender) =>
+                //{
+                //    AboutViewModel aboutViewModel = new AboutViewModel(false);
+                //});
+                //MessagingCenter.Subscribe<LoginViewModel>(this, "admin", (sender) =>
+                //{
+                //    AboutViewModel aboutViewModel = new AboutViewModel(false);
+                //});
 
-               
                 //CrossFirebasePushNotification.Current.Subscribe("all");
             }
             catch (Exception ex)
@@ -113,7 +135,7 @@ namespace VLDonFeedStockApp.ViewModels
             var _responseChannelClients = await _channelclients.GetStringAsync(
                 $"{GlobalSettings.HostUrl}api/auth/related_organization_channels/{_responseTokenDiff}");
             List<string> _channels = JsonConvert.DeserializeObject<List<string>>(_responseChannelClients);
-            if (CrossFirebasePushNotification.Current.SubscribedTopics.Length > 0)
+            if (CrossFirebasePushNotification.Current.SubscribedTopics.Length >= 0)
             {
                 CrossFirebasePushNotification.Current.UnsubscribeAll();
                 foreach (var x in _channels)
@@ -127,7 +149,7 @@ namespace VLDonFeedStockApp.ViewModels
             HttpClient _channelclients = new HttpClient();
             var _responseChannelClients = await _channelclients.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/related_organization_channels");
             List<string> _channels = JsonConvert.DeserializeObject<List<string>>(_responseChannelClients);
-            if (CrossFirebasePushNotification.Current.SubscribedTopics.Length > 0)
+            if (CrossFirebasePushNotification.Current.SubscribedTopics.Length >= 0)
             {
                 CrossFirebasePushNotification.Current.UnsubscribeAll();
                 foreach (var x in _channels)
@@ -141,7 +163,7 @@ namespace VLDonFeedStockApp.ViewModels
         {
             HttpClient _tokenclientDiff = new HttpClient();
             var _responseTokenDiff = await _tokenclientDiff.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/store/{User.Organization}/{User.Address}");
-            if (CrossFirebasePushNotification.Current.SubscribedTopics.Length > 0)
+            if (CrossFirebasePushNotification.Current.SubscribedTopics.Length >= 0)
             {
                 CrossFirebasePushNotification.Current.UnsubscribeAll();
                 CrossFirebasePushNotification.Current.Subscribe($"{_responseTokenDiff}");

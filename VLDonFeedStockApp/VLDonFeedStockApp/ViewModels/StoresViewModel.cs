@@ -97,7 +97,8 @@ namespace VLDonFeedStockApp.ViewModels
             }
             catch (Exception ex)
             {
-                await alertService.ShowMessage(ex.Data.ToString(), ex.Message);
+                await alertService.ShowMessage("Панель администратора", "У вас недостаточно прав!!!");
+                await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
             }
             finally
             {

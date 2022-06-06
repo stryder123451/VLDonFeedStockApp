@@ -1,14 +1,16 @@
 ﻿using System;
 using System.IO;
 using VLDonFeedStockApp.Services;
+using VLDonFeedStockApp.ViewModels;
 using VLDonFeedStockApp.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
-
+[assembly: ExportFont("deusex.otf", Alias = "DeusEx")]
 namespace VLDonFeedStockApp
 {
     public partial class App : Application
     {
+        
         private static Database _database;
         public static Database Database
         {
@@ -25,13 +27,12 @@ namespace VLDonFeedStockApp
         public App()
         {
             InitializeComponent();
-
-            
             MainPage = new AppShell();
         }
 
         protected override void OnStart()
         {
+           
         }
 
         protected override void OnSleep()

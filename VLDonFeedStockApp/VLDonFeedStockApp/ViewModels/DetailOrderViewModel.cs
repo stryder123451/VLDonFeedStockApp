@@ -435,10 +435,23 @@ namespace VLDonFeedStockApp.ViewModels
                 indications.FinishedData = DateTime.Now.ToString().Split(' ')[0].ToString();
             }
 
-            
-            
+            if (indications.OldCartonPrice == null)
+            {
+                indications.OldCartonPrice = Prices.Carton;
+            }
+            if (indications.OldPlenkaPrice == null)
+            {
+                indications.OldPlenkaPrice = Prices.Plenka;
+            }
+            if (indications.OldPoddonPrice == null)
+            {
+                indications.OldPoddonPrice = Prices.Poddon;
+            }
 
-                if (CheckAmount(indications.State, IsPlenka, Plenka, PlenkaAmount) && CheckAmount(indications.State, IsPoddon, Poddon, PoddonAmount)
+
+
+
+            if (CheckAmount(indications.State, IsPlenka, Plenka, PlenkaAmount) && CheckAmount(indications.State, IsPoddon, Poddon, PoddonAmount)
                 && CheckAmount(indications.State, IsCarton, Carton, CartonAmount))
                 {
                     
@@ -538,8 +551,19 @@ namespace VLDonFeedStockApp.ViewModels
         }
         public async Task<Request> UpdateStateAsync(Request indications)
         {
-            
-           
+
+            if (indications.OldCartonPrice == null)
+            {
+                indications.OldCartonPrice = Prices.Carton;
+            }
+            if (indications.OldPlenkaPrice == null)
+            {
+                indications.OldPlenkaPrice = Prices.Plenka;
+            }
+            if (indications.OldPoddonPrice == null)
+            {
+                indications.OldPoddonPrice = Prices.Poddon;
+            }
             indications.LastModified = DateTime.Now.ToString().Split(' ')[0].ToString();
             if (indications.State.Length == "created".Length)
             {
@@ -609,6 +633,9 @@ namespace VLDonFeedStockApp.ViewModels
                                         WhoClosed = res.Result.WhoClosed,
                                          WhoTook = res.Result.WhoTook,
                                           WhoWeighed = res.Result.WhoWeighed,
+                                           OldCartonPrice = res.Result.OldCartonPrice,
+                                            OldPlenkaPrice = res.Result.OldPlenkaPrice,
+                                             OldPoddonPrice = res.Result.OldPoddonPrice,
                     };
                     
                    
