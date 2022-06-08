@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:VLDonFeedStockApp.ViewModels" xmlns:model="clr-namespace:VLDonFeedStockApp.Models" x:DataType="viewmodels:ContrAgentsPricesViewModel"
+             x:Class="VLDonFeedStockApp.Views.ContrAgentsPrices"
+             Shell.TabBarIsVisible="False"
+             Shell.ForegroundColor="White">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="КонтрАгенты" Command="{Binding ChangeMoneyCourse}" />
+
+    </ContentPage.ToolbarItems>
+    <ContentPage.Content>
+        <RefreshView x:DataType="viewmodels:ContrAgentsPricesViewModel" Command="{Binding LoadStoresCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+
+            <Frame>
+                <Frame.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="White" Offset="0.1" />
+                        <GradientStop Color="LightBlue" Offset="1" />
+                    </LinearGradientBrush>
+                </Frame.Background>
+                <ScrollView>
+                    <ListView x:Name="OrderItems" ItemsSource="{Binding StoresList}" SeparatorVisibility="Default" HasUnevenRows="True" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+
+                                <ViewCell Height="190">
+                                    <StackLayout   Padding="0"  x:DataType="model:Prices">
+                                        <Frame BorderColor="Green">
+                                            <Frame.Background>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                    <GradientStop Color="White" Offset="0.1" />
+                                                    <GradientStop Color="LightBlue" Offset="1" />
+                                                </LinearGradientBrush>
+                                            </Frame.Background>
+
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition ></ColumnDefinition>
+                                                    <ColumnDefinition ></ColumnDefinition>
+                                                    <ColumnDefinition ></ColumnDefinition>
+                                                  
+
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition></RowDefinition>
+                                                    <RowDefinition></RowDefinition>
+                                                    <RowDefinition></RowDefinition>
+                                                    <RowDefinition></RowDefinition>
+                                                    <RowDefinition></RowDefinition>
+                                                </Grid.RowDefinitions>
+                                                <Label Grid.Row="0" FontFamily="DeusEx" FontSize="Caption" TextColor="Red" HorizontalOptions="CenterAndExpand" FontAttributes="Bold" Grid.Column="1" Grid.ColumnSpan="2"  Text="{Binding Id}"></Label>
+                                                <Label Grid.Row="1" FontFamily="DeusEx" FontSize="Caption" TextColor="Red" HorizontalOptions="CenterAndExpand" FontAttributes="Bold" Grid.Column="1" Grid.ColumnSpan="2"  Text="{Binding Poddon}"></Label>
+                                                <Label Grid.Row="2" FontFamily="DeusEx" FontSize="Caption" TextColor="Red" HorizontalOptions="CenterAndExpand" FontAttributes="Bold" Grid.Column="1" Grid.ColumnSpan="2"  Text="{Binding Plenka}"></Label>
+                                                <Label Grid.Row="3" FontFamily="DeusEx" FontSize="Caption" TextColor="Red" HorizontalOptions="CenterAndExpand" FontAttributes="Bold" Grid.Column="1" Grid.ColumnSpan="2"  Text="{Binding Carton}"></Label>
+                                                <Label Grid.Row="4" FontFamily="DeusEx" FontSize="Caption" TextColor="Red" HorizontalOptions="CenterAndExpand" FontAttributes="Bold" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding RelatedContrAgent}"></Label>
+                                                <Label Grid.Row="0" FontFamily="DeusEx" FontSize="Caption" TextColor="Black" HorizontalOptions="CenterAndExpand" FontAttributes="Bold" Grid.Column="0" Text="ID"></Label>
+                                                <Label Grid.Row="1" FontFamily="DeusEx" FontSize="Caption" TextColor="Black" HorizontalOptions="CenterAndExpand" FontAttributes="Bold" Grid.Column="0" Text="Поддоны:"></Label>
+                                                <Label Grid.Row="2" FontFamily="DeusEx" FontSize="Caption" TextColor="Black" HorizontalOptions="CenterAndExpand" FontAttributes="Bold" Grid.Column="0" Text="Пленка:"></Label>
+                                                <Label Grid.Row="3" FontFamily="DeusEx" FontSize="Caption" TextColor="Black" HorizontalOptions="CenterAndExpand" FontAttributes="Bold" Grid.Column="0" Text="Картон:"></Label>
+                                                <Label Grid.Row="4" FontFamily="DeusEx" FontSize="Caption" TextColor="Black" HorizontalOptions="CenterAndExpand" FontAttributes="Bold" Grid.Column="0" Text="Агент:"></Label>
+                                                
+                                            </Grid>
+                                        </Frame>
+                                        <StackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer 
+                                         NumberOfTapsRequired="1"
+                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:ContrAgentsPricesViewModel}}, Path=EditOrder}"		
+                                         CommandParameter="{Binding .}">
+                                            </TapGestureRecognizer>
+                                        </StackLayout.GestureRecognizers>
+                                    </StackLayout>
+                                </ViewCell>
+
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </ScrollView>
+            </Frame>
+        </RefreshView>
+    </ContentPage.Content>
+</ContentPage>

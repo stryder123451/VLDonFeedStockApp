@@ -61,7 +61,7 @@ namespace VLDonFeedStockApp.ViewModels
         {
             if (item == null)
                 return;
-            await Shell.Current.GoToAsync($"{nameof(DetailOrderPage)}?{nameof(DetailOrderViewModel.Id)}={item.Id}");
+            await Shell.Current.GoToAsync($"{nameof(DetailOrderPage)}?{nameof(DetailOrderViewModel.Id)}={item.Id}&{nameof(DetailOrderViewModel.Address)}={item.Address}");
         }
 
         private async Task GetUserData()

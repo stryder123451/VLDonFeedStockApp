@@ -20,7 +20,7 @@ namespace VLDonFeedStockApp.ViewModels
 {
     public class RegisterViewModel : BaseViewModel
     {
-        public ObservableCollection<Organizations> Organizations { get; }
+        public ObservableCollection<Models.Organizations> Organizations { get; }
         public ObservableCollection<Stores> Stores { get; }
         public Command RegisterCommand { get; }
         public Command BackCommand { get; }
@@ -35,7 +35,7 @@ namespace VLDonFeedStockApp.ViewModels
         public IAlertService alertService;
         public RegisterViewModel()
         {
-            Organizations = new ObservableCollection<Organizations>();
+            Organizations = new ObservableCollection<Models.Organizations>();
             Stores = new ObservableCollection<Stores>();
             LoadItemsCommand = new Command(async () => await GetRegisterData());
             RegisterCommand = new Command(OnRegisterClicked);
@@ -96,7 +96,7 @@ namespace VLDonFeedStockApp.ViewModels
             try
             {
                 Organizations.Clear();
-                IEnumerable<Organizations> organizationsItems = await GetOrganizationsAsync(true);
+                IEnumerable<Models.Organizations> organizationsItems = await GetOrganizationsAsync(true);
 
                 foreach (var item in organizationsItems)
                 {
@@ -162,7 +162,7 @@ namespace VLDonFeedStockApp.ViewModels
             }
         }
 
-        public async Task<IEnumerable<Organizations>> GetOrganizationsAsync(bool forceRefresh = false)
+        public async Task<IEnumerable<Models.Organizations>> GetOrganizationsAsync(bool forceRefresh = false)
         {
             try
             {
@@ -171,7 +171,7 @@ namespace VLDonFeedStockApp.ViewModels
                 var url = $"{GlobalSettings.HostUrl}api/auth/organizations";
                 var _responseToken = await _tokenclient.GetStringAsync(url);
                 var _jsonResults = JsonConvert.DeserializeObject<List<Organizations>>(_responseToken);
-                return await Task.FromResult(_jsonResults.Distinct());
+                return (IEnumerable<Models.Organizations>)await Task.FromResult(_jsonResults.Distinct());
             }
             catch (Exception ex)
             {

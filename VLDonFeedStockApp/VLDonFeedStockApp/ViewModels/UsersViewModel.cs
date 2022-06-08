@@ -99,16 +99,16 @@ namespace VLDonFeedStockApp.ViewModels
                     User = Users[0];
                     
                 }
-                if (User.Role.Length == "root".Length)
+                if (User.Role.Length != "root".Length)
                 {
                     await alertService.ShowMessage("Администратор", "У вас недостаточно прав!!!");
                     await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
                 }
 
-                else
-                {
-                    await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
-                }
+                //else
+                //{
+                //    await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+                //}
                 HttpClient _tokenClientPrice = new HttpClient();
                 var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/users/{User.Login}/{User.Token}");
                 var _jsonResultsPrice = JsonConvert.DeserializeObject<List<Workers>>(_responseTokenPrice);

@@ -1,15 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:VLDonFeedStockApp.ViewModels" xmlns:model="clr-namespace:VLDonFeedStockApp.Models" x:DataType="viewmodels:StoresViewModel"
-             x:Class="VLDonFeedStockApp.Views.StoresPage">
+             x:Class="VLDonFeedStockApp.Views.StoresPage"
+             Shell.ForegroundColor="White">
+    <Shell.TitleView>
+        <Label VerticalOptions="CenterAndExpand"  VerticalTextAlignment="Center"  HorizontalTextAlignment="Start" HorizontalOptions="CenterAndExpand"  TextColor="White"  FontFamily="DeusEx" Text="{Binding Title}" />
+    </Shell.TitleView>
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Изменить цены" Command="{Binding ChangeMoneyCourse}" />
-        <ToolbarItem>
-        </ToolbarItem>
+      
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <RefreshView x:DataType="viewmodels:StoresViewModel" Command="{Binding LoadStoresCommand}"  IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+            <Frame>
             <ScrollView>
                 <ListView x:Name="StoreItems" ItemsSource="{Binding StoresList}"  SeparatorVisibility="None"  HasUnevenRows="True" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
                     <ListView.ItemTemplate>
@@ -26,7 +30,7 @@
                                     </MenuItem>
                                 </ViewCell.ContextActions>-->
                                 <StackLayout   Padding="0"  x:DataType="model:Stores">
-                                    <Frame BorderColor="Red">
+                                    <Frame BorderColor="Green">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition></ColumnDefinition>
@@ -43,13 +47,13 @@
                                             </Grid.RowDefinitions>
                                             
                                            
-                                            <Label Grid.Row="0" TextColor="Black"  HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Адрес:"></Label>
-                                            <Label Grid.Row="0" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding Address}"></Label>
-                                            
-                                            <Label Grid.Row="1" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Организация:"></Label>
-                                            <Label Grid.Row="1" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding RelatedOrganization}"></Label>
-                                            
-                                            <Label Grid.Row="2" TextColor="Black"  HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding RelatedContrAgent}"></Label>
+                                            <Label Grid.Row="0"  TextColor="Black"  HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Адрес:"></Label>
+                                                <Label Grid.Row="0" FontFamily="DeusEx" FontSize="Caption" TextColor="Red" HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding Address}"></Label>
+
+                                                <Label Grid.Row="1"  TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Организация:"></Label>
+                                                <Label Grid.Row="1" FontFamily="DeusEx" TextColor="Red" HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding RelatedOrganization}"></Label>
+
+                                                <Label Grid.Row="2" FontFamily="DeusEx" FontSize="Caption" TextColor="Red"  HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding RelatedContrAgent}"></Label>
                                             <Label Grid.Row="2" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="КонтрАгент:"></Label>
 
                                            
@@ -73,6 +77,7 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </ScrollView>
+            </Frame>
         </RefreshView>
     </ContentPage.Content>
 </ContentPage>

@@ -10,26 +10,30 @@
         <viewmodels:LoginViewModel/>
     </ContentPage.BindingContext>
     <ContentPage.Content>
-        <Grid>
+        <Frame>
+            <Frame.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="White" Offset="0.1" />
+                    <GradientStop Color="LightBlue" Offset="1" />
+                </LinearGradientBrush>
+            </Frame.Background>
+            <Grid>
 
-           
-
-            <ScrollView>
-            <StackLayout Spacing="5" Margin="16,32" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
-                <Image HeightRequest="200" WidthRequest="200"  Source="logoClear.png"></Image>
-                <Frame BorderColor="Red" CornerRadius="5">
-                    <Frame.Background>
-                        <LinearGradientBrush EndPoint="1,0">
-                            <GradientStop Color="White" Offset="0.1" />
-                            <GradientStop Color="LightBlue" Offset="1" />
-                        </LinearGradientBrush>
-                    </Frame.Background>
+                <StackLayout Spacing="5" Margin="16,32" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
+                    <Image HeightRequest="200" WidthRequest="200"  Source="logoClear.png"></Image>
+                    <Frame BorderColor="Green" CornerRadius="5">
+                        <Frame.Background>
+                            <LinearGradientBrush EndPoint="1,0">
+                                <GradientStop Color="White" Offset="0.1" />
+                                <GradientStop Color="LightBlue" Offset="1" />
+                            </LinearGradientBrush>
+                        </Frame.Background>
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="50"></RowDefinition>
                                 <RowDefinition Height="50"></RowDefinition>
                                 <RowDefinition Height="90"></RowDefinition>
-                               
+
                             </Grid.RowDefinitions>
                             <Entry PlaceholderColor="Black" TextColor="Black" Text="{Binding Username}"
                    Placeholder="Логин..." />
@@ -44,8 +48,8 @@
                     Command="{Binding LoginCommand}">
                                     <Button.Background>
                                         <LinearGradientBrush EndPoint="1,0">
-                                            <GradientStop Color="#48c6ef" Offset="0.1" />
-                                            <GradientStop Color="#6f86d6" Offset="1.0" />
+                                            <GradientStop Color="#02AABD" Offset="0.1" />
+                                            <GradientStop Color="#00CDAC" Offset="1.0" />
                                         </LinearGradientBrush>
                                     </Button.Background>
                                 </Button>
@@ -53,7 +57,7 @@
                                 <Button Text="Регистрация" WidthRequest="150"
                 HorizontalOptions="Center"  CornerRadius="5"
                 IsVisible="{Binding IsLogging}"
-                Command="{Binding RegisterCommand}">
+                Command="{Binding RegisterCommand}" BorderColor="Red">
                                     <Button.Background>
                                         <LinearGradientBrush EndPoint="1,0">
                                             <GradientStop Color="#FF512F" Offset="0.1" />
@@ -64,9 +68,9 @@
                                 <ActivityIndicator IsRunning="{Binding IsLoggedIn}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></ActivityIndicator>
                             </StackLayout>
                         </Grid>
-                   
-                </Frame>
-                <!--<Frame BorderColor="Red" CornerRadius="5">
+
+                    </Frame>
+                    <!--<Frame BorderColor="Red" CornerRadius="5">
                     <Frame.Background>
                         <LinearGradientBrush EndPoint="1,0">
                             <GradientStop Color="White" Offset="0.1" />
@@ -76,10 +80,14 @@
                    
                 </Frame>-->
 
-                    
+
                 </StackLayout>
+
+                <!--<ScrollView>
+            
         
-        </ScrollView>
+        </ScrollView>-->
         </Grid>
+    </Frame>
     </ContentPage.Content>
 </ContentPage>

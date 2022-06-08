@@ -36,15 +36,7 @@ namespace VLDonFeedStockApp.ViewModels
             LoadItemsCommand = new Command(async () => await GetUserData());
             
         }
-        public AboutViewModel(bool _isAdmin)
-        {
-            alertService = DependencyService.Resolve<IAlertService>();
-            Title = "Данные о пользователе";
-            OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://aka.ms/xamarin-quickstart"));
-            Users = new ObservableCollection<Workers>();
-            LoadItemsCommand = new Command(async () => await GetUserData());
-            
-        }
+       
 
         public bool IsAdmin
         {
@@ -142,6 +134,7 @@ namespace VLDonFeedStockApp.ViewModels
                 {
                     CrossFirebasePushNotification.Current.Subscribe(x);
                 }
+                CrossFirebasePushNotification.Current.Subscribe($"{User.Login}");
             }
         }
         private async Task RootLogin()
@@ -156,7 +149,9 @@ namespace VLDonFeedStockApp.ViewModels
                 {
                     CrossFirebasePushNotification.Current.Subscribe(x);
                 }
+                CrossFirebasePushNotification.Current.Subscribe($"root");
             }
+           
         }
 
         private async Task DirectorLogin()
@@ -175,6 +170,7 @@ namespace VLDonFeedStockApp.ViewModels
                 {
                     CrossFirebasePushNotification.Current.Subscribe(_responseTokenDiff);
                 }
+                CrossFirebasePushNotification.Current.Subscribe($"{User.Login}");
             }
         }
 

@@ -22,11 +22,12 @@ namespace VLDonFeedStockApp
             Routing.RegisterRoute(nameof(DetailOrderPage), typeof(DetailOrderPage));
             Routing.RegisterRoute(nameof(WeightedOrdersPage), typeof(WeightedOrdersPage));
             Routing.RegisterRoute(nameof(FinishedOrdersPage), typeof(FinishedOrdersPage));
-            Routing.RegisterRoute(nameof(Organization), typeof(Organization));
+            Routing.RegisterRoute(nameof(AboutUs), typeof(AboutUs));
             Routing.RegisterRoute(nameof(StoresPage), typeof(StoresPage));
             Routing.RegisterRoute(nameof(StoreEditPage), typeof(StoreEditPage));
             Routing.RegisterRoute(nameof(MoneyCourse), typeof(MoneyCourse));
             Routing.RegisterRoute(nameof(UsersPage), typeof(UsersPage));
+            Routing.RegisterRoute(nameof(ContrAgentsPrices), typeof(ContrAgentsPrices));
         }
 
         private async void OnMenuItemClicked(object sender, EventArgs e)

@@ -114,7 +114,7 @@ namespace VLDonFeedStockApp.ViewModels
             {
                 Users.Clear();
                 alertService.ShowToast("Загрузка...", 1f);
-
+                ContrAgents.Clear();
                 var list = await App.Database.GetUsersAsync();
                 if (list.Count > 0)
                 {

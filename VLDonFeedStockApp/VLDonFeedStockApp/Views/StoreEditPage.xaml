@@ -58,9 +58,9 @@
                                     <GradientStop Color="LightBlue" Offset="1" />
                                 </LinearGradientBrush>
                             </Frame.Background>
-                            <Picker TextColor="Black" TitleColor="Black" FontSize="Medium"  SelectedIndex="{Binding Store.RelatedContrAgent}" ItemsSource="{Binding ContrAgents}"  Unfocused="AgentsPicker_Unfocused" SelectedIndexChanged="AgentsPicker_SelectedIndexChanged" x:Name="AgentsPicker"  Title="КонтрАгент..." ></Picker>
+                            <Picker TextColor="Black" TitleColor="Black" FontSize="Medium"  SelectedIndex="0" ItemsSource="{Binding ContrAgents}"  Unfocused="AgentsPicker_Unfocused" SelectedIndexChanged="AgentsPicker_SelectedIndexChanged" x:Name="AgentsPicker"  Title="КонтрАгент..." ></Picker>
                         </Frame>
-                        <Entry TextColor="Black" IsVisible="false" x:Name="ContrAgentEntry" Text="{Binding Store.RelatedContrAgent}" FontSize="Small"/>
+                        <Entry TextColor="Black" IsVisible="true" x:Name="ContrAgentEntry" Text="{Binding Store.RelatedContrAgent}" FontSize="Small"/>
 
 
                     </StackLayout>

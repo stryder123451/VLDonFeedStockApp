@@ -1,10 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:VLDonFeedStockApp.ViewModels" x:DataType="viewmodels:MoneyCourseViewModel"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:VLDonFeedStockApp.ViewModels" xmlns:model="clr-namespace:VLDonFeedStockApp.Models" x:DataType="viewmodels:MoneyCourseViewModel"
              x:Class="VLDonFeedStockApp.Views.MoneyCourse"
              Title="{Binding Title}"
              Shell.TabBarIsVisible="False"
              >
+
+    <Shell.TitleView>
+        <Label VerticalOptions="CenterAndExpand"  VerticalTextAlignment="Center"  HorizontalTextAlignment="Start" HorizontalOptions="CenterAndExpand"  TextColor="White"  FontFamily="DeusEx" Text="{Binding Title}" />
+    </Shell.TitleView>
+
     <ContentPage.Content>
         <RefreshView x:DataType="viewmodels:MoneyCourseViewModel" Command="{Binding LoadItemsCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
 
@@ -15,11 +20,11 @@
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
                 
-                <Button Grid.Row="1" Text="Изменить данные"  Command="{Binding UpdateOrder}"></Button>
-                <Button Grid.Row="2" Text="Отмена"  Command="{Binding BackCommand}"></Button>
+                <Button Grid.Row="1" Text="Изменить данные"  FontFamily="DeusEx" Command="{Binding UpdateOrder}"></Button>
+                <Button Grid.Row="2" Text="Отмена" FontFamily="DeusEx"  Command="{Binding BackCommand}"></Button>
                 <ScrollView Grid.Row="0">
                     <StackLayout  Spacing="10" Padding="15">
-                        <Label TextColor="Black" Text="Цена за кг картона:" FontSize="Medium"/>
+                        <Label TextColor="Black" FontFamily="DeusEx" Text="Цена за кг картона:" FontSize="Medium"/>
                         
                         <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Red" CornerRadius="5">
                             <Frame.Background>
@@ -28,10 +33,10 @@
                                     <GradientStop Color="LightBlue" Offset="1" />
                                 </LinearGradientBrush>
                             </Frame.Background>
-                            <Entry TextColor="Red" Text="{Binding Prices.Carton}"  FontSize="Small"/>
+                            <Entry TextColor="Red" Text="{Binding Prices.Carton,Mode=TwoWay}"  FontSize="Small"/>
                         </Frame>
 
-                        <Label TextColor="Black" Text="Цена за кг пленки:" FontSize="Medium"/>
+                        <Label TextColor="Black" FontFamily="DeusEx" Text="Цена за кг пленки:" FontSize="Medium"/>
 
                         <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Red" CornerRadius="5">
                             <Frame.Background>
@@ -40,11 +45,21 @@
                                     <GradientStop Color="LightBlue" Offset="1" />
                                 </LinearGradientBrush>
                             </Frame.Background>
-                            <Entry TextColor="Red" Text="{Binding Prices.Plenka}"  FontSize="Small"/>
+                            <Entry TextColor="Red" Text="{Binding Prices.Plenka,Mode=TwoWay}"  FontSize="Small"/>
+                        </Frame>
+
+                        <Label TextColor="Black" FontFamily="DeusEx" Text="Цена за кг поддонов:" FontSize="Medium"/>
+
+                        <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Red" CornerRadius="5">
+                            <Frame.Background>
+                                <LinearGradientBrush EndPoint="1,0">
+                                    <GradientStop Color="White" Offset="0.1" />
+                                    <GradientStop Color="LightBlue" Offset="1" />
+                                </LinearGradientBrush>
+                            </Frame.Background>
+                            <Entry TextColor="Red" Text="{Binding Prices.Poddon,Mode=TwoWay}"  FontSize="Small"/>
                         </Frame>
                         
-                        <Label TextColor="Black" Text="Цена за кг поддонов:" FontSize="Medium"/>
-
                         <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Red" CornerRadius="5">
                             <Frame.Background>
                                 <LinearGradientBrush EndPoint="1,0">
@@ -52,10 +67,20 @@
                                     <GradientStop Color="LightBlue" Offset="1" />
                                 </LinearGradientBrush>
                             </Frame.Background>
-                            <Entry TextColor="Red" Text="{Binding Prices.Poddon}"  FontSize="Small"/>
+                            <!--<ScrollView>
+                                <ListView x:Name="OrderItems" ItemsSource="{Binding Organizations}" SeparatorVisibility="Default" HasUnevenRows="True" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackLayout x:DataType="model:Organizations">
+                                                <Label Text="{Binding Organization}"></Label>
+                                            </StackLayout>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </ScrollView>-->
+                            <Entry x:Name="ContrAgentEntry" Unfocused="ContrAgentEntry_Unfocused"  TextColor="Black" IsReadOnly="True"  Text="{Binding Prices.RelatedContrAgent}" FontSize="Medium"/>
+                            <!--<Picker x:Name="ContrAgentPicker" ItemDisplayBinding="{Binding Organization}" SelectedItem="{Binding Organization}" ItemsSource="{Binding Organizations,Mode=TwoWay}" SelectedIndexChanged="ContrAgentPicker_SelectedIndexChanged" Title="КонтрАгент..."></Picker>-->
                         </Frame>
-
-
                         <!--<Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition></ColumnDefinition>

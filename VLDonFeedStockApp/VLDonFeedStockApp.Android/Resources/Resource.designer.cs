@@ -22390,13 +22390,16 @@ namespace VLDonFeedStockApp.Droid
 			public const int user = 2131165369;
 			
 			// aapt resource value: 0x7F0700BA
-			public const int weight = 2131165370;
+			public const int users = 2131165370;
 			
 			// aapt resource value: 0x7F0700BB
-			public const int xamarin_logo = 2131165371;
+			public const int weight = 2131165371;
 			
 			// aapt resource value: 0x7F0700BC
-			public const int your_house = 2131165372;
+			public const int xamarin_logo = 2131165372;
+			
+			// aapt resource value: 0x7F0700BD
+			public const int your_house = 2131165373;
 			
 			static Drawable()
 			{

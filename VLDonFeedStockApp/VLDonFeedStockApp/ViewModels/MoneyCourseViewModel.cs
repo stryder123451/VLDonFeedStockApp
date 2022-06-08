@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -10,22 +12,30 @@ using VLDonFeedStockApp.Models;
 using VLDonFeedStockApp.Services;
 using VLDonFeedStockApp.Views;
 using Xamarin.Forms;
+using Organizations = VLDonFeedStockApp.Models.Organizations;
 
 namespace VLDonFeedStockApp.ViewModels
 {
+    [QueryProperty(nameof(ContrAgent), nameof(ContrAgent))]
     public class MoneyCourseViewModel : BaseViewModel
     {
         IAlertService alertService;
 
+        private string _contrAgent;
         public Command LoadItemsCommand { get; }
         public Command UpdateOrder { get; }
         public Command BackCommand { get; }
-
+        
         private Prices _prices;
         public Prices Prices
         {
             get => _prices;
             set => SetProperty(ref _prices, value);
+        }
+        public string ContrAgent
+        {
+            get => _contrAgent;
+            set => SetProperty(ref _contrAgent, value);
         }
 
         public MoneyCourseViewModel()
@@ -78,9 +88,9 @@ namespace VLDonFeedStockApp.ViewModels
             else
             {
                 var res = JsonConvert.DeserializeObject<Prices>(response.Content.ReadAsStringAsync().Result);
-                
+
                 Prices = res;
-                
+
 
                 //await Shell.Current.GoToAsync($"//{nameof(LightIndicationsPage)}");
                 return null;
@@ -92,7 +102,7 @@ namespace VLDonFeedStockApp.ViewModels
         {
             try
             {
-               
+
                 alertService.ShowToast("Загрузка...", 1f);
 
                 //var list = await App.Database.GetUsersAsync();
@@ -104,12 +114,12 @@ namespace VLDonFeedStockApp.ViewModels
                 //    }
                 //    User = Users[0];
                 //}
-               
+
                 HttpClient _tokenClientPrice = new HttpClient();
-                var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/price");
+                var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/price/{ContrAgent}");
                 var _jsonResultsPrice = JsonConvert.DeserializeObject<Prices>(_responseTokenPrice);
                 Prices = _jsonResultsPrice;
-         
+
 
                 alertService.ShowToast("Данные получены...", 1f);
 

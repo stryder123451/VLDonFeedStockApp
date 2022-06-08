@@ -26,7 +26,7 @@
         <ResourceDictionary>
             <Style x:Key="BaseStyle" TargetType="Element">
                 <Setter Property="Shell.BackgroundColor" Value="{StaticResource Primary}" />
-                <Setter Property="Shell.ForegroundColor" Value="White" />
+                <Setter Property="Shell.ForegroundColor" Value="Transparent" />
                 <Setter Property="Shell.TitleColor" Value="White" />
                 <Setter Property="Shell.DisabledColor" Value="#B4FFFFFF" />
                 <Setter Property="Shell.UnselectedColor" Value="#95FFFFFF" />
@@ -106,14 +106,15 @@
         <ShellContent Route="FinishedOrdersPage" ContentTemplate="{DataTemplate local:FinishedOrdersPage}" />
     </FlyoutItem>
     <FlyoutItem Title="О программе" Icon="infoNew.png">
-        <ShellContent Route="Organization" ContentTemplate="{DataTemplate local:Organization}" />
+        <ShellContent Route="Organization" ContentTemplate="{DataTemplate local:AboutUs}" />
     </FlyoutItem>
     <FlyoutItem  x:Name="AdminPage" IsVisible="True"  Title="Магазины" Icon="stores.png">
         <ShellContent  Route="StoresPage" ContentTemplate="{DataTemplate local:StoresPage}" />
     </FlyoutItem>
-    <FlyoutItem  IsVisible="True"  Title="Пользователи" Icon="stores.png">
+    <FlyoutItem  IsVisible="True"  Title="Пользователи" Icon="users.png">
         <ShellContent  Route="UsersPage" ContentTemplate="{DataTemplate local:UsersPage}" />
     </FlyoutItem>
+    
     <!-- When the Flyout is visible this will be a menu item you can tie a click behavior to  -->
     <MenuItem IconImageSource="exit.png" Text="Выход" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuItemClicked">
     </MenuItem>
@@ -129,6 +130,7 @@
         <ShellContent Route="LoginPage" ContentTemplate="{DataTemplate local:LoginPage}" />
         <ShellContent Route="RegisterPage" ContentTemplate="{DataTemplate local:RegisterPage}" />
         <ShellContent Route="MoneyCourse" ContentTemplate="{DataTemplate local:MoneyCourse}" />
+        <ShellContent Route="ContrAgentsPrices" ContentTemplate="{DataTemplate local:ContrAgentsPrices}" />
     </TabBar>
 
     <!-- Optional Templates 

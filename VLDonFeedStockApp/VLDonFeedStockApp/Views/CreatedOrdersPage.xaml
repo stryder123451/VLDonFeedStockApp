@@ -8,10 +8,13 @@
     </Shell.TitleView>
     
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Создать" Command="{Binding AddItemCommand}" >
+        <ToolbarItem Text="Создать" Command="{Binding AddItemCommand}"  Order="Primary"
+                 
+                 Priority="0"
+                 IconImageSource="addIco.png">
             
         </ToolbarItem>
-
+       
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <RefreshView x:DataType="viewmodels:CreatedOrdersViewModel" Command="{Binding LoadOrdersCommand}"  IsRefreshing="{Binding IsBusy, Mode=TwoWay}">

@@ -10,5 +10,6 @@ namespace VLDonFeedStockApp.Services
     {
         Task ShowMessage(string header, string message);
         void ShowToast(string message, float duration);
+        Task<bool> ConfirmDialog(string header, string question, string okText, string cancelText);
     }
 }

@@ -13,55 +13,53 @@ using Xamarin.Forms;
 
 namespace VLDonFeedStockApp.ViewModels
 {
-    public class StoresViewModel : BaseViewModel
+    public class ContrAgentsPricesViewModel : BaseViewModel
     {
         public Command LoadStoresCommand { get; }
-        public Command<Stores> EditStore { get; }
+        public Command<Prices> EditOrder { get; }
         public Command ChangeMoneyCourse { get; }
+        public Command<Prices> EditStore { get; }
+        private Prices _selectedPrice;
+        private IAlertService alertService;
+        public ObservableCollection<Prices> StoresList { get; }
 
-        private Stores _selectedStore;
-        private IAlertService alertService; 
-        public ObservableCollection<Stores> StoresList { get; }
-        public ObservableCollection<Workers> WorkersList { get; }
-        public StoresViewModel()
+        internal void OnAppearing()
         {
-            Title = "Магазины";
-            StoresList = new ObservableCollection<Stores>();
+            IsBusy = true;
+        }
+
+        public ObservableCollection<Workers> WorkersList { get; }
+        public ContrAgentsPricesViewModel()
+        {
+            Title = "КонтрАгенты";
+            StoresList = new ObservableCollection<Prices>();
             //EasyOrdersList = new ObservableCollection<Order>();
             WorkersList = new ObservableCollection<Workers>();
             //Title = $"Созданные заявки,{DateTime.Now.Month}, {DateTime.Now.Year}г";
             alertService = DependencyService.Resolve<IAlertService>();
             LoadStoresCommand = new Command(async () => await GetUserData());
-            EditStore = new Command<Stores>(OnItemSelected);
-            ChangeMoneyCourse = new Command(OnEditMoneyAsync);
+            EditOrder = new Command<Prices>(OnItemSelectedAsync);
+            ChangeMoneyCourse = new Command(OnEditContrAgentAsync);
         }
 
-        private async void OnEditMoneyAsync(object obj)
+        private async void OnEditContrAgentAsync(object obj)
         {
-            await Shell.Current.GoToAsync($"//{nameof(ContrAgentsPrices)}");
+            await Shell.Current.GoToAsync($"//{nameof(StoresPage)}");
         }
-
-        
-
-        public Stores SelectedOrder
+        public Prices SelectedOrder
         {
-            get => _selectedStore;
+            get => _selectedPrice;
             set
             {
-                SetProperty(ref _selectedStore, value);
-                OnItemSelected(value);
+                SetProperty(ref _selectedPrice, value);
+                OnItemSelectedAsync(value);
             }
         }
-        async void OnItemSelected(Stores item)
+        private async void OnItemSelectedAsync(Prices obj)
         {
-            if (item == null)
+            if (obj == null)
                 return;
-            await Shell.Current.GoToAsync($"{nameof(StoreEditPage)}?{nameof(StoreEditViewModel.Id)}={item.Id}");
-        }
-
-        internal void OnAppearing()
-        {
-            IsBusy = true;
+            await Shell.Current.GoToAsync($"{nameof(MoneyCourse)}?{nameof(MoneyCourseViewModel.ContrAgent)}={obj.RelatedContrAgent}");
         }
 
         private async Task GetUserData()
@@ -79,14 +77,13 @@ namespace VLDonFeedStockApp.ViewModels
                         WorkersList.Add(user);
                     }
                     HttpClient _tokenclient = new HttpClient();
-                    var _responseToken = await _tokenclient.GetStringAsync($"" +
-                        $"{GlobalSettings.HostUrl}api/store/root_get_stores/{WorkersList[0].Login}/{WorkersList[0].Token}");
-                    var _jsonResults = JsonConvert.DeserializeObject<List<Stores>>(_responseToken);
+                    var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/price/full/{WorkersList[0].Login}/{WorkersList[0].Token}");
+                    var _jsonResults = JsonConvert.DeserializeObject<List<Prices>>(_responseToken);
                     foreach (var x in _jsonResults)
                     {
                         StoresList.Add(x);
                     }
-                    
+
                     alertService.ShowToast("Данные получены...", 1f);
                 }
                 else

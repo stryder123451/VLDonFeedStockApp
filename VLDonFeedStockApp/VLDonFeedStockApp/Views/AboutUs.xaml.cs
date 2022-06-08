@@ -10,9 +10,9 @@ using Xamarin.Forms.Xaml;
 namespace VLDonFeedStockApp.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class Organization : ContentPage
+    public partial class AboutUs : ContentPage
     {
-        public Organization()
+        public AboutUs()
         {
             InitializeComponent();
         }

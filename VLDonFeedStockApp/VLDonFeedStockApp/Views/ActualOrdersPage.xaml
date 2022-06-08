@@ -9,10 +9,13 @@
 
 
     <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Создать" Command="{Binding AddItemCommand}"  Order="Primary"
+                 
+                 Priority="0"
+                 IconImageSource="addIco.png">
 
-        <ToolbarItem Text="Создать"  Command="{Binding AddItemCommand}" >
-          
         </ToolbarItem>
+
     </ContentPage.ToolbarItems>
     <ContentPage.Content>
         <RefreshView x:DataType="viewmodels:ActualOrdersViewModel" Command="{Binding LoadOrdersCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">

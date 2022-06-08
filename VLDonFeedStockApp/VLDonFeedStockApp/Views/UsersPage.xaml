@@ -1,9 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:VLDonFeedStockApp.ViewModels" xmlns:model="clr-namespace:VLDonFeedStockApp.Models"
-             x:Class="VLDonFeedStockApp.Views.UsersPage">
+             x:Class="VLDonFeedStockApp.Views.UsersPage"
+             Shell.ForegroundColor="White">
     <ContentPage.Content>
         <RefreshView x:DataType="viewmodels:UsersViewModel" Command="{Binding LoadUsersCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+            <Frame>
+                <Frame.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="White" Offset="0.1" />
+                        <GradientStop Color="LightBlue" Offset="1" />
+                    </LinearGradientBrush>
+                </Frame.Background>
             <ScrollView>
                 <ListView x:Name="OrderItems" ItemsSource="{Binding RegisteredUsers}" SeparatorVisibility="Default" HasUnevenRows="True" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
                     <ListView.ItemTemplate>
@@ -20,8 +28,14 @@
                                     </MenuItem>
                                 </ViewCell.ContextActions>-->
                                 <StackLayout   Padding="0"  x:DataType="model:Workers">
-                                    <Frame BorderColor="Red">
-                                        <Grid>
+                                    <Frame BorderColor="Green">
+                                            <Frame.Background>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                    <GradientStop Color="White" Offset="0.1" />
+                                                    <GradientStop Color="LightBlue" Offset="1" />
+                                                </LinearGradientBrush>
+                                            </Frame.Background>
+                                            <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition ></ColumnDefinition>
                                                
@@ -45,16 +59,16 @@
                                                 </StackLayout>-->
                                                 
                                                 <StackLayout Orientation="Vertical">
-                                                <Label FontSize="Small" TextColor="Red"  FontFamily="DeusEx" HorizontalOptions="CenterAndExpand" Text="Пользователь:"></Label>
-                                                    <Label FontFamily="DeusEx" TextColor="Black" FontSize="Small" HorizontalTextAlignment="Center" HorizontalOptions="CenterAndExpand" Text="{Binding Name}"></Label>
+                                                    <Label FontSize="Caption" TextColor="Red"  FontFamily="DeusEx" HorizontalOptions="CenterAndExpand" Text="Пользователь:"></Label>
+                                                    <Label FontFamily="DeusEx" TextColor="Black" FontSize="Caption" HorizontalTextAlignment="Center" HorizontalOptions="CenterAndExpand" Text="{Binding Name}"></Label>
                                                 </StackLayout>
                                                     <StackLayout Orientation="Horizontal">
-                                                    <Label FontSize="Small" TextColor="Red" VerticalOptions="CenterAndExpand" FontFamily="DeusEx" HorizontalOptions="CenterAndExpand" Text="Аккаунт подтвержен:"></Label>
-                                                    <CheckBox HorizontalOptions="CenterAndExpand" IsChecked="{Binding IsAccepted}" IsEnabled="False" Color="Green" VerticalOptions="CenterAndExpand"></CheckBox>
+                                                    <Label FontSize="Caption" TextColor="Red" VerticalOptions="CenterAndExpand" FontFamily="DeusEx" HorizontalOptions="CenterAndExpand" Text="Аккаунт подтвержен:"></Label>
+                                                    <CheckBox HorizontalOptions="CenterAndExpand" IsChecked="{Binding IsAccepted}" IsEnabled="False" Color="Red" VerticalOptions="CenterAndExpand"></CheckBox>
                                                 </StackLayout>
                                                 <StackLayout Orientation="Vertical">
-                                                    <Label FontSize="Small" TextColor="Red"  FontFamily="DeusEx" HorizontalOptions="CenterAndExpand" Text="Организация:"></Label>
-                                                    <Label FontFamily="DeusEx" FontSize="Small" TextColor="Black" HorizontalTextAlignment="Center" HorizontalOptions="CenterAndExpand" Text="{Binding Organization}"></Label>
+                                                    <Label FontSize="Caption" TextColor="Red "  FontFamily="DeusEx" HorizontalOptions="CenterAndExpand" Text="Организация:"></Label>
+                                                    <Label  FontFamily="DeusEx" FontSize="Caption" TextColor="Black" HorizontalTextAlignment="Center" HorizontalOptions="CenterAndExpand" Text="{Binding Organization}"></Label>
                                                
                                                 </StackLayout>
                                             </StackLayout>
@@ -74,6 +88,7 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </ScrollView>
+        </Frame>
         </RefreshView>
     </ContentPage.Content>
 </ContentPage>

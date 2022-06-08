@@ -4,46 +4,52 @@
              x:Class="VLDonFeedStockApp.Views.DetailOrderPage">
     <ContentPage.Content>
         <RefreshView x:DataType="viewmodels:DetailOrderViewModel" Command="{Binding LoadOrdersCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
-            
+            <Frame>
+                <Frame.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="White" Offset="0.1" />
+                        <GradientStop Color="LightBlue" Offset="1" />
+                    </LinearGradientBrush>
+                </Frame.Background>
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="8*"></RowDefinition>
                         <RowDefinition></RowDefinition>
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
-                    <Button Grid.Row="1" Text="Товар вывезен" IsVisible="{Binding IsTaken}" BackgroundColor="#FFD400" IsEnabled="{Binding CanUpdate}" Command="{Binding UpdateState}"></Button>
-                    <Button Grid.Row="1" Text="Товар взвешен" IsVisible="{Binding IsWeighted}" BackgroundColor="#FF8500" IsEnabled="{Binding CanUpdate}" Command="{Binding UpdateState}"></Button>
-                    <Button Grid.Row="1" Text="Заявка закрыта" IsVisible="{Binding IsFinished}" BackgroundColor="Red" IsEnabled="{Binding CanUpdate}" Command="{Binding UpdateState}"></Button>
-                    <Button Grid.Row="2" Text="Изменить данные"  Command="{Binding UpdateOrder}"></Button>
+                    <Button Grid.Row="1" FontFamily="DeusEx" Text="Товар вывезен" IsVisible="{Binding IsTaken}" BackgroundColor="#FFD400" IsEnabled="{Binding CanUpdate}" Command="{Binding UpdateState}"></Button>
+                    <Button Grid.Row="1" FontFamily="DeusEx" Text="Товар взвешен" IsVisible="{Binding IsWeighted}" BackgroundColor="#FF8500" IsEnabled="{Binding CanUpdate}" Command="{Binding UpdateState}"></Button>
+                    <Button Grid.Row="1" FontFamily="DeusEx" Text="Заявка закрыта" IsVisible="{Binding IsFinished}" BackgroundColor="Red" IsEnabled="{Binding CanUpdate}" Command="{Binding UpdateState}"></Button>
+                    <Button Grid.Row="2" FontFamily="DeusEx" Text="Изменить данные"  Command="{Binding UpdateOrder}"></Button>
                 <ScrollView Grid.Row="0">
                     <StackLayout  Spacing="5" Padding="15">
-                        <Label TextColor="Black" Text="ID заказа:" FontSize="Medium"/>
+                            <Label FontFamily="DeusEx" TextColor="Black" Text="ID заказа:" FontSize="Medium"/>
 
-                        <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Red" CornerRadius="5">
+                        <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Green" CornerRadius="5">
                             <Frame.Background>
                                 <LinearGradientBrush EndPoint="1,0">
                                     <GradientStop Color="White" Offset="0.1" />
                                     <GradientStop Color="LightBlue" Offset="1" />
                                 </LinearGradientBrush>
                             </Frame.Background>
-                            <Entry TextColor="Red" Text="{Binding Request.Id}" IsReadOnly="True" FontSize="Small"/>
+                                <Entry TextColor="Red" FontFamily="DeusEx" Text="{Binding Request.Id}" IsReadOnly="True" FontSize="Small"/>
                         </Frame>
 
-                        <Label TextColor="Black" IsVisible="False" Text="Имя заказа:" FontSize="Medium" />
-                        <Label TextColor="Black" Text="Статус заказа:" FontSize="Medium" />
-                        <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Red" CornerRadius="5">
+                            <Label  FontFamily="DeusEx" TextColor="Black" IsVisible="False" Text="Имя заказа:" FontSize="Medium" />
+                        <Label FontFamily="DeusEx"  TextColor="Black" Text="Статус заказа:" FontSize="Medium" />
+                        <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Green" CornerRadius="5">
                             <Frame.Background>
                                 <LinearGradientBrush EndPoint="1,0">
                                     <GradientStop Color="White" Offset="0.1" />
                                     <GradientStop Color="LightBlue" Offset="1" />
                                 </LinearGradientBrush>
                             </Frame.Background>
-                            <Entry  Text="{Binding Request.RuState}" TextColor="Red" FontAttributes="Bold" IsReadOnly="True" FontSize="Small"/>
+                                <Entry  Text="{Binding Request.RuState}" TextColor="Red" FontFamily="DeusEx" FontAttributes="Bold" IsReadOnly="True" FontSize="Small"/>
                         </Frame>
-                        <Entry TextColor="Black" IsVisible="False" Text="{Binding Request.Name}" FontSize="Small"/>
+                        <Entry TextColor="Black" FontFamily="DeusEx" IsVisible="False" Text="{Binding Request.Name}" FontSize="Small"/>
 
 
-                        <Label TextColor="Black" Text="Материалы:" FontSize="Medium" />
+                            <Label TextColor="Black" FontFamily="DeusEx" Text="Материалы:" FontSize="Medium" />
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition></ColumnDefinition>
@@ -68,9 +74,9 @@
                                     <ColumnDefinition></ColumnDefinition>
                                     <ColumnDefinition></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
-                                <Label FontSize="Body" FontAttributes="Bold" Grid.Row="0" Grid.ColumnSpan="2" TextColor="Black"   VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="Пленка"></Label>
+                                    <Label FontSize="Body" FontAttributes="Bold" Grid.Row="0" FontFamily="DeusEx" Grid.ColumnSpan="2" TextColor="Black"   VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="Пленка"></Label>
                                 <Label FontSize="Body" FontAttributes="Bold" Grid.Row="1"  TextColor="Red"   VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="{Binding Prices.Plenka}"></Label>
-                                <Label FontSize="Body" FontAttributes="Bold" Grid.Row="1" Grid.Column="1"  TextColor="Black"   VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="руб/кг"></Label>
+                                <Label FontSize="Body" FontAttributes="Bold" Grid.Row="1" Grid.Column="1"   TextColor="Black"   VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="руб/кг"></Label>
                                 <Label FontSize="Body" FontAttributes="Bold" Grid.Row="2"  TextColor="Black"   VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="{Binding Request.OldPlenkaPrice}"></Label>
                                 <Label FontSize="Body" FontAttributes="Bold" Grid.Row="2" Grid.Column="1"  TextColor="Black"   VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="руб/кг"></Label>
                             </Grid>
@@ -85,7 +91,7 @@
                                     <ColumnDefinition></ColumnDefinition>
                                     <ColumnDefinition></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
-                                <Label FontSize="Body" FontAttributes="Bold" Grid.Row="0" Grid.ColumnSpan="2" TextColor="Black"   VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="Картон"></Label>
+                                    <Label FontSize="Body" FontAttributes="Bold" Grid.Row="0" Grid.ColumnSpan="2" TextColor="Black"   VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx" Text="Картон"></Label>
                                 <Label FontSize="Body" FontAttributes="Bold" Grid.Row="1"  TextColor="Red"   VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="{Binding Prices.Carton}"></Label>
                                 <Label FontSize="Body" FontAttributes="Bold" Grid.Row="1" Grid.Column="1"  TextColor="Black"   VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="руб/кг"></Label>
                                 <Label FontSize="Body" FontAttributes="Bold" Grid.Row="2"  TextColor="Black"   VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="{Binding Request.OldCartonPrice}"></Label>
@@ -102,14 +108,15 @@
                                     <ColumnDefinition></ColumnDefinition>
                                     <ColumnDefinition></ColumnDefinition>
                                 </Grid.ColumnDefinitions>
-                                <Label FontSize="Body" FontAttributes="Bold" Grid.Row="0" Grid.ColumnSpan="2" TextColor="Black"   VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="Поддон"></Label>
+                                    <Label FontSize="Body" FontAttributes="Bold" Grid.Row="0" Grid.ColumnSpan="2" TextColor="Black"   VerticalOptions="CenterAndExpand" FontFamily="DeusEx" HorizontalOptions="CenterAndExpand" Text="Поддон"></Label>
                                 <Label FontSize="Body" FontAttributes="Bold" Grid.Row="1"  TextColor="Red"   VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="{Binding Prices.Poddon}"></Label>
                                 <Label FontSize="Body" FontAttributes="Bold" Grid.Row="1" Grid.Column="1"  TextColor="Black"   VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="руб/кг"></Label>
                                 <Label FontSize="Body" FontAttributes="Bold" Grid.Row="2"  TextColor="Black"   VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="{Binding Request.OldPoddonPrice}"></Label>
                                 <Label FontSize="Body" FontAttributes="Bold" Grid.Row="2" Grid.Column="1"  TextColor="Black"   VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" Text="руб/кг"></Label>
                             </Grid>
 
-                            <Frame Grid.Column="2"  Grid.Row="0" BorderColor="Red" CornerRadius="5">
+                            <Frame Grid.Column="2"  Grid.Row="0" BorderColor="Green"
+                                   CornerRadius="5">
                                 <Frame.Background>
                                     <LinearGradientBrush EndPoint="1,0">
                                         <GradientStop Color="White" Offset="0.1" />
@@ -119,7 +126,7 @@
                                 <Entry TextColor="Black"  x:Name="PlenkaEntry" TextChanged="PlenkaEntry_TextChanged" IsReadOnly="{Binding CanEdit}"  VerticalOptions="CenterAndExpand" Text="{Binding PlenkaAmount}" HorizontalOptions="FillAndExpand" Unfocused="PlenkaEntry_Unfocused" Keyboard="Numeric"></Entry>
                             </Frame>
 
-                            <Frame Grid.Column="2"  Grid.Row="1" BorderColor="Red" CornerRadius="5">
+                            <Frame Grid.Column="2"  Grid.Row="1" BorderColor="Green" CornerRadius="5">
                                 <Frame.Background>
                                     <LinearGradientBrush EndPoint="1,0">
                                         <GradientStop Color="White" Offset="0.1" />
@@ -129,7 +136,7 @@
                                 <Entry TextColor="Black" x:Name="CartonEntry" TextChanged="CartonEntry_TextChanged"  IsReadOnly="{Binding CanEdit}" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Text="{Binding CartonAmount}" Unfocused="CartonEntry_Unfocused" Keyboard="Numeric"></Entry>
                             </Frame>
 
-                            <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Red" CornerRadius="5">
+                            <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Green" CornerRadius="5">
                                 <Frame.Background>
                                     <LinearGradientBrush EndPoint="1,0">
                                         <GradientStop Color="White" Offset="0.1" />
@@ -151,26 +158,26 @@
 
                             <Entry TextColor="Black" Grid.Column="3" x:Name="PoddonEntryHidden"  Grid.Row="2" VerticalOptions="CenterAndExpand" HorizontalOptions="FillAndExpand" Keyboard="Numeric" Text="{Binding Poddon}"></Entry>
                         </Grid>
-                        <Entry TextColor="Black" IsVisible="False" Text="{Binding Request.Materials}" FontSize="Small"/>
-                        <Label TextColor="Black" Text="Примечание:" FontSize="Medium" />
-                        <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Red" CornerRadius="5">
+                        <Entry  TextColor="Black" IsVisible="False" Text="{Binding Request.Materials}" FontSize="Small"/>
+                            <Label FontFamily="DeusEx" TextColor="Black" Text="Примечание:" FontSize="Medium" />
+                        <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Green" CornerRadius="5">
                             <Frame.Background>
                                 <LinearGradientBrush EndPoint="1,0">
                                     <GradientStop Color="White" Offset="0.1" />
                                     <GradientStop Color="LightBlue" Offset="1" />
                                 </LinearGradientBrush>
                             </Frame.Background>
-                            <Entry TextColor="Black" Text="{Binding Request.Description}" FontSize="Small"/>
+                                <Entry FontFamily="DeusEx" FontSize="Caption" TextColor="Black" Text="{Binding Request.Description}" />
                         </Frame>
-                        <Label TextColor="Black" Text="Цена заказа:" FontSize="Medium" />
-                        <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Red" CornerRadius="5">
+                            <Label FontFamily="DeusEx" TextColor="Black" Text="Цена заказа:" FontSize="Medium" />
+                        <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Green" CornerRadius="5">
                             <Frame.Background>
                                 <LinearGradientBrush EndPoint="1,0">
                                     <GradientStop Color="White" Offset="0.1" />
                                     <GradientStop Color="LightBlue" Offset="1" />
                                 </LinearGradientBrush>
                             </Frame.Background>
-                            <Entry IsReadOnly="True" TextColor="Black" x:Name="PriceEntry" Text="{Binding Request.Price}" FontSize="Small"/>
+                            <Entry IsReadOnly="True" FontFamily="DeusEx" TextColor="Black" x:Name="PriceEntry" Text="{Binding Request.Price}" FontSize="Small"/>
                         </Frame>
 
                         <Label TextColor="Black" IsVisible="False" Text="Организация:" FontSize="Medium" />
@@ -187,7 +194,7 @@
                     </StackLayout>
                 </ScrollView>
             </Grid>
-               
+               </Frame>
             
         </RefreshView>
     </ContentPage.Content>

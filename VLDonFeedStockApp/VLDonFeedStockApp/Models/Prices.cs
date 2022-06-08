@@ -13,5 +13,6 @@ namespace VLDonFeedStockApp.Models
         public string Poddon { get; set; }
         public string Plenka { get; set; }
         public string Version { get; set; }
+        public string RelatedContrAgent { get; set; }
     }
 }

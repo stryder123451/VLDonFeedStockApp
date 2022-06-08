@@ -27,7 +27,10 @@ namespace VLDonFeedStockApp.Views
 
         private void AgentsPicker_SelectedIndexChanged(object sender, EventArgs e)
         {
-            ContrAgentEntry.Text = AgentsPicker.Items[AgentsPicker.SelectedIndex];
+            if (AgentsPicker.SelectedIndex != -1)
+            {
+                ContrAgentEntry.Text = AgentsPicker.Items[AgentsPicker.SelectedIndex];
+            }
         }
 
         private void AgentsPicker_Unfocused(object sender, FocusEventArgs e)

@@ -6,9 +6,12 @@
     <Shell.TitleView>
         <Label VerticalOptions="CenterAndExpand"  VerticalTextAlignment="Center"  HorizontalTextAlignment="Start" HorizontalOptions="CenterAndExpand"  TextColor="White"  FontFamily="DeusEx" Text="{Binding Title}" />
     </Shell.TitleView>
-    
+
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Создать" Command="{Binding AddItemCommand}" >
+        <ToolbarItem Text="Создать" Command="{Binding AddItemCommand}"  Order="Primary"
+                 
+                 Priority="0"
+                 IconImageSource="addIco.png">
 
         </ToolbarItem>
 

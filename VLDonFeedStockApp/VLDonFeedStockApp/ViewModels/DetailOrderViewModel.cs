@@ -18,6 +18,7 @@ using Xamarin.Forms;
 namespace VLDonFeedStockApp.ViewModels
 {
     [QueryProperty(nameof(Id), nameof(Id))]
+    [QueryProperty(nameof(Address), nameof(Address))]
     public class DetailOrderViewModel : BaseViewModel
     {
         private int _id;
@@ -42,6 +43,7 @@ namespace VLDonFeedStockApp.ViewModels
         private bool _isFinished;
         private Request _request;
         private bool _canEdit;
+        public string _address;
         public ObservableCollection<Workers> Users { get; }
         public Command LoadOrdersCommand { get; }
         public Command UpdateOrder { get; }
@@ -58,11 +60,12 @@ namespace VLDonFeedStockApp.ViewModels
             UpdateOrder = new Command(OnEditClicked);
             UpdateState = new Command(OnStateEditClicked);
         }
-        private async void OnEditClicked(object obj)
+        private void OnEditClicked(object obj)
         {
             try
             {
-                await UpdateIndicationsAsync(Request);
+                UpdateConfirm();
+               // await UpdateIndicationsAsync(Request);
             }
             catch (Exception ex)
             {
@@ -70,6 +73,11 @@ namespace VLDonFeedStockApp.ViewModels
             }
 
 
+        }
+        public string Address
+        {
+            get => _address;
+            set => SetProperty(ref _address, value);    
         }
         public bool CanEdit
         {
@@ -173,7 +181,23 @@ namespace VLDonFeedStockApp.ViewModels
         {
             try
             {
-                await UpdateStateAsync(Request);
+                
+                switch (Request.RuState)
+                {
+                    case "Создан":
+                        UpdateStateConfirm("вывезен");
+                        break;
+                    case "Вывезен":
+                        UpdateStateConfirm("взвешен");
+                        break;
+                    case "Взвешен":
+                        UpdateStateConfirm("завершен");
+                        break;
+                    case "Завершен":
+                        await alertService.ShowMessage("Статус", "Заказ уже закрыт!!!");
+                        break;
+                }
+               
             }
             catch (Exception ex)
             {
@@ -205,7 +229,7 @@ namespace VLDonFeedStockApp.ViewModels
                 _jsonResults.RuState = RuState(_jsonResults.State);
                 //
                 HttpClient _tokenClientPrice = new HttpClient();
-                var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/price");
+                var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/price/{User.Organization}/{Address}");
                 var _jsonResultsPrice = JsonConvert.DeserializeObject<Prices>(_responseTokenPrice);
                 Prices = _jsonResultsPrice;
                 //
@@ -384,7 +408,30 @@ namespace VLDonFeedStockApp.ViewModels
         }
 
 
-
+        private async void UpdateConfirm()
+        {
+            var action = await alertService.ConfirmDialog("Статус", "Вы хотите изменить данные заказа?", "Да", "Нет");
+            if (!action)
+            {
+                await alertService.ShowMessage("Данные заказа", "Ну бывает...");
+            }
+            else
+            {
+                await UpdateIndicationsAsync(Request);
+            }
+        }
+        private async void UpdateStateConfirm(string message)
+        {
+            var action = await alertService.ConfirmDialog("Статус", $"Вы хотите изменить статус заказа на {message}?", "Да", "Нет");
+            if (!action)
+            {
+                await alertService.ShowMessage("Статус заказа", "Ну бывает...");
+            }
+            else
+            {
+                await UpdateStateAsync(Request);
+            }
+        }
 
 
         internal void OnAppear()

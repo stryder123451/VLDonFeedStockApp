@@ -34,5 +34,24 @@ namespace VLDonFeedStockApp.Models
             };
             UserDialogs.Instance.Toast(config);
         }
+
+        public async Task<bool> ConfirmDialog(string header, string question, string okText, string cancelText )
+        {
+           var res =  await UserDialogs.Instance.ConfirmAsync(new ConfirmConfig()
+            {
+                 Title = header,
+                   Message = question,
+                    CancelText = cancelText,
+                     OkText = okText
+            });
+            if (res == false)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
     }
 }
