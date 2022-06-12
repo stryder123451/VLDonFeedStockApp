@@ -102,21 +102,22 @@ namespace VLDonFeedStockApp.ViewModels
                 if (User.Role.Length != "root".Length)
                 {
                     await alertService.ShowMessage("Администратор", "У вас недостаточно прав!!!");
-                    await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+                    await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
                 }
-
-                //else
-                //{
-                //    await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
-                //}
-                HttpClient _tokenClientPrice = new HttpClient();
-                var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/users/{User.Login}/{User.Token}");
-                var _jsonResultsPrice = JsonConvert.DeserializeObject<List<Workers>>(_responseTokenPrice);
-                foreach (var price in _jsonResultsPrice)
+                else
                 {
-                    RegisteredUsers.Add(price);
-                } 
-
+                    //else
+                    //{
+                    //    await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+                    //}
+                    HttpClient _tokenClientPrice = new HttpClient();
+                    var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/users/{User.Login}/{User.Token}");
+                    var _jsonResultsPrice = JsonConvert.DeserializeObject<List<Workers>>(_responseTokenPrice);
+                    foreach (var price in _jsonResultsPrice)
+                    {
+                        RegisteredUsers.Add(price);
+                    }
+                }
             }
             catch (Exception ex)
             {

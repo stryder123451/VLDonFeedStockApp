@@ -28,6 +28,8 @@ namespace VLDonFeedStockApp
             Routing.RegisterRoute(nameof(MoneyCourse), typeof(MoneyCourse));
             Routing.RegisterRoute(nameof(UsersPage), typeof(UsersPage));
             Routing.RegisterRoute(nameof(ContrAgentsPrices), typeof(ContrAgentsPrices));
+            Routing.RegisterRoute(nameof(MaterialShow), typeof(MaterialShow));
+            
         }
 
         private async void OnMenuItemClicked(object sender, EventArgs e)

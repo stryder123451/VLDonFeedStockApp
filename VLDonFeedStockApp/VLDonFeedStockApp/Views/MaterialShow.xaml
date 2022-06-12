@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:VLDonFeedStockApp.ViewModels"
+             x:Class="VLDonFeedStockApp.Views.MaterialShow"
+             >
+    <ContentPage.Content>
+        <RefreshView x:DataType="viewmodels:ShowMaterialViewModel" Command="{Binding LoadItemsCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="8*"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <Image Grid.Row="0" x:Name="ShowMaterial" Source="{Binding MaterialSource}"></Image>
+                <Button Grid.Row="1" Text="Закрыть" Command="{Binding BackCommand}"></Button>
+            </Grid>
+        </RefreshView>
+    </ContentPage.Content>
+</ContentPage>

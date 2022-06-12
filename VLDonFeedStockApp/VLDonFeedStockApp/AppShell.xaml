@@ -131,6 +131,7 @@
         <ShellContent Route="RegisterPage" ContentTemplate="{DataTemplate local:RegisterPage}" />
         <ShellContent Route="MoneyCourse" ContentTemplate="{DataTemplate local:MoneyCourse}" />
         <ShellContent Route="ContrAgentsPrices" ContentTemplate="{DataTemplate local:ContrAgentsPrices}" />
+        <ShellContent Route="MaterialShow" ContentTemplate="{DataTemplate local:MaterialShow}" />
     </TabBar>
 
     <!-- Optional Templates 

@@ -21,7 +21,13 @@ namespace VLDonFeedStockApp.ViewModels
         private Workers _user;
         private bool _isAdmin;
         private string _status;
+        private int _all;
+        private int _created;
+        private int _actual;
+        private int _weighted;
+        private int _finished;
         public ObservableCollection<Workers> Users { get; }
+        public ObservableCollection<Order> Orders { get; }
         public Workers User
         {
             get => _user;
@@ -33,10 +39,37 @@ namespace VLDonFeedStockApp.ViewModels
             Title = "Данные о пользователе";
             OpenWebCommand = new Command(async () => await Browser.OpenAsync("https://aka.ms/xamarin-quickstart"));
             Users = new ObservableCollection<Workers>();
+            Orders = new ObservableCollection<Order>();
             LoadItemsCommand = new Command(async () => await GetUserData());
             
         }
        
+        public int All
+        {
+            get => _all;
+            set => SetProperty(ref _all, value);
+        }
+
+        public int Created
+        {
+            get => _created;
+            set => SetProperty(ref _created, value);
+        }
+        public int Actual
+        {
+            get => _actual;
+            set => SetProperty(ref _actual, value);
+        }
+        public int Weighted
+        {
+            get => _weighted;
+            set => SetProperty(ref _weighted, value);
+        }
+        public int Finished
+        {
+            get => _finished;
+            set => SetProperty(ref _finished, value);
+        }
 
         public bool IsAdmin
         {
@@ -93,6 +126,53 @@ namespace VLDonFeedStockApp.ViewModels
                         await RootLogin();
                         break;
                 }
+
+                HttpClient _tokenclient = new HttpClient();
+                var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/order/created/{User.Login}/{User.Token}");
+                var _jsonResults = JsonConvert.DeserializeObject<List<Order>>(_responseToken);
+                foreach (var x in _jsonResults)
+                {
+                    Orders.Add(x);
+                }
+
+                Created = Orders.Count;
+
+                Orders.Clear();
+
+                HttpClient _tokenclientActual = new HttpClient();
+                var _responseTokenActual = await _tokenclientActual.GetStringAsync($"{GlobalSettings.HostUrl}api/order/active/{User.Login}/{User.Token}");
+                var _jsonResultsActual = JsonConvert.DeserializeObject<List<Order>>(_responseTokenActual);
+                foreach (var x in _jsonResultsActual)
+                {
+                    Orders.Add(x);
+                }
+                Actual = Orders.Count;
+
+                Orders.Clear();
+
+                HttpClient _tokenclientWeighted = new HttpClient();
+                var _responseTokenWeighted = await _tokenclientWeighted.GetStringAsync($"{GlobalSettings.HostUrl}api/order/weighted/{User.Login}/{User.Token}");
+                var _jsonResultsWeighted = JsonConvert.DeserializeObject<List<Order>>(_responseTokenWeighted);
+                foreach (var x in _jsonResultsWeighted)
+                {
+                    Orders.Add(x);
+                }
+                Weighted = Orders.Count;
+
+
+                Orders.Clear();
+
+                HttpClient _tokenclientFinished = new HttpClient();
+                var _responseTokenFinished = await _tokenclientWeighted.GetStringAsync($"{GlobalSettings.HostUrl}api/order/finished/{User.Login}/{User.Token}");
+                var _jsonResultsFinished = JsonConvert.DeserializeObject<List<Order>>(_responseTokenFinished);
+                foreach (var x in _jsonResultsFinished)
+                {
+                    Orders.Add(x);
+                }
+                Finished = Orders.Count;
+
+                All = Created + Actual + Finished + Weighted;
+
                 //MessagingCenter.Subscribe<LoginViewModel>(this, "root", (sender) =>
                 //{
                 //    IsAdmin = true;
@@ -121,19 +201,18 @@ namespace VLDonFeedStockApp.ViewModels
 
         private async Task ContrAgentLogin()
         {
-            HttpClient _tokenclientDiff = new HttpClient();
-            var _responseTokenDiff = await _tokenclientDiff.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/related_organization/{User.Organization}");
+            //HttpClient _tokenclientDiff = new HttpClient();
+            //var _responseTokenDiff = await _tokenclientDiff.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/related_organization/{User.Organization}");
             HttpClient _channelclients = new HttpClient();
             var _responseChannelClients = await _channelclients.GetStringAsync(
-                $"{GlobalSettings.HostUrl}api/auth/related_organization_channels/{_responseTokenDiff}");
-            List<string> _channels = JsonConvert.DeserializeObject<List<string>>(_responseChannelClients);
+                $"{GlobalSettings.HostUrl}api/auth/related_organization_channels/{User.Organization}");
+            string _channel = _responseChannelClients;
             if (CrossFirebasePushNotification.Current.SubscribedTopics.Length >= 0)
             {
                 CrossFirebasePushNotification.Current.UnsubscribeAll();
-                foreach (var x in _channels)
-                {
-                    CrossFirebasePushNotification.Current.Subscribe(x);
-                }
+                
+                CrossFirebasePushNotification.Current.Subscribe(_channel);
+                
                 CrossFirebasePushNotification.Current.Subscribe($"{User.Login}");
             }
         }

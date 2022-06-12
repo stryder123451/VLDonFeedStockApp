@@ -20,7 +20,7 @@
             <Grid>
 
                 <StackLayout Spacing="5" Margin="16,32" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand">
-                    <Image HeightRequest="200" WidthRequest="200"  Source="logoClear.png"></Image>
+                    <Image HeightRequest="200" x:Name="Logo" WidthRequest="200"  Source="logoClear"></Image>
                     <Frame BorderColor="Green" CornerRadius="5">
                         <Frame.Background>
                             <LinearGradientBrush EndPoint="1,0">
@@ -66,6 +66,9 @@
                                     </Button.Background>
                                 </Button>
                                 <ActivityIndicator IsRunning="{Binding IsLoggedIn}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></ActivityIndicator>
+                                <Button Text="Test" Clicked="Button_Clicked">
+                                    
+                                </Button>
                             </StackLayout>
                         </Grid>
 

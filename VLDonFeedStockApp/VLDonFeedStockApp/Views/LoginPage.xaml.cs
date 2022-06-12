@@ -18,5 +18,10 @@ namespace VLDonFeedStockApp.Views
             this.BindingContext = new LoginViewModel();
            
         }
+
+        private void Button_Clicked(object sender, EventArgs e)
+        {
+
+        }
     }
 }

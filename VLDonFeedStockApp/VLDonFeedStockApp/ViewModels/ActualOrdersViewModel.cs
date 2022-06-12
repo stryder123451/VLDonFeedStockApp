@@ -110,7 +110,14 @@ namespace VLDonFeedStockApp.ViewModels
             }
             catch (Exception ex)
             {
-                await alertService.ShowMessage(ex.Data.ToString(), ex.Message);
+                if (Workers[0].IsAccepted == false)
+                {
+                    await alertService.ShowMessage("Регистрация", "Ваша учетная запись не подтверждена, обратитесь к администратору!!!");
+                }
+                else
+                {
+                    await alertService.ShowMessage("Сервер", "Сервер временно недоступен... Приносим извинения... :с");
+                }
             }
             finally
             {

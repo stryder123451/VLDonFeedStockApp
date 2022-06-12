@@ -152,7 +152,7 @@ namespace VLDonFeedStockApp.Views
             {
                 StoresPicker.Items.Clear();
                 HttpClient _tokenclient = new HttpClient();
-                var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/stores/{organizationEntry.Text}");
+                var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/store/stores/{organizationEntry.Text}");
                 var _jsonResults = JsonConvert.DeserializeObject<List<Stores>>(_responseToken);
                 foreach (var store in _jsonResults)
                 {
