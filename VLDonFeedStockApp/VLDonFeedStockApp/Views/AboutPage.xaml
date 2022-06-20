@@ -31,19 +31,31 @@
                     </LinearGradientBrush>
                 </Frame.Background>
                 <Grid>
-                    <StackLayout>
-                        <Label Text="Пользователь:" TextColor="Red" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
-                        <Label Text="{Binding User.Name}" TextColor="Black" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
-                        <Label Text="Логин:" TextColor="Red" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
-                        <Label Text="{Binding User.Login}" TextColor="Black" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
-                        <Label Text="Роль:" TextColor="Red" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
-                        <Label Text="{Binding User.RuRole}" TextColor="Black" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
-                        <Label Text="Организация:" TextColor="Red" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
-                        <Label Text="{Binding User.Organization}" TextColor="Black" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
+                    <StackLayout >
+
+                            <Frame CornerRadius="100" BackgroundColor="Transparent"  WidthRequest="50" HeightRequest="80" Padding="0" IsClippedToBounds="True">
+                                <!--<ImageButton Source="UserHD" Scale="0.75" HeightRequest="100" CornerRadius="300" Aspect="AspectFit" BorderColor="Red"></ImageButton>-->
+                                <Image Source="UserHD" Scale="0.75" VerticalOptions="Center" HorizontalOptions="Center"></Image>
+                            </Frame>
+                            <Label FontFamily="DeusEx" VerticalOptions="Center" HorizontalOptions="CenterAndExpand" TextColor="Red" Text="{Binding Version}"></Label>
+                            <Frame  BackgroundColor="Transparent">
+                                <Grid RowDefinitions="3">
+                                   
+                                    <Label Grid.Row="0" Text="Пользователь:" TextColor="Red" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
+                                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding User.Name}" TextColor="Black" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
+                                    <Label Grid.Row="1" Text="Логин:" TextColor="Red" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
+                                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding User.Login}" TextColor="Black" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
+                                    <Label Grid.Row="2" Text="Роль:" TextColor="Red" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
+                                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding User.RuRole}" TextColor="Black" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
+                                    <Label Grid.Row="3" Text="Организация:" TextColor="Red" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
+                                    <Label Grid.Row="3" Grid.Column="1" Text="{Binding User.Organization}" TextColor="Black" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
+                                </Grid>
+                            </Frame>
+                       
                         <!--<Label Text="Статус:" TextColor="Red" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
                         <Label Text="{Binding Status}" TextColor="Black" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>-->
                             <Frame BackgroundColor="Transparent">
-                                <Image HeightRequest="100" Source="logoClear"></Image>
+                                <Image HeightRequest="150" Source="logoClear"></Image>
                             </Frame>
                         
                             <Grid>
@@ -63,28 +75,30 @@
                                 </Grid.ColumnDefinitions>
                                 <Label Grid.Row="0" Grid.ColumnSpan="3" Text="Всего заявок:" TextColor="Red" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
                                 
-                                <Frame Grid.Row="0" Grid.Column="3" BorderColor="Red" Padding="5">
+                                <Frame Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="3" BorderColor="Red" Padding="5">
                                 <Label  Text="{Binding All}" TextColor="Black" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
                                 </Frame>
                                 <Label Grid.Row="1"  Grid.ColumnSpan="3" Text="Активные:" TextColor="Red" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
-                                <Frame Grid.Row="1"   Grid.Column="3" Padding="5" BorderColor="Red">
-                                <Label  Text="{Binding Created}" TextColor="Black" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
+                                <Frame Grid.Row="1"  Grid.ColumnSpan="3"  Grid.Column="3" Padding="5" BorderColor="Red">
+                                <Label  Text="{Binding Created}"   TextColor="Black" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
                                 </Frame>
                                 
                                 <Label Grid.Row="2" Grid.ColumnSpan="3" Text="Вывезенные:" TextColor="Red" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
-                                <Frame Grid.Row="2"   Grid.Column="3" Padding="5" BorderColor="Red">
+                                <Frame Grid.Row="2"  Grid.ColumnSpan="3" Grid.Column="3" Padding="5" BorderColor="Red">
                                     <Label  Text="{Binding Actual}" TextColor="Black" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
                                 </Frame>
                                 <Label Grid.Row="3" Grid.ColumnSpan="3" Text="Взвешенные:" TextColor="Red" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
-                                <Frame Grid.Row="3"   Grid.Column="3" Padding="5" BorderColor="Red">
+                                <Frame Grid.Row="3"  Grid.ColumnSpan="3"  Grid.Column="3" Padding="5" BorderColor="Red">
                                     <Label Grid.Row="3"   Grid.Column="3" Text="{Binding Weighted}" TextColor="Black" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
                                 </Frame>
                                 <Label Grid.Row="4" Grid.ColumnSpan="3" Text="Закрытые:" TextColor="Red" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
-                                <Frame Grid.Row="4"   Grid.Column="3" Padding="5" BorderColor="Red">
+                                <Frame Grid.Row="4" Grid.ColumnSpan="3"  Grid.Column="3" Padding="5" BorderColor="Red">
                                     <Label Grid.Row="4"  Grid.Column="3"  Text="{Binding Finished}" TextColor="Black" FontSize="Small" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand" FontFamily="DeusEx"></Label>
                                 </Frame>
+                                
                             </Grid>
-                        
+                            
+
                         </StackLayout>
               
             </Grid>

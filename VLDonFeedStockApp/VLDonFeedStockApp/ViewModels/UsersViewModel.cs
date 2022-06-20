@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using VLDonFeedStockApp.Models;
@@ -69,7 +70,8 @@ namespace VLDonFeedStockApp.ViewModels
             try
             {
                 HttpClient _tokenClientPrice = new HttpClient();
-                var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/accept/{User.Login}/{User.Token}/{workers.Login}");
+                _tokenClientPrice.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
+                var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/accept/{User.Login}/{User.UserToken}/{workers.Login}");
                 IsBusy = true;
             }
             catch (Exception ex)
@@ -111,7 +113,8 @@ namespace VLDonFeedStockApp.ViewModels
                     //    await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
                     //}
                     HttpClient _tokenClientPrice = new HttpClient();
-                    var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/users/{User.Login}/{User.Token}");
+                    _tokenClientPrice.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
+                    var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/users/{User.Login}/{User.UserToken}");
                     var _jsonResultsPrice = JsonConvert.DeserializeObject<List<Workers>>(_responseTokenPrice);
                     foreach (var price in _jsonResultsPrice)
                     {

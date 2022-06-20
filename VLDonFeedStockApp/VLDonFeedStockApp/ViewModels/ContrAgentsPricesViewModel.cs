@@ -77,7 +77,7 @@ namespace VLDonFeedStockApp.ViewModels
                         WorkersList.Add(user);
                     }
                     HttpClient _tokenclient = new HttpClient();
-                    var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/price/full/{WorkersList[0].Login}/{WorkersList[0].Token}");
+                    var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/price/full/{WorkersList[0].Login}/{WorkersList[0].UserToken}");
                     var _jsonResults = JsonConvert.DeserializeObject<List<Prices>>(_responseToken);
                     foreach (var x in _jsonResults)
                     {

@@ -66,9 +66,9 @@
                                     </Button.Background>
                                 </Button>
                                 <ActivityIndicator IsRunning="{Binding IsLoggedIn}" VerticalOptions="CenterAndExpand" HorizontalOptions="CenterAndExpand"></ActivityIndicator>
-                                <Button Text="Test" Clicked="Button_Clicked">
+                               
                                     
-                                </Button>
+                            
                             </StackLayout>
                         </Grid>
 

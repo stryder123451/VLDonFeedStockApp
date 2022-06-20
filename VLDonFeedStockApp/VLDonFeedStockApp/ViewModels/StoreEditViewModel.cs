@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using VLDonFeedStockApp.Models;
@@ -66,7 +67,8 @@ namespace VLDonFeedStockApp.ViewModels
             alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
             IsBusy = true;
             HttpClient client = new HttpClient();
-            var response = await client.PutAsync($"{GlobalSettings.HostUrl}api/store/{User.Login}/{User.Token}",
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
+            var response = await client.PutAsync($"{GlobalSettings.HostUrl}api/store/{User.Login}/{User.UserToken}",
             new StringContent(System.Text.Json.JsonSerializer.Serialize(request),
             Encoding.UTF8, "application/json"));
             if (response.StatusCode != HttpStatusCode.OK)
@@ -131,7 +133,8 @@ namespace VLDonFeedStockApp.ViewModels
                     ContrAgents.Add(item);
                 }
                 HttpClient _tokenclient = new HttpClient();
-                var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/store/root_get_stores/store/{Id}/{User.Login}/{User.Token}");
+                _tokenclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
+                var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/store/root_get_stores/store/{Id}/{User.Login}/{User.UserToken}");
                 var _jsonResults = JsonConvert.DeserializeObject<Stores>(_responseToken);
                 
                 Stores.Add(_jsonResults);
@@ -156,7 +159,8 @@ namespace VLDonFeedStockApp.ViewModels
             {
 
                 HttpClient _tokenclient = new HttpClient();
-                var url = $"{GlobalSettings.HostUrl}api/store/root_get_stores/agents/{Id}/{User.Login}/{User.Token}";
+                _tokenclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
+                var url = $"{GlobalSettings.HostUrl}api/store/root_get_stores/agents/{Id}/{User.Login}/{User.UserToken}";
                 var _responseToken = await _tokenclient.GetStringAsync(url);
                 var _jsonResults = JsonConvert.DeserializeObject<List<string>>(_responseToken);
                 return await Task.FromResult(_jsonResults.Distinct());

@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using VLDonFeedStockApp.Models;
@@ -57,6 +58,7 @@ namespace VLDonFeedStockApp.ViewModels
         private bool _cartonPhotoLoaded;
         public string _address;
         public ObservableCollection<Workers> Users { get; }
+        public ObservableCollection<AttachedFiles> RelatedFiles { get; }
         public Command LoadOrdersCommand { get; }
         public Command UpdateOrder { get; }
         public Command ChoosePhoto { get; }
@@ -66,12 +68,13 @@ namespace VLDonFeedStockApp.ViewModels
         public Command MakePhoto { get; }
         public Command UpdateState { get; }
         public Command BackCommand { get; }
-
+        public Command<AttachedFiles> DownloadFile { get; }
         public ObservableCollection<Request> Requests { get; }
         public DetailOrderViewModel()
         {
             Requests = new ObservableCollection<Request>();
             Users = new ObservableCollection<Workers>();
+            RelatedFiles = new ObservableCollection<AttachedFiles>();
             Title = $"Данные о заявке";
             alertService = DependencyService.Resolve<IAlertService>();
             LoadOrdersCommand = new Command(async () => await GetUserData());
@@ -83,6 +86,15 @@ namespace VLDonFeedStockApp.ViewModels
             MakePhoto = new Command(CreatePhotoPoddon);
             UpdateState = new Command(OnStateEditClicked);
             BackCommand = new Command(OnCancel);
+            DownloadFile = new Command<AttachedFiles>(OnItemSelected);
+        }
+
+        private async void OnItemSelected(AttachedFiles obj)
+        {
+            if (obj != null)
+            {
+                await alertService.ShowMessage("Прикрепленный файл",obj.Name);
+            }
         }
 
         private void OnCancel(object obj)
@@ -97,25 +109,43 @@ namespace VLDonFeedStockApp.ViewModels
 
         private async void OnItemSelectedPoddon(ImageSource obj)
         {
-            if (obj == null)
-                return;
-            await Shell.Current.GoToAsync($"{nameof(MaterialShow)}?{nameof(ShowMaterialViewModel.Address)}={Address}&{nameof(ShowMaterialViewModel.Id)}={Id}&" +
-                $"{nameof(ShowMaterialViewModel.Material)}=Poddon");
+            var res = File.Exists(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png");
+            if (res == false)
+            {
+                alertService.ShowToast("Фотография отсутствует ...", 1);
+            }
+            else
+            {
+                await Launcher.OpenAsync(new OpenFileRequest { File = new ReadOnlyFile(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png") });
+            }
         }
 
         private async void OnItemSelectedPlenka(ImageSource obj)
         {
-            if (obj == null)
-                return;
-            await Shell.Current.GoToAsync($"{nameof(MaterialShow)}?{nameof(ShowMaterialViewModel.Address)}={Address}&{nameof(ShowMaterialViewModel.Id)}={Id}&" +
-                $"{nameof(ShowMaterialViewModel.Material)}=Plenka");
+
+            var res = File.Exists(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png");
+            if (res == false)
+            {
+                alertService.ShowToast("Фотография отсутствует ...", 1);
+            }
+            else
+            {
+                await Launcher.OpenAsync(new OpenFileRequest { File = new ReadOnlyFile(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png") });
+            }
+            
+            
         }
         private async void OnItemSelectedCarton(ImageSource obj)
         {
-            if (obj == null)
-                return;
-            await Shell.Current.GoToAsync($"{nameof(MaterialShow)}?{nameof(ShowMaterialViewModel.Address)}={Address}&{nameof(ShowMaterialViewModel.Id)}={Id}&" +
-                $"{nameof(ShowMaterialViewModel.Material)}=Carton");
+            var res = File.Exists(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png");
+            if (res == false)
+            {
+                alertService.ShowToast("Фотография отсутствует ...", 1);
+            }
+            else
+            {
+                await Launcher.OpenAsync(new OpenFileRequest { File = new ReadOnlyFile(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png") });
+            }
         }
 
         private void OnEditClicked(object obj)
@@ -320,6 +350,7 @@ namespace VLDonFeedStockApp.ViewModels
             try
             {
                 Users.Clear();
+                RelatedFiles.Clear();
                 alertService.ShowToast("Загрузка...", 1f);
 
                 var list = await App.Database.GetUsersAsync();
@@ -333,11 +364,13 @@ namespace VLDonFeedStockApp.ViewModels
                 }
                 Requests.Clear();
                 HttpClient _tokenclient = new HttpClient();
+                _tokenclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
                 var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/order/get/{Id}");
                 var _jsonResults = JsonConvert.DeserializeObject<Request>(_responseToken);
                 _jsonResults.RuState = RuState(_jsonResults.State);
                 //
                 HttpClient _tokenClientPrice = new HttpClient();
+                _tokenClientPrice.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
                 var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/price/{User.Organization}/{Address}");
                 var _jsonResultsPrice = JsonConvert.DeserializeObject<Prices>(_responseTokenPrice);
                 Prices = _jsonResultsPrice;
@@ -369,9 +402,31 @@ namespace VLDonFeedStockApp.ViewModels
 
         private async void CheckPhotos()
         {
-           //await CheckPhotoCarton();
-           await CheckPhotoPlenka();
+          await CheckListOfAttachedFiles();
+          //  await CheckPhotoCarton();
+          // await CheckPhotoPlenka();
           // await CheckPhotoPoddon();
+        }
+
+        private async Task<List<AttachedFiles>> CheckListOfAttachedFiles()
+        {
+            try
+            {
+                HttpClient _tokenClientPrice = new HttpClient();
+                _tokenClientPrice.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
+                var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/order/{Request.Id}/getFiles");
+                var res = JsonConvert.DeserializeObject<List<AttachedFiles>>(_responseTokenPrice);
+                foreach (var attachedFile in res)
+                {
+                    RelatedFiles.Add(attachedFile);
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                alertService.ShowToast(ex.Message,1);
+                return null;
+            }
         }
 
         //
@@ -386,6 +441,8 @@ namespace VLDonFeedStockApp.ViewModels
                     CartonPhotoLoaded = true;
 
                     WebClient _cartonPhotoClient = new WebClient();
+                    _cartonPhotoClient.Headers.Add(HttpRequestHeader.Authorization, User.Token);
+                    //_cartonPhotoClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
                     _cartonPhotoClient.DownloadFileAsync(new Uri($"{GlobalSettings.HostUrl}api/order/{Request.Id}/{Request.Address}/Carton"),
                     DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png");
                     _cartonPhotoClient.DownloadFileCompleted += _cartonPhotoClient_DownloadFileCompleted;
@@ -408,7 +465,7 @@ namespace VLDonFeedStockApp.ViewModels
         private async void _cartonPhotoClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             CartonPhotoLoaded = false;
-            CartonPhoto = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png";
+            //CartonPhoto = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png";
             //CartonPhoto = new UriImageSource()
             //{
             //    Uri = new Uri(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png"),
@@ -428,6 +485,7 @@ namespace VLDonFeedStockApp.ViewModels
                     PlenkaPhotoLoaded = true;
 
                     WebClient _plenkaPhotoClient = new WebClient();
+                    _plenkaPhotoClient.Headers.Add(HttpRequestHeader.Authorization, User.Token);
                     _plenkaPhotoClient.DownloadFileAsync(new Uri($"{GlobalSettings.HostUrl}api/order/{Request.Id}/{Request.Address}/Plenka"),
                     DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png");
                     _plenkaPhotoClient.DownloadFileCompleted += _plenkaPhotoClient_DownloadFileCompleted;
@@ -447,10 +505,10 @@ namespace VLDonFeedStockApp.ViewModels
             }
         }
 
-        private void _plenkaPhotoClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        private async void _plenkaPhotoClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             PlenkaPhotoLoaded = false;
-            PlenkaPhoto = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png";
+           // PlenkaPhoto = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png";
             //PlenkaPhoto = new UriImageSource()
             //{
             //    Uri = new  Uri(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png"),
@@ -458,7 +516,7 @@ namespace VLDonFeedStockApp.ViewModels
 
             //};
 
-            //await CheckPhotoPoddon();
+            await CheckPhotoPoddon();
         }
 
 
@@ -473,6 +531,7 @@ namespace VLDonFeedStockApp.ViewModels
                     PoddonPhotoLoaded = true;
                     
                     WebClient _tokenPhoto = new WebClient();
+                    _tokenPhoto.Headers.Add(HttpRequestHeader.Authorization, User.Token);
                     _tokenPhoto.DownloadFileAsync(new Uri($"{GlobalSettings.HostUrl}api/order/{Request.Id}/{Request.Address}/Poddon"),
                     DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png");
                     _tokenPhoto.DownloadFileCompleted += _tokenPhoto_DownloadFileCompletedAsync;
@@ -496,7 +555,7 @@ namespace VLDonFeedStockApp.ViewModels
         {
             //await alertService.ShowMessage("Фото", "Загружено");
             PoddonPhotoLoaded =false;
-            PoddonPhoto = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png";
+            //PoddonPhoto = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png";
             //PoddonPhoto = new UriImageSource()
             //{
             //    Uri = new Uri(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png"),
@@ -700,39 +759,80 @@ namespace VLDonFeedStockApp.ViewModels
 
         public async void TakePhotoPlenka()
         {
-            var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions()
+            if (IsPlenka)
             {
-                Title = "Выберите фотографию Пленки"
-            });
-            if (result != null)
-            {
-                var stream = await result.OpenReadAsync();
-                if (stream != null)
-                {
-                    PlenkaPhoto = ImageSource.FromStream(() => stream);
-                    AttachedPhotoPlenka = result;
-                }
-            }
-        }
 
-        public async void CreatePhotoPlenka()
-        {
-            try
-            {
-                var result = await MediaPicker.CapturePhotoAsync();
+                var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions()
+                {
+                    Title = "Выберите фотографию Пленки"
+                });
                 if (result != null)
                 {
                     var stream = await result.OpenReadAsync();
                     if (stream != null)
                     {
-                        PlenkaPhoto = ImageSource.FromStream(() => stream);
-                        AttachedPhotoPlenka = result;
+                        try
+                        {
+                            PlenkaPhoto = ImageSource.FromStream(() => stream);
+                            AttachedPhotoPlenka = result;
+                            var path = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png";
+                            if (File.Exists(path))
+                            {
+                                File.Delete(path);
+                            }
+                            File.Copy(AttachedPhotoPlenka.FullPath, path);
+                        }
+                        catch (Exception ex)
+                        {
+                            alertService.ShowToast(ex.Message, 1);
+                        }
                     }
                 }
             }
-            catch (Exception ex)
+            else
             {
-                await alertService.ShowMessage("Фото", ex.Message);
+                alertService.ShowToast("Такой позиции нет в заказе...", 1);
+            }
+        }
+
+        public async void CreatePhotoPlenka()
+        {
+            if (IsPlenka)
+            {
+                try
+                {
+                    var result = await MediaPicker.CapturePhotoAsync();
+                    if (result != null)
+                    {
+                        var stream = await result.OpenReadAsync();
+                        if (stream != null)
+                        {
+                            try
+                            {
+                                PlenkaPhoto = ImageSource.FromStream(() => stream);
+                                AttachedPhotoPlenka = result;
+                                var path = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png";
+                                if (File.Exists(path))
+                                {
+                                    File.Delete(path);
+                                }
+                                File.Copy(AttachedPhotoPlenka.FullPath, path);
+                            }
+                            catch (Exception ex)
+                            {
+                                alertService.ShowToast(ex.Message, 1);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await alertService.ShowMessage("Фото", ex.Message);
+                }
+            }
+            else
+            {
+                alertService.ShowToast("Такой позиции нет в заказе...", 1);
             }
         }
 
@@ -741,26 +841,12 @@ namespace VLDonFeedStockApp.ViewModels
 
         public async void TakePhotoCarton()
         {
-            var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions()
+            if (IsCarton)
             {
-                Title = "Выберите фотографию Картона"
-            });
-            if (result != null)
-            {
-                var stream = await result.OpenReadAsync();
-                if (stream != null)
+                var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions()
                 {
-                    CartonPhoto = ImageSource.FromStream(() => stream);
-                    AttachedPhotoCarton = result;
-                }
-            }
-        }
-
-        public async void CreatePhotoCarton()
-        {
-            try
-            {
-                var result = await MediaPicker.CapturePhotoAsync();
+                    Title = "Выберите фотографию Картона"
+                });
                 if (result != null)
                 {
                     var stream = await result.OpenReadAsync();
@@ -768,12 +854,52 @@ namespace VLDonFeedStockApp.ViewModels
                     {
                         CartonPhoto = ImageSource.FromStream(() => stream);
                         AttachedPhotoCarton = result;
+                        var path = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png";
+                        if (File.Exists(path))
+                        {
+                            File.Delete(path);
+                        }
+                        File.Copy(AttachedPhotoCarton.FullPath, path);
                     }
                 }
             }
-            catch (Exception ex)
+            else
             {
-                await alertService.ShowMessage("Фото", ex.Message);
+                alertService.ShowToast("Такой позиции нет в заказе...", 1);
+            }
+        }
+
+        public async void CreatePhotoCarton()
+        {
+            if (IsCarton)
+            {
+                try
+                {
+                    var result = await MediaPicker.CapturePhotoAsync();
+                    if (result != null)
+                    {
+                        var stream = await result.OpenReadAsync();
+                        if (stream != null)
+                        {
+                            CartonPhoto = ImageSource.FromStream(() => stream);
+                            AttachedPhotoCarton = result;
+                            var path = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png";
+                            if (File.Exists(path))
+                            {
+                                File.Delete(path);
+                            }
+                            File.Copy(AttachedPhotoCarton.FullPath, path);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await alertService.ShowMessage("Фото", ex.Message);
+                }
+            }
+            else
+            {
+                alertService.ShowToast("Такой позиции нет в заказе...", 1);
             }
         }
 
@@ -781,26 +907,12 @@ namespace VLDonFeedStockApp.ViewModels
 
         public async void TakePhotoPoddon()
         {
-            var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions()
+            if (IsPoddon)
             {
-                Title = "Выберите фотографию Поддонов"
-            }) ;
-            if (result != null)
-            {
-                var stream = await result.OpenReadAsync();
-                if (stream != null)
+                var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions()
                 {
-                    PoddonPhoto = ImageSource.FromStream(() => stream);
-                    AttachedPhotoPoddon = result;
-                }
-            }
-        }
-
-       public async void CreatePhotoPoddon()
-        {
-            try
-            {
-                var result = await MediaPicker.CapturePhotoAsync();
+                    Title = "Выберите фотографию Поддонов"
+                });
                 if (result != null)
                 {
                     var stream = await result.OpenReadAsync();
@@ -808,12 +920,52 @@ namespace VLDonFeedStockApp.ViewModels
                     {
                         PoddonPhoto = ImageSource.FromStream(() => stream);
                         AttachedPhotoPoddon = result;
+                        var path = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png";
+                        if (File.Exists(path))
+                        {
+                            File.Delete(path);
+                        }
+                        File.Copy(AttachedPhotoPoddon.FullPath, path);
                     }
                 }
             }
-            catch (Exception ex)
+            else
             {
-                await alertService.ShowMessage("Фото", ex.Message);
+                alertService.ShowToast("Такой позиции нет в заказе...", 1);
+            }
+        }
+
+       public async void CreatePhotoPoddon()
+        {
+            if (IsPoddon)
+            {
+                try
+                {
+                    var result = await MediaPicker.CapturePhotoAsync();
+                    if (result != null)
+                    {
+                        var stream = await result.OpenReadAsync();
+                        if (stream != null)
+                        {
+                            PoddonPhoto = ImageSource.FromStream(() => stream);
+                            AttachedPhotoPoddon = result;
+                            var path = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png";
+                            if (File.Exists(path))
+                            {
+                                File.Delete(path);
+                            }
+                            File.Copy(AttachedPhotoPoddon.FullPath, path);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await alertService.ShowMessage("Фото", ex.Message);
+                }
+            }
+            else
+            {
+                alertService.ShowToast("Такой позиции нет в заказе...", 1);
             }
         }
 
@@ -852,23 +1004,32 @@ namespace VLDonFeedStockApp.ViewModels
         private async Task UploadPhotos()
         {
             FilesValidator();
-            //await UploadPhotoToServer(AttachedPhotoPoddon, "Poddon");
-            //await UploadPhotoToServer(AttachedPhotoCarton, "Carton");
-            await UploadPhotoToServer(AttachedPhotoPlenka, "Plenka");
+            if (IsPoddon && File.Exists(AttachedPhotoPoddon.FullPath))
+            {
+                await UploadPhotoToServer(AttachedPhotoPoddon, "Poddon");
+            }
+            if (IsCarton && File.Exists(AttachedPhotoCarton.FullPath))
+            {
+                await UploadPhotoToServer(AttachedPhotoCarton, "Carton");
+            }
+            if (IsPlenka && File.Exists(AttachedPhotoPlenka.FullPath))
+            {
+                await UploadPhotoToServer(AttachedPhotoPlenka, "Plenka");
+            }
         }
 
         private void FilesValidator()
         {
             try
             {
-                //if (AttachedPhotoPoddon == null)
-                //{
-                //    AttachedPhotoPoddon = new FileResult(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png");
-                //}
-                //if (AttachedPhotoCarton == null)
-                //{
-                //    AttachedPhotoCarton = new FileResult(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png");
-                //}
+                if (AttachedPhotoPoddon == null)
+                {
+                    AttachedPhotoPoddon = new FileResult(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png");
+                }
+                if (AttachedPhotoCarton == null)
+                {
+                    AttachedPhotoCarton = new FileResult(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png");
+                }
                 if (AttachedPhotoPlenka == null)
                 {
                     AttachedPhotoPlenka = new FileResult(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png");
@@ -882,11 +1043,12 @@ namespace VLDonFeedStockApp.ViewModels
 
         public async Task<bool> UploadPhotoToServer(FileResult file, string material)
         {
-            if (file != null)
+            if (file != null && File.Exists(file.FullPath))
             {
                 var content = new MultipartFormDataContent();
                 content.Add(new StreamContent(await file.OpenReadAsync()), "photos", $"{Request.Id.ToString()}_{Request.Address}_{material}.png");
                 var httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
                 var res = await httpClient.PostAsync($"{GlobalSettings.HostUrl}api/order/UploadPhoto/{Request.Id}/{material}", content);
                 if (res.IsSuccessStatusCode)
                 {
@@ -950,7 +1112,8 @@ namespace VLDonFeedStockApp.ViewModels
                     alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
                     IsBusy = true;
                     HttpClient client = new HttpClient();
-                    var response = await client.PutAsync($"{GlobalSettings.HostUrl}api/order/{User.Token}",
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
+                    var response = await client.PutAsync($"{GlobalSettings.HostUrl}api/order/{User.UserToken}",
                     new StringContent(System.Text.Json.JsonSerializer.Serialize(indications),
                     Encoding.UTF8, "application/json"));
                     if (response.StatusCode != HttpStatusCode.OK)
@@ -980,7 +1143,7 @@ namespace VLDonFeedStockApp.ViewModels
 
         bool AllowEdit(Request request, Workers workers)
         {
-            if (request.WeightData != null && request.TakenData != null)
+            if (!String.IsNullOrEmpty(request.WeightData) && !String.IsNullOrEmpty(request.TakenData))
             {
                 TimeSpan diff = TimeSpan.FromDays(float.Parse(request.WeightData.Split('.')[0]) - float.Parse(request.TakenData.Split('.')[0]));
                 if (diff.Days <= 1 && workers.Role.Length=="employee".Length && request.State.Length=="weighted".Length)
@@ -1089,6 +1252,7 @@ namespace VLDonFeedStockApp.ViewModels
                 alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
                 IsBusy = true;
                 HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
                 var response = await client.PostAsync($"{GlobalSettings.HostUrl}api/order/update_state/{indications.Id}",
                 new StringContent(System.Text.Json.JsonSerializer.Serialize(indications),
                 Encoding.UTF8, "application/json"));

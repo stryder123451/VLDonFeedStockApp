@@ -142,10 +142,21 @@ namespace VLDonFeedStockApp.ViewModels
         public async Task<Workers> AddNewUser(Workers user)
         {
             user.Role = Role;
+            RegisterModel _registerData = new RegisterModel()
+            {
+                Address = Address,
+                 Login = Login,
+                  Organization = Organization,
+                   OrganizationId = user.OrganizationId,
+                    Role = user.Role,
+                     Password = Password,
+                      WorkerName  = Name
+
+            };
             HttpClient client = new HttpClient();
-            var response = await client.PostAsync($"{GlobalSettings.HostUrl}api/auth",
+            var response = await client.PostAsync($"{GlobalSettings.HostUrl}api/MobileAccount/loginreg/",
                 new StringContent(
-                   System.Text.Json.JsonSerializer.Serialize(user),
+                   System.Text.Json.JsonSerializer.Serialize(_registerData),
             Encoding.UTF8, "application/json"));
 
             if (response.StatusCode != HttpStatusCode.OK)

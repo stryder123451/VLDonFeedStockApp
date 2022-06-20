@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using VLDonFeedStockApp.Models;
@@ -37,11 +38,12 @@ namespace VLDonFeedStockApp.ViewModels
             get => _contrAgent;
             set => SetProperty(ref _contrAgent, value);
         }
+        public ObservableCollection<Workers> Users { get; }
 
         public MoneyCourseViewModel()
         {
             //Requests = new ObservableCollection<Request>();
-            //Users = new ObservableCollection<Workers>();
+            Users = new ObservableCollection<Workers>();
             Title = $"Цена за кг";
             alertService = DependencyService.Resolve<IAlertService>();
             LoadItemsCommand = new Command(async () => await GetUserData());
@@ -77,6 +79,7 @@ namespace VLDonFeedStockApp.ViewModels
             alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
             IsBusy = true;
             HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
             var response = await client.PutAsync($"{GlobalSettings.HostUrl}api/price",
             new StringContent(System.Text.Json.JsonSerializer.Serialize(indications),
             Encoding.UTF8, "application/json"));
@@ -104,18 +107,19 @@ namespace VLDonFeedStockApp.ViewModels
             {
 
                 alertService.ShowToast("Загрузка...", 1f);
-
-                //var list = await App.Database.GetUsersAsync();
-                //if (list.Count > 0)
-                //{
-                //    foreach (var user in list)
-                //    {
-                //        Users.Add(user);
-                //    }
-                //    User = Users[0];
-                //}
+               Users.Clear();
+               var list = await App.Database.GetUsersAsync();
+               if (list.Count > 0)
+               {
+                   foreach (var user in list)
+                   {
+                       Users.Add(user);
+                   }
+                    //User = Users[0];
+                }
 
                 HttpClient _tokenClientPrice = new HttpClient();
+                _tokenClientPrice.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
                 var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/price/{ContrAgent}");
                 var _jsonResultsPrice = JsonConvert.DeserializeObject<Prices>(_responseTokenPrice);
                 Prices = _jsonResultsPrice;

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using VLDonFeedStockApp.Models;
@@ -90,21 +91,41 @@ namespace VLDonFeedStockApp.ViewModels
                             {
                                 try
                                 {
+                                    LoginModel _loginModel = new LoginModel()
+                                    {
+                                         Login = Username,
+                                         Password = Password,
+                                    };
+
+
                                     alertService.ShowToast("Аутентификация...Пожалуйста, подождите...", 2f);
                                     HttpClient _tokenclient = new HttpClient();
-                                    var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/{Username}/{Password}/{_token}");
-                                    var _jsonResults = JsonConvert.DeserializeObject<Workers>(_responseToken);
-                                    //await alertService.ShowMessage("Аутентификация", $"Здравствуйте, {_jsonResults.FullName}!!!");
-                                    
-                                    await App.Database.Login(_jsonResults);
-                                    IsLoggedIn = false;
-                                    IsLogging = true;
-                                    //if (_jsonResults.Role == "root")
-                                    //{
-                                    //    MessagingCenter.Send<LoginViewModel>(this, "root");
-                                    //}
-                                    await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
-                                    
+                                    var _responseTokenJWT = await _tokenclient.PostAsync($"{GlobalSettings.HostUrl}api/MobileAccount/login", new StringContent(System.Text.Json.JsonSerializer.Serialize(_loginModel),
+                                      Encoding.UTF8, "application/json"));
+                                    //
+                            
+                                    //
+                                    if (_responseTokenJWT.IsSuccessStatusCode)
+                                    {
+                                        var _jwtToken = JsonConvert.DeserializeObject<ResponseModel>(_responseTokenJWT.Content.ReadAsStringAsync().Result).Token;
+
+                                        //var _jsonResults = JsonConvert.DeserializeObject<Workers>(_responseToken);
+                                        //await alertService.ShowMessage("Аутентификация", $"Здравствуйте, {_jsonResults.FullName}!!!");
+                                        HttpClient _tokenclientLogin = new HttpClient();
+                                        _tokenclientLogin.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                                        var _responseTokenLogin = await _tokenclientLogin.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/{Username}/{Password}/{_token}");
+                                        var _jsonResults = JsonConvert.DeserializeObject<Workers>(_responseTokenLogin);
+
+                                        //
+                                        await App.Database.Login(_jsonResults, _jwtToken);
+                                        IsLoggedIn = false;
+                                        IsLogging = true;
+                                        //if (_jsonResults.Role == "root")
+                                        //{
+                                        //    MessagingCenter.Send<LoginViewModel>(this, "root");
+                                        //}
+                                        await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
+                                    }
                                     // await Shell.Current.GoToAsync($"//{nameof(AboutPage)}");
                                 }
                                 catch (Exception ex)

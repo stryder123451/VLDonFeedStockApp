@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -27,6 +28,7 @@ namespace VLDonFeedStockApp.ViewModels
         private string _cartonAmount;
         private string _plenkaAmount;
         private string _poddonAmount;
+        private bool _existed;
         public ObservableCollection<Workers> Users { get; }
         
         public Command LoadItemsCommand { get; }
@@ -89,7 +91,7 @@ namespace VLDonFeedStockApp.ViewModels
                     }
                     
 
-                    await CreateRequest(NewOrder);
+                    CreateRequest(NewOrder);
                 }
             }
             catch (Exception ex)
@@ -159,7 +161,7 @@ namespace VLDonFeedStockApp.ViewModels
                         Users.Add(user);
                     }
                     User = Users[0];
-                    
+                   
                 }
                 else
                 {
@@ -195,35 +197,67 @@ namespace VLDonFeedStockApp.ViewModels
             set => SetProperty(ref _cartonAmount, value);
         }
 
-        public async Task<Request> CreateRequest(Request indications)
+        public async Task<bool> CheckForRequestAsync()
         {
-            indications.Id = 0;
-            indications.Address = User.Address;
-            indications.Materials = $"{Validator(Plenka, PlenkaAmount)}{Validator(Carton, CartonAmount)}{Validator(Poddon, PoddonAmount)}";
-            alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
-            IsBusy = true;
-            HttpClient client = new HttpClient();
-            var response = await client.PostAsync($"{GlobalSettings.HostUrl}api/order/{User.Token}",
-            new StringContent(System.Text.Json.JsonSerializer.Serialize(indications),
-            Encoding.UTF8, "application/json"));
-            if (response.StatusCode != HttpStatusCode.OK)
+            HttpClient _tokenclient = new HttpClient();
+            _tokenclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
+            var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/order/created/{User.Login}/{User.UserToken}");
+            var _jsonResults = JsonConvert.DeserializeObject<List<Order>>(_responseToken);
+            if (_jsonResults.Count > 0)
             {
-                alertService.ShowToast("Ошибка при обновлении... Попробуйте позже...", 1);
-                return null;
+                _existed =  true;
+                return true;
             }
             else
             {
-                var res = JsonConvert.DeserializeObject<Request>(response.Content.ReadAsStringAsync().Result);
-                HttpClient _tokenclientDiff = new HttpClient();
-                var _responseTokenDiff = await _tokenclientDiff.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/store/{User.Organization}/{User.Address}");
-                CrossFirebasePushNotification.Current.Subscribe($"{_responseTokenDiff}");
-                await alertService.ShowMessage("Заявка", "Успешно создано!!!");
-                
-                await Shell.Current.GoToAsync("..");
+                _existed = false;
+                return false;
+            }
+        }
+
+        public void CreateRequest(Request indications)
+        {
+            Task result = CheckForRequestAsync().ContinueWith(async x=>indications = await Create(indications));
+            
+        }
+
+        private async Task<Request> Create(Request indications)
+        {
+            if (_existed == false)
+            {
+                indications.Id = 0;
+                indications.Address = User.Address;
+                indications.Materials = $"{Validator(Plenka, PlenkaAmount)}{Validator(Carton, CartonAmount)}{Validator(Poddon, PoddonAmount)}";
+                alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
+                IsBusy = true;
+                HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
+                var response = await client.PostAsync($"{GlobalSettings.HostUrl}api/order/{User.UserToken}",
+                new StringContent(System.Text.Json.JsonSerializer.Serialize(indications),
+                Encoding.UTF8, "application/json"));
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    alertService.ShowToast("Ошибка при обновлении... Попробуйте позже...", 1);
+                    return null;
+                }
+                else
+                {
+                    var res = JsonConvert.DeserializeObject<Request>(response.Content.ReadAsStringAsync().Result);
+                    HttpClient _tokenclientDiff = new HttpClient();
+                    var _responseTokenDiff = await _tokenclientDiff.GetStringAsync($"{GlobalSettings.HostUrl}api/auth/store/{User.Organization}/{User.Address}");
+                    CrossFirebasePushNotification.Current.Subscribe($"{_responseTokenDiff}");
+                    await alertService.ShowMessage("Заявка", "Успешно создано!!!");
+
+                    await Shell.Current.GoToAsync("..");
+                    return null;
+                }
+            }
+            else
+            {
+                await alertService.ShowMessage("Заявка", "У вас уже есть созданная заявка!!!");
                 return null;
             }
         }
-    
 
 
         private async void OnCancel()
@@ -234,6 +268,7 @@ namespace VLDonFeedStockApp.ViewModels
         internal void OnAppearing()
         {
             IsBusy = true;
+            
         }
 
     }

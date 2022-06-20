@@ -11,8 +11,8 @@ namespace VLDonFeedStockApp.Models
     {
         [SQLite.PrimaryKey, SQLite.AutoIncrement]
         public int LocalId { get; set; }
-        [JsonProperty("id")]
-        public int Id { get; set; }
+        //[JsonProperty("id")]
+        //public int Id { get; set; }
         [JsonProperty("name")]
         public string Name { get; set; }
         [JsonProperty("login")]
@@ -25,12 +25,13 @@ namespace VLDonFeedStockApp.Models
         public string Role { get; set; }
         [JsonProperty("organizationid")]
         public int OrganizationId { get; set; }
-        [JsonProperty("token")]
-        public string Token { get; set; }
+        [JsonProperty("usertoken")]
+        public string UserToken { get; set; }
         [JsonProperty("address")]
         public string Address { get; set; }
         [JsonProperty("isaccepted")]
         public bool IsAccepted { get; set; }
+        public string Token { get; set; }
         public string RuRole { get; set; }
         public string OrganizationCodeTopic { get; set; }
     }

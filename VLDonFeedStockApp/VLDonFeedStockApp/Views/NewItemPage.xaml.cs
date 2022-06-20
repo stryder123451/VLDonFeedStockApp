@@ -22,7 +22,7 @@ namespace VLDonFeedStockApp.Views
         {
             base.OnAppearing();
             _NewItemViewModel.OnAppearing();
-            
+           
         }
 
         private void isPlenka_Toggled(object sender, ToggledEventArgs e)
