@@ -51,12 +51,14 @@ namespace VLDonFeedStockApp.Models
         public string OldCartonPrice { get; set; }
         [JsonProperty("oldplenkaprice")]
         public string OldPlenkaPrice { get; set; }
-        [JsonProperty("attachedphotopoddon")]
-        public string AttachedPhotoPoddon { get; set; }
-        [JsonProperty("attachedphotoplenka")]
-        public string AttachedPhotoPlenka { get; set; }
-        [JsonProperty("attachedphotocarton")]
-        public string AttachedPhotoCarton { get; set; }
+        [JsonProperty("mark")]
+        public string Mark { get; set; }
+        //[JsonProperty("attachedphotopoddon")]
+        //public string AttachedPhotoPoddon { get; set; }
+        //[JsonProperty("attachedphotoplenka")]
+        //public string AttachedPhotoPlenka { get; set; }
+        //[JsonProperty("attachedphotocarton")]
+        //public string AttachedPhotoCarton { get; set; }
         public string RuState { get; set; }
     }
 }

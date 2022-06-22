@@ -219,36 +219,36 @@ namespace VLDonFeedStockApp.Views
 
         private async void DisplayActionAddPhoto()
         {
-            var res = await DisplayActionSheet("Изменить фото...", "Отмена", null,"Добавить фото Поддонов", "Добавить фото Пленки", "Добавить фото Картона");
-            switch (res)
-            {
-                case "Добавить фото Поддонов":
-                    _detailOrderViewModel.TakePhotoPoddon();
-                    break;
-                case "Добавить фото Пленки":
-                    _detailOrderViewModel.TakePhotoPlenka();
-                    break;
-                case "Добавить фото Картона":
-                    _detailOrderViewModel.TakePhotoCarton();
-                    break;
-            }
+            //var res = await DisplayActionSheet("Изменить фото...", "Отмена", null,"Добавить фото Поддонов", "Добавить фото Пленки", "Добавить фото Картона");
+            //switch (res)
+            //{
+            //    case "Добавить фото Поддонов":
+            //        _detailOrderViewModel.TakePhotoPoddon();
+            //        break;
+            //    case "Добавить фото Пленки":
+            //        _detailOrderViewModel.TakePhotoPlenka();
+            //        break;
+            //    case "Добавить фото Картона":
+            //        _detailOrderViewModel.TakePhotoCarton();
+            //        break;
+            //}
         }
 
         private async void DisplayActionCreatePhoto()
         {
-            var res = await DisplayActionSheet("Сделать фото...", "Отмена", null, "Сделать фото Поддонов", "Сделать фото Пленки", "Сделать фото Картона");
-            switch (res)
-            {
-                case "Сделать фото Поддонов":
-                    _detailOrderViewModel.CreatePhotoPoddon();
-                    break;
-                case "Сделать фото Пленки":
-                    _detailOrderViewModel.CreatePhotoPlenka();
-                    break;
-                case "Сделать фото Картона":
-                    _detailOrderViewModel.CreatePhotoCarton();
-                    break;
-            }
+            //var res = await DisplayActionSheet("Сделать фото...", "Отмена", null, "Сделать фото Поддонов", "Сделать фото Пленки", "Сделать фото Картона");
+            //switch (res)
+            //{
+            //    case "Сделать фото Поддонов":
+            //        _detailOrderViewModel.CreatePhotoPoddon();
+            //        break;
+            //    case "Сделать фото Пленки":
+            //        _detailOrderViewModel.CreatePhotoPlenka();
+            //        break;
+            //    case "Сделать фото Картона":
+            //        _detailOrderViewModel.CreatePhotoCarton();
+            //        break;
+            //}
         }
 
         private void ImageButton_Clicked(object sender, EventArgs e)

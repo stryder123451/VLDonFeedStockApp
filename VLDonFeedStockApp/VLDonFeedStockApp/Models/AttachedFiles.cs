@@ -16,6 +16,8 @@ namespace VLDonFeedStockApp.Models
         [JsonProperty("data")]
         public byte[] Data { get; set; }
        
-        public bool IsLoading { get; set; }
+        //public bool IsLoading { get; set; }
+
+        //public bool LoadingState { get; set; } = true;
     }
 }

@@ -51,6 +51,8 @@ namespace VLDonFeedStockApp.Models
         [JsonProperty("oldplenkaprice")]
         public string OldPlenkaPrice { get; set; }
         public string RuState { get; set; }
+        [JsonProperty("mark")]
+        public string Mark { get; set; }
     }
 
 }

@@ -38,6 +38,7 @@
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
                             <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
                             <Frame Grid.Row="0" Grid.Column="0" IsVisible="{Binding IsTaken}" BackgroundColor="Transparent"  Padding="0">
@@ -90,7 +91,7 @@
                                         <GradientStop Color="#8E54E9" Offset="1" />
                                     </LinearGradientBrush>
                                 </Frame.Background>-->
-                                <ImageButton  Source="addImage"  Scale="0.8" BackgroundColor="Transparent" Clicked="ImageButton_Clicked">
+                                <ImageButton  Source="addImage"  Scale="0.8" BackgroundColor="Transparent" Command="{Binding ChoosePhoto}">
                                     <!--Command="{Binding ChoosePhoto}"--></ImageButton>
                                 <!--<Button Grid.Row="0" Grid.Column="2"  FontFamily="DeusEx" ImageSource="cam"  BackgroundColor="Transparent" Command="{Binding ChoosePhoto}"></Button>-->
                             </Frame>
@@ -101,7 +102,17 @@
                                         <GradientStop Color="#8E54E9" Offset="1" />
                                     </LinearGradientBrush>
                                 </Frame.Background>-->
-                                <ImageButton Scale="0.8" BackgroundColor="Transparent" Source="camHD" Clicked="ImageButton_Clicked_1"></ImageButton>
+                                <ImageButton Scale="0.8" BackgroundColor="Transparent" Source="camHD" Command="{Binding MakePhoto}"></ImageButton>
+                                <!--<Button Grid.Row="0" Grid.Column="3"  FontFamily="DeusEx" BackgroundColor="Transparent" ImageSource="addImage" Scale="0.15" Command="{Binding MakePhoto}"></Button>-->
+                            </Frame>
+                            <Frame Grid.Row="0" Grid.Column="4" BackgroundColor="Transparent"  Padding="0">
+                                <!--<Frame.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="Red" Offset="0.1" />
+                                        <GradientStop Color="#8E54E9" Offset="1" />
+                                    </LinearGradientBrush>
+                                </Frame.Background>-->
+                                <ImageButton Scale="0.8" BackgroundColor="Transparent" Source="videoHD" Command="{Binding MakeVideo}"></ImageButton>
                                 <!--<Button Grid.Row="0" Grid.Column="3"  FontFamily="DeusEx" BackgroundColor="Transparent" ImageSource="addImage" Scale="0.15" Command="{Binding MakePhoto}"></Button>-->
                             </Frame>
                         </Grid>
@@ -109,6 +120,18 @@
                    
                     <ScrollView Grid.Row="0">
                     <StackLayout  Spacing="5" Padding="15">
+
+                            <Frame BorderColor="Green" Padding="10" BackgroundColor="{StaticResource Primary}" HeightRequest="25">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition></ColumnDefinition>
+                                        <ColumnDefinition></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <ImageButton Scale="1" BackgroundColor="Transparent" Source="like" Command="{Binding MakeVideo}"></ImageButton>
+                                    <ImageButton Grid.Column="1" Scale="1" BackgroundColor="Transparent" Source="dislike" Command="{Binding MakeVideo}"></ImageButton>
+                                </Grid>
+                                
+                            </Frame>
                             <Label FontFamily="DeusEx" TextColor="Black" Text="ID заказа:" FontSize="Medium"/>
 
                         <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Green" CornerRadius="5">
@@ -266,94 +289,23 @@
                             </Frame.Background>
                             <Entry IsReadOnly="True" FontFamily="DeusEx" TextColor="Black" x:Name="PriceEntry" Text="{Binding Request.Price}" FontSize="Small"/>
                         </Frame>
-                            <!--<Frame HeightRequest="100" BackgroundColor="Transparent">
-                                <Grid >
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="8*"></ColumnDefinition>
-                                    <ColumnDefinition></ColumnDefinition>
-                                   
-                                </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition></RowDefinition>
-                                        <RowDefinition></RowDefinition>
-                                        <RowDefinition></RowDefinition>
-                                        <RowDefinition></RowDefinition>
-                                    </Grid.RowDefinitions>
 
-
-                                    --><!--<StackLayout Grid.Row="0" Grid.Column="0">
-                                        <Label FontFamily="DeusEx" TextColor="Black" Text="Фото пленки"></Label>
-                                        <StackLayout.GestureRecognizers>
-                                            <TapGestureRecognizer 
-                                         NumberOfTapsRequired="1"
-                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DetailOrderViewModel}}, Path=ShowPhotoPlenka}"		
-                                         CommandParameter="{Binding PlenkaPhoto}">
-                                            </TapGestureRecognizer>
-                                        </StackLayout.GestureRecognizers>
-                                    </StackLayout>
-                                    <ActivityIndicator Grid.Row="0" Grid.Column="1" IsRunning="{Binding PlenkaPhotoLoaded}" ></ActivityIndicator>
-
-                                    <StackLayout Grid.Row="1" Grid.Column="0">
-                                        <Label FontFamily="DeusEx" TextColor="Black" Text="Фото картона"></Label>
-                                        <StackLayout.GestureRecognizers>
-                                            <TapGestureRecognizer 
-                                         NumberOfTapsRequired="1"
-                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DetailOrderViewModel}}, Path=ShowPhotoCarton}"		
-                                         CommandParameter="{Binding CartonPhoto}">
-                                            </TapGestureRecognizer>
-                                        </StackLayout.GestureRecognizers>
-                                    </StackLayout>
-                                    <ActivityIndicator Grid.Row="1" Grid.Column="1" IsRunning="{Binding CartonPhotoLoaded}" ></ActivityIndicator>-->
-
-                                    <!--<Image Aspect="AspectFit"   Source="{Binding CartonPhoto}">
-                                        <Image.GestureRecognizers>
-                                            <TapGestureRecognizer 
-                                         NumberOfTapsRequired="1"
-                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DetailOrderViewModel}}, Path=ShowPhotoCarton}"		
-                                         CommandParameter="{Binding CartonPhoto}">
-                                            </TapGestureRecognizer>
-                                        </Image.GestureRecognizers>
-
-                                    </Image>
-                                    <ActivityIndicator IsRunning="{Binding CartonPhotoLoaded}" ></ActivityIndicator>-->
-                          
-                           
-                               
-                                    <!--<Image Aspect="AspectFit"   Source="{Binding PoddonPhoto}">
-                                        <Image.GestureRecognizers>
-                                            <TapGestureRecognizer 
-                                         NumberOfTapsRequired="1"
-                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DetailOrderViewModel}}, Path=ShowPhoto}"		
-                                         CommandParameter="{Binding PoddonPhoto}">
-                                            </TapGestureRecognizer>
-                                        </Image.GestureRecognizers>
-
-                                    </Image>
-                                    <ActivityIndicator IsRunning="{Binding PoddonPhotoLoaded}" ></ActivityIndicator>-->
-
-                                    <!--<StackLayout Grid.Row="2" Grid.Column="0">
-                                        <Label FontFamily="DeusEx" TextColor="Black" Text="Фото поддонов"></Label>
-                                        <StackLayout.GestureRecognizers>
-                                            <TapGestureRecognizer 
-                                         NumberOfTapsRequired="1"
-                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:DetailOrderViewModel}}, Path=ShowPhoto}"		
-                                         CommandParameter="{Binding PoddonPhoto}">
-                                            </TapGestureRecognizer>
-                                        </StackLayout.GestureRecognizers>
-                                    </StackLayout>
-                                    <ActivityIndicator Grid.Row="2" Grid.Column="1" IsRunning="{Binding PoddonPhotoLoaded}" ></ActivityIndicator>--><!--
-
-                                   
-                                </Grid>
-                                
-                            </Frame>-->
+                            <Label FontFamily="DeusEx" TextColor="Black" Text="Файлы:" FontSize="Medium"></Label>
                             <Frame BorderColor="Red" HeightRequest="150" Padding="5" BackgroundColor="{StaticResource Primary}">
-                                <ListView  x:Name="OrderItems"  ItemsSource="{Binding RelatedFiles}" SeparatorVisibility="Default" HasUnevenRows="True" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="{Binding LoadingRow}"></RowDefinition>
+                                        <RowDefinition Height="{Binding LoadingItems}"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <ActivityIndicator Grid.Row="0" IsVisible="{Binding IsLoading}" IsRunning="{Binding IsLoading}"></ActivityIndicator>
+                                
+                                <ListView  Grid.Row="1" x:Name="OrderItems"  ItemsSource="{Binding RelatedFiles}" SeparatorVisibility="Default" HasUnevenRows="True" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
 
                                             <ViewCell>
 
+                                                
 
                                                 <StackLayout Padding="1" x:DataType="model:AttachedFiles">
                                                     <Frame Padding="15" BorderColor="Red">
@@ -365,16 +317,15 @@
                                                         </Frame.Background>
 
 
-                                                        <Grid>
+                                                        <StackLayout>
 
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition></ColumnDefinition>
-
-                                                            </Grid.ColumnDefinitions>
+                                                           
                                                             <Label Text="{Binding Name}"></Label>
-                                                            <!--<ActivityIndicator IsRunning="{Binding IsLoading}"></ActivityIndicator>-->
-                                                        </Grid>
+                                                           
+                                                        </StackLayout>
+                                                         
                                                     </Frame>
+                                                    
                                                     <StackLayout.GestureRecognizers>
                                                         <TapGestureRecognizer 
                                          NumberOfTapsRequired="1"
@@ -383,26 +334,18 @@
                                                         </TapGestureRecognizer>
                                                     </StackLayout.GestureRecognizers>
                                                 </StackLayout>
+                                                    
+                                                
                                             </ViewCell>
 
                                         </DataTemplate>
                                     </ListView.ItemTemplate>
                                 </ListView>
-                                <!--<Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition></ColumnDefinition>
-                                        <ColumnDefinition></ColumnDefinition>
-                                        <ColumnDefinition></ColumnDefinition>
-                                    </Grid.ColumnDefinitions>
-                                    <ImageButton Scale="0.5" BackgroundColor="Transparent" Command="{Binding ShowPhotoCarton}" Source="cartonHD"></ImageButton>
-                                    <ImageButton Scale="0.5" BackgroundColor="Transparent" Command="{Binding ShowPhotoPlenka}" Grid.Column="1" Source="plenkaHD"></ImageButton>
-                                    <ImageButton Scale="0.5" BackgroundColor="Transparent" Command="{Binding ShowPhoto}" Grid.Column="2" Source="poddonHD"></ImageButton>
-                                    <ActivityIndicator  Grid.Column="0" IsRunning="{Binding CartonPhotoLoaded}" ></ActivityIndicator>
-                                    <ActivityIndicator  Grid.Column="1" IsRunning="{Binding PlenkaPhotoLoaded}" ></ActivityIndicator>
-                                    <ActivityIndicator  Grid.Column="2" IsRunning="{Binding PoddonPhotoLoaded}" ></ActivityIndicator>
-                                </Grid>-->
+                                </Grid>
+                               
                                 
                             </Frame>
+                          
 
                             <!--<Grid Grid.Row="3" Padding="0">
                                 --><!--<Frame.Background>

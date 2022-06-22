@@ -3,6 +3,8 @@ using FirebaseAdmin.Messaging;
 using Google.Apis.Auth.OAuth2;
 using Newtonsoft.Json;
 using Plugin.FirebasePushNotification;
+using Plugin.Media;
+using Plugin.Media.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -27,12 +29,13 @@ namespace VLDonFeedStockApp.ViewModels
     {
         private int _id;
         private Workers _user;
-        private ImageSource _poddonOrderPhoto;
-        private ImageSource _plenkaOrderPhoto;
-        private ImageSource _cartonOrderPhoto;
-        private FileResult _attachedPhotoPoddon;
-        private FileResult _attachedPhotoPlenka;
-        private FileResult _attachedPhotoCarton;
+        //private ImageSource _poddonOrderPhoto;
+        //private ImageSource _plenkaOrderPhoto;
+        //private ImageSource _cartonOrderPhoto;
+        //private FileResult _attachedPhotoPoddon;
+        //private FileResult _attachedPhotoPlenka;
+        //private FileResult _attachedPhotoCarton;
+        private FileResult _uploadedFile;
         private Prices _prices;
         private string _carton;
         private string _plenka;
@@ -53,9 +56,14 @@ namespace VLDonFeedStockApp.ViewModels
         private bool _isFinished;
         private Request _request;
         private bool _canEdit;
-        private bool _poddonPhotoLoaded;
-        private bool _plenkaPhotoLoaded;
-        private bool _cartonPhotoLoaded;
+        private bool _isLoading;
+        private bool _stateLoading;
+        private GridLength _loadingRow;
+        private GridLength _loadingItems;
+        //private bool _poddonPhotoLoaded;
+        //private bool _plenkaPhotoLoaded;
+        //private bool _cartonPhotoLoaded;
+
         public string _address;
         public ObservableCollection<Workers> Users { get; }
         public ObservableCollection<AttachedFiles> RelatedFiles { get; }
@@ -66,10 +74,12 @@ namespace VLDonFeedStockApp.ViewModels
         public Command<ImageSource> ShowPhotoPlenka { get; }
         public Command<ImageSource> ShowPhotoCarton { get; }
         public Command MakePhoto { get; }
+        public Command MakeVideo { get; }
         public Command UpdateState { get; }
         public Command BackCommand { get; }
         public Command<AttachedFiles> DownloadFile { get; }
         public ObservableCollection<Request> Requests { get; }
+
         public DetailOrderViewModel()
         {
             Requests = new ObservableCollection<Request>();
@@ -79,24 +89,214 @@ namespace VLDonFeedStockApp.ViewModels
             alertService = DependencyService.Resolve<IAlertService>();
             LoadOrdersCommand = new Command(async () => await GetUserData());
             UpdateOrder = new Command(OnEditClicked);
-            ChoosePhoto = new Command(TakePhotoPoddon);
-            ShowPhoto = new Command<ImageSource>(OnItemSelectedPoddon);
-            ShowPhotoPlenka = new Command<ImageSource>(OnItemSelectedPlenka);
-            ShowPhotoCarton = new Command<ImageSource>(OnItemSelectedCarton);
-            MakePhoto = new Command(CreatePhotoPoddon);
+            ChoosePhoto = new Command(AttachFileMethod);
+            //ShowPhoto = new Command<ImageSource>(OnItemSelectedPoddon);
+            //ShowPhotoPlenka = new Command<ImageSource>(OnItemSelectedPlenka);
+            //ShowPhotoCarton = new Command<ImageSource>(OnItemSelectedCarton);
+            MakePhoto = new Command(AttachPhotoMethod);
+            MakeVideo = new Command(AttachVideoMethod);
             UpdateState = new Command(OnStateEditClicked);
             BackCommand = new Command(OnCancel);
             DownloadFile = new Command<AttachedFiles>(OnItemSelected);
         }
 
-        private async void OnItemSelected(AttachedFiles obj)
+        private async void AttachVideoMethod(object obj)
         {
-            if (obj != null)
+            await AttachVideoMethodAsync();
+            //await UploadPhotoToServer(UploadedFile, "file");
+        }
+
+        private async void AttachPhotoMethod(object obj)
+        {
+            UploadedFile = await AttachPhotoMethodAsync();
+            await UploadPhotoToServer(UploadedFile, "file");
+        }
+
+        private async Task<FileResult> AttachPhotoMethodAsync()
+        {
+            var file = await MediaPicker.CapturePhotoAsync();
+
+            if (file == null)
             {
-                await alertService.ShowMessage("Прикрепленный файл",obj.Name);
+                return null;
+            }
+            else
+            {
+                return file;
             }
         }
 
+        //async Task LoadVideoAsync(FileResult photo)
+        //{
+        //    // canceled
+        //    if (photo == null)
+        //    {
+        //        UploadedFile = null;
+        //        return;
+        //    }
+        //    // save the file into local storage
+        //    var newFile = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
+        //    using (var stream = await photo.OpenReadAsync())
+        //    using (var newStream = File.OpenWrite(newFile))
+        //        await stream.CopyToAsync(newStream);
+
+        //    UploadedFile = newFile;
+        //}
+
+        private async Task AttachVideoMethodAsync()
+        {
+            //var file = await CrossMedia.Current.TakeVideoAsync(new StoreVideoOptions
+            //{
+            //    DesiredLength = TimeSpan.FromSeconds(15),
+            //    SaveToAlbum = true,
+            //    Quality = VideoQuality.High,
+                
+                
+            //});
+
+                var file = await MediaPicker.CaptureVideoAsync();
+
+                if (file == null)
+                {
+                await alertService.ShowMessage("Видео", "Ошибка при записи...");
+                }
+                else
+                {
+               
+                UploadedFile = await AttachFile();
+                await UploadPhotoToServer(UploadedFile, "file");
+            }
+            }
+
+
+        private async void AttachFileMethod(object obj)
+        {
+           UploadedFile = await AttachFile();
+           await UploadPhotoToServer(UploadedFile, "file");
+        }
+
+        private async Task<FileResult> AttachFile()
+        {
+            var file = await FilePicker.PickAsync();
+
+            if (file == null)
+            {
+                return null;
+            }
+            else
+            {
+                return file;
+            }
+            
+            //Task upload = await UploadPhotoToServer(file, "file");
+
+            //var result = await FilePicker.PickAsync(new PickOptions()
+            //{
+            //    PickerTitle = "Выберите файлы...",
+            //});
+            //if (result != null)
+            //{
+            //    var stream = await result.OpenReadAsync();
+            //    if (stream != null)
+            //    {
+            //        var file = ImageSource.FromStream(() => stream);
+            //        UploadPhotoToServer(file,"file")
+            //           //PoddonPhoto = ImageSource.FromStream(() => stream);
+
+            //        //var path = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png";
+            //        //if (File.Exists(path))
+            //        //{
+            //        //    File.Delete(path);
+            //        //}
+            //        //File.Copy(AttachedPhotoPoddon.FullPath, path);
+            //    }
+            //}
+        }
+
+        
+
+        private async void OnItemSelected(AttachedFiles obj)
+        {
+            IsLoading = true;
+            LoadingState = false;
+            LoadingItems = 0;
+            LoadingRow = new GridLength(1, GridUnitType.Star);
+            if (obj != null)
+            {
+                var res = File.Exists(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{obj.Name}");
+                if (res)
+                {
+                    await Launcher.OpenAsync(new OpenFileRequest { File = new ReadOnlyFile(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{obj.Name}") });
+                    IsLoading = false;
+                    LoadingState = true;
+                    LoadingRow = 0;
+                    LoadingItems = new GridLength(1, GridUnitType.Star);
+                }
+                else
+                {
+                   
+                    await GetFile(obj);
+                }
+                // await alertService.ShowMessage("Прикрепленный файл",obj.Name);
+            }
+        }
+
+        private async Task GetFile(AttachedFiles obj)
+        {
+            try
+            {
+                HttpClient _tokenclient = new HttpClient();
+                _tokenclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
+                var _responseToken = await _tokenclient.GetAsync($"{GlobalSettings.HostUrl}api/order/{Request.Id}/{obj.Name}/get");
+                using (var fs = new FileStream(
+                DependencyService.Resolve<IFileService>().GetRootPath() + $"/{obj.Name}",
+                FileMode.CreateNew))
+                {
+                    await _responseToken.Content.CopyToAsync(fs);
+                    alertService.ShowToast($"{obj.Name} загружен...",1f);
+                    IsLoading = false;
+                    LoadingState = true;
+                    LoadingRow = 0;
+                    LoadingItems = new GridLength(1, GridUnitType.Star);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                await alertService.ShowMessage("Фото", "Фотография заказа повреждена...");
+                IsLoading = false;
+                LoadingState = true;
+                LoadingRow = 0;
+                LoadingItems = new GridLength(1, GridUnitType.Star);
+
+            }
+        }
+        public FileResult UploadedFile
+        {
+            get => _uploadedFile;
+            set => SetProperty(ref _uploadedFile, value);
+        }
+
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set=> SetProperty(ref _isLoading, value);
+        }
+        public bool LoadingState
+        {
+            get => _stateLoading;
+            set => SetProperty(ref _stateLoading, value);
+        }
+        public GridLength LoadingRow
+        {
+            get => _loadingRow;
+            set => SetProperty(ref _loadingRow, value);
+        }
+        public GridLength LoadingItems
+        {
+            get => _loadingItems;
+            set => SetProperty(ref _loadingItems, value);
+        }
         private void OnCancel(object obj)
         {
             BackToOrder();
@@ -107,46 +307,46 @@ namespace VLDonFeedStockApp.ViewModels
             await Shell.Current.GoToAsync($"..");
         }
 
-        private async void OnItemSelectedPoddon(ImageSource obj)
-        {
-            var res = File.Exists(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png");
-            if (res == false)
-            {
-                alertService.ShowToast("Фотография отсутствует ...", 1);
-            }
-            else
-            {
-                await Launcher.OpenAsync(new OpenFileRequest { File = new ReadOnlyFile(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png") });
-            }
-        }
+        //private async void OnItemSelectedPoddon(ImageSource obj)
+        //{
+        //    var res = File.Exists(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png");
+        //    if (res == false)
+        //    {
+        //        alertService.ShowToast("Фотография отсутствует ...", 1);
+        //    }
+        //    else
+        //    {
+        //        await Launcher.OpenAsync(new OpenFileRequest { File = new ReadOnlyFile(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png") });
+        //    }
+        //}
 
-        private async void OnItemSelectedPlenka(ImageSource obj)
-        {
+        //private async void OnItemSelectedPlenka(ImageSource obj)
+        //{
 
-            var res = File.Exists(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png");
-            if (res == false)
-            {
-                alertService.ShowToast("Фотография отсутствует ...", 1);
-            }
-            else
-            {
-                await Launcher.OpenAsync(new OpenFileRequest { File = new ReadOnlyFile(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png") });
-            }
+        //    var res = File.Exists(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png");
+        //    if (res == false)
+        //    {
+        //        alertService.ShowToast("Фотография отсутствует ...", 1);
+        //    }
+        //    else
+        //    {
+        //        await Launcher.OpenAsync(new OpenFileRequest { File = new ReadOnlyFile(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png") });
+        //    }
             
             
-        }
-        private async void OnItemSelectedCarton(ImageSource obj)
-        {
-            var res = File.Exists(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png");
-            if (res == false)
-            {
-                alertService.ShowToast("Фотография отсутствует ...", 1);
-            }
-            else
-            {
-                await Launcher.OpenAsync(new OpenFileRequest { File = new ReadOnlyFile(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png") });
-            }
-        }
+        //}
+        //private async void OnItemSelectedCarton(ImageSource obj)
+        //{
+        //    var res = File.Exists(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png");
+        //    if (res == false)
+        //    {
+        //        alertService.ShowToast("Фотография отсутствует ...", 1);
+        //    }
+        //    else
+        //    {
+        //        await Launcher.OpenAsync(new OpenFileRequest { File = new ReadOnlyFile(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png") });
+        //    }
+        //}
 
         private void OnEditClicked(object obj)
         {
@@ -162,56 +362,56 @@ namespace VLDonFeedStockApp.ViewModels
 
 
         }
-        public ImageSource PoddonPhoto
-        {
-            get => _poddonOrderPhoto;
-            set => SetProperty(ref _poddonOrderPhoto, value);
-        }
-        public ImageSource PlenkaPhoto
-        {
-            get => _plenkaOrderPhoto;
-            set => SetProperty(ref _plenkaOrderPhoto, value);
-        }
-        public ImageSource CartonPhoto
-        {
-            get => _cartonOrderPhoto;
-            set => SetProperty(ref _cartonOrderPhoto, value);
-        }
+        //public ImageSource PoddonPhoto
+        //{
+        //    get => _poddonOrderPhoto;
+        //    set => SetProperty(ref _poddonOrderPhoto, value);
+        //}
+        //public ImageSource PlenkaPhoto
+        //{
+        //    get => _plenkaOrderPhoto;
+        //    set => SetProperty(ref _plenkaOrderPhoto, value);
+        //}
+        //public ImageSource CartonPhoto
+        //{
+        //    get => _cartonOrderPhoto;
+        //    set => SetProperty(ref _cartonOrderPhoto, value);
+        //}
 
 
-        public FileResult AttachedPhotoPoddon
-        {
-            get => _attachedPhotoPoddon;
-            set => SetProperty(ref _attachedPhotoPoddon, value);
-        }
-        public FileResult AttachedPhotoPlenka
-        {
-            get => _attachedPhotoPlenka;
-            set => SetProperty(ref _attachedPhotoPlenka, value);
-        }
-        public FileResult AttachedPhotoCarton
-        {
-            get => _attachedPhotoCarton;
-            set => SetProperty(ref _attachedPhotoCarton, value);
-        }
+        //public FileResult AttachedPhotoPoddon
+        //{
+        //    get => _attachedPhotoPoddon;
+        //    set => SetProperty(ref _attachedPhotoPoddon, value);
+        //}
+        //public FileResult AttachedPhotoPlenka
+        //{
+        //    get => _attachedPhotoPlenka;
+        //    set => SetProperty(ref _attachedPhotoPlenka, value);
+        //}
+        //public FileResult AttachedPhotoCarton
+        //{
+        //    get => _attachedPhotoCarton;
+        //    set => SetProperty(ref _attachedPhotoCarton, value);
+        //}
 
-        public bool PoddonPhotoLoaded
-        {
-            get => _poddonPhotoLoaded;
-            set => SetProperty(ref _poddonPhotoLoaded, value);
-        }
+        //public bool PoddonPhotoLoaded
+        //{
+        //    get => _poddonPhotoLoaded;
+        //    set => SetProperty(ref _poddonPhotoLoaded, value);
+        //}
 
-        public bool PlenkaPhotoLoaded
-        {
-            get => _plenkaPhotoLoaded;
-            set => SetProperty(ref _plenkaPhotoLoaded, value);
-        }
+        //public bool PlenkaPhotoLoaded
+        //{
+        //    get => _plenkaPhotoLoaded;
+        //    set => SetProperty(ref _plenkaPhotoLoaded, value);
+        //}
 
-        public bool CartonPhotoLoaded
-        {
-            get => _cartonPhotoLoaded;
-            set => SetProperty(ref _cartonPhotoLoaded, value);
-        }
+        //public bool CartonPhotoLoaded
+        //{
+        //    get => _cartonPhotoLoaded;
+        //    set => SetProperty(ref _cartonPhotoLoaded, value);
+        //}
 
         public string Address
         {
@@ -336,7 +536,26 @@ namespace VLDonFeedStockApp.ViewModels
                         await alertService.ShowMessage("Статус", "Заказ уже закрыт!!!");
                         break;
                 }
-               
+                //if (Request.Mark == null)
+                //{
+                //    var action = await alertService.ConfirmDialog("Отзыв", "Вам понравилось состояние ", "Да", "Нет");
+                //    if (!action)
+                //    {
+                //        await alertService.ShowMessage("Данные заказа", "Ну бывает...");
+                //    }
+                //    else
+                //    {
+                //        if (Request.State == "actual" && User.Role == "admin")
+                //        {
+                //            await alertService.ShowMessage("Данные заказа", "Директор не может изменять заказ после вывоза!!!");
+                //        }
+                //        else
+                //        {
+                //            await UpdateIndicationsAsync(Request);
+                //        }
+                //    }
+                //}
+
             }
             catch (Exception ex)
             {
@@ -386,7 +605,8 @@ namespace VLDonFeedStockApp.ViewModels
                 CheckUserRights();
 
                 CheckPhotos();
-
+                LoadingRow = 0;
+                LoadingItems = new GridLength(1, GridUnitType.Star);
                 alertService.ShowToast("Данные получены...", 1f);
 
             }
@@ -410,8 +630,10 @@ namespace VLDonFeedStockApp.ViewModels
 
         private async Task<List<AttachedFiles>> CheckListOfAttachedFiles()
         {
+            
             try
             {
+                RelatedFiles.Clear();
                 HttpClient _tokenClientPrice = new HttpClient();
                 _tokenClientPrice.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
                 var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/order/{Request.Id}/getFiles");
@@ -420,149 +642,157 @@ namespace VLDonFeedStockApp.ViewModels
                 {
                     RelatedFiles.Add(attachedFile);
                 }
+                LoadingRow = 0;
+                LoadingItems = new GridLength(1, GridUnitType.Star);
+                IsLoading = false;
+                LoadingState = true;
                 return null;
+                
             }
             catch (Exception ex)
             {
                 alertService.ShowToast(ex.Message,1);
+                LoadingRow = 0;
+                LoadingItems = new GridLength(1, GridUnitType.Star);
                 return null;
             }
         }
 
         //
 
-        private async Task CheckPhotoCarton()
-        {
-            if (Request.AttachedPhotoCarton != null)
-            {
+        //private async Task CheckPhotoCarton()
+        //{
+        //    if (Request.AttachedPhotoCarton != null)
+        //    {
 
-                try
-                {
-                    CartonPhotoLoaded = true;
+        //        try
+        //        {
+        //            CartonPhotoLoaded = true;
 
-                    WebClient _cartonPhotoClient = new WebClient();
-                    _cartonPhotoClient.Headers.Add(HttpRequestHeader.Authorization, User.Token);
-                    //_cartonPhotoClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
-                    _cartonPhotoClient.DownloadFileAsync(new Uri($"{GlobalSettings.HostUrl}api/order/{Request.Id}/{Request.Address}/Carton"),
-                    DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png");
-                    _cartonPhotoClient.DownloadFileCompleted += _cartonPhotoClient_DownloadFileCompleted;
+        //            WebClient _cartonPhotoClient = new WebClient();
+        //            _cartonPhotoClient.Headers.Add(HttpRequestHeader.Authorization, User.Token);
+        //            //_cartonPhotoClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
+        //            _cartonPhotoClient.DownloadFileAsync(new Uri($"{GlobalSettings.HostUrl}api/order/{Request.Id}/{Request.Address}/Carton"),
+        //            DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png");
+        //            _cartonPhotoClient.DownloadFileCompleted += _cartonPhotoClient_DownloadFileCompleted;
 
 
-                }
-                catch (Exception ex)
-                {
-                    await alertService.ShowMessage("Фото", "Фотография заказа повреждена...");
-                    CartonPhotoLoaded = false;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            await alertService.ShowMessage("Фото", "Фотография заказа повреждена...");
+        //            CartonPhotoLoaded = false;
 
-                }
-            }
-            else
-            {
+        //        }
+        //    }
+        //    else
+        //    {
 
-            }
-        }
+        //    }
+        //}
 
         private async void _cartonPhotoClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
-            CartonPhotoLoaded = false;
-            //CartonPhoto = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png";
-            //CartonPhoto = new UriImageSource()
-            //{
-            //    Uri = new Uri(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png"),
-            //    CachingEnabled = false
-            //};
-            await CheckPhotoPlenka();
+            await alertService.ShowMessage("Файл", "Загружено!");
+            //CartonPhotoLoaded = false;
+            ////CartonPhoto = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png";
+            ////CartonPhoto = new UriImageSource()
+            ////{
+            ////    Uri = new Uri(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png"),
+            ////    CachingEnabled = false
+            ////};
+            //await CheckPhotoPlenka();
         }
 
         //
-        private async Task CheckPhotoPlenka()
-        {
-            if (Request.AttachedPhotoPlenka != null)
-            {
+        //private async Task CheckPhotoPlenka()
+        //{
+        //    if (Request.AttachedPhotoPlenka != null)
+        //    {
 
-                try
-                {
-                    PlenkaPhotoLoaded = true;
+        //        try
+        //        {
+        //            PlenkaPhotoLoaded = true;
 
-                    WebClient _plenkaPhotoClient = new WebClient();
-                    _plenkaPhotoClient.Headers.Add(HttpRequestHeader.Authorization, User.Token);
-                    _plenkaPhotoClient.DownloadFileAsync(new Uri($"{GlobalSettings.HostUrl}api/order/{Request.Id}/{Request.Address}/Plenka"),
-                    DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png");
-                    _plenkaPhotoClient.DownloadFileCompleted += _plenkaPhotoClient_DownloadFileCompleted;
+        //            WebClient _plenkaPhotoClient = new WebClient();
+        //            _plenkaPhotoClient.Headers.Add(HttpRequestHeader.Authorization, User.Token);
+        //            _plenkaPhotoClient.DownloadFileAsync(new Uri($"{GlobalSettings.HostUrl}api/order/{Request.Id}/{Request.Address}/Plenka"),
+        //            DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png");
+        //            _plenkaPhotoClient.DownloadFileCompleted += _plenkaPhotoClient_DownloadFileCompleted;
 
 
-                }
-                catch (Exception ex)
-                {
-                    await alertService.ShowMessage("Фото", "Фотография заказа повреждена...");
-                    PlenkaPhotoLoaded = false;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            await alertService.ShowMessage("Фото", "Фотография заказа повреждена...");
+        //            PlenkaPhotoLoaded = false;
 
-                }
-            }
-            else
-            {
+        //        }
+        //    }
+        //    else
+        //    {
 
-            }
-        }
+        //    }
+        //}
 
-        private async void _plenkaPhotoClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
-        {
-            PlenkaPhotoLoaded = false;
-           // PlenkaPhoto = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png";
-            //PlenkaPhoto = new UriImageSource()
-            //{
-            //    Uri = new  Uri(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png"),
-            //    CachingEnabled = false,
+        //private async void _plenkaPhotoClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        //{
+        //    PlenkaPhotoLoaded = false;
+        //   // PlenkaPhoto = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png";
+        //    //PlenkaPhoto = new UriImageSource()
+        //    //{
+        //    //    Uri = new  Uri(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png"),
+        //    //    CachingEnabled = false,
 
-            //};
+        //    //};
 
-            await CheckPhotoPoddon();
-        }
+        //    await CheckPhotoPoddon();
+        //}
 
 
         //
-        private async Task CheckPhotoPoddon()
-        {
-            if (Request.AttachedPhotoPoddon != null)
-            {
+        //private async Task CheckPhotoPoddon()
+        //{
+        //    if (Request.AttachedPhotoPoddon != null)
+        //    {
 
-                try
-                {
-                    PoddonPhotoLoaded = true;
+        //        try
+        //        {
+        //            PoddonPhotoLoaded = true;
                     
-                    WebClient _tokenPhoto = new WebClient();
-                    _tokenPhoto.Headers.Add(HttpRequestHeader.Authorization, User.Token);
-                    _tokenPhoto.DownloadFileAsync(new Uri($"{GlobalSettings.HostUrl}api/order/{Request.Id}/{Request.Address}/Poddon"),
-                    DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png");
-                    _tokenPhoto.DownloadFileCompleted += _tokenPhoto_DownloadFileCompletedAsync;
+        //            WebClient _tokenPhoto = new WebClient();
+        //            _tokenPhoto.Headers.Add(HttpRequestHeader.Authorization, User.Token);
+        //            _tokenPhoto.DownloadFileAsync(new Uri($"{GlobalSettings.HostUrl}api/order/{Request.Id}/{Request.Address}/Poddon"),
+        //            DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png");
+        //            _tokenPhoto.DownloadFileCompleted += _tokenPhoto_DownloadFileCompletedAsync;
                     
                     
-                }
-                catch (Exception ex)
-                {
-                    await alertService.ShowMessage("Фото", "Фотография заказа повреждена...");
-                    PoddonPhotoLoaded = false;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            await alertService.ShowMessage("Фото", "Фотография заказа повреждена...");
+        //            PoddonPhotoLoaded = false;
                     
-                }
-            }
-            else
-            {
+        //        }
+        //    }
+        //    else
+        //    {
                 
-            }
-        }
+        //    }
+        //}
 
-        private void _tokenPhoto_DownloadFileCompletedAsync(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
-        {
-            //await alertService.ShowMessage("Фото", "Загружено");
-            PoddonPhotoLoaded =false;
-            //PoddonPhoto = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png";
-            //PoddonPhoto = new UriImageSource()
-            //{
-            //    Uri = new Uri(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png"),
-            //    CachingEnabled = true,
-            //    CacheValidity = TimeSpan.FromDays(1),
-            //};
-        }
+        //private void _tokenPhoto_DownloadFileCompletedAsync(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        //{
+        //    //await alertService.ShowMessage("Фото", "Загружено");
+        //    PoddonPhotoLoaded =false;
+        //    //PoddonPhoto = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png";
+        //    //PoddonPhoto = new UriImageSource()
+        //    //{
+        //    //    Uri = new Uri(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png"),
+        //    //    CachingEnabled = true,
+        //    //    CacheValidity = TimeSpan.FromDays(1),
+        //    //};
+        //}
 
         private void CheckUserRights()
         {
@@ -757,217 +987,217 @@ namespace VLDonFeedStockApp.ViewModels
             }
         }
 
-        public async void TakePhotoPlenka()
-        {
-            if (IsPlenka)
-            {
+        //public async void TakePhotoPlenka()
+        //{
+        //    if (IsPlenka)
+        //    {
 
-                var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions()
-                {
-                    Title = "Выберите фотографию Пленки"
-                });
-                if (result != null)
-                {
-                    var stream = await result.OpenReadAsync();
-                    if (stream != null)
-                    {
-                        try
-                        {
-                            PlenkaPhoto = ImageSource.FromStream(() => stream);
-                            AttachedPhotoPlenka = result;
-                            var path = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png";
-                            if (File.Exists(path))
-                            {
-                                File.Delete(path);
-                            }
-                            File.Copy(AttachedPhotoPlenka.FullPath, path);
-                        }
-                        catch (Exception ex)
-                        {
-                            alertService.ShowToast(ex.Message, 1);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                alertService.ShowToast("Такой позиции нет в заказе...", 1);
-            }
-        }
+        //        var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions()
+        //        {
+        //            Title = "Выберите фотографию Пленки"
+        //        });
+        //        if (result != null)
+        //        {
+        //            var stream = await result.OpenReadAsync();
+        //            if (stream != null)
+        //            {
+        //                try
+        //                {
+        //                    //PlenkaPhoto = ImageSource.FromStream(() => stream);
+        //                    //AttachedPhotoPlenka = result;
+        //                    var path = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png";
+        //                    if (File.Exists(path))
+        //                    {
+        //                        File.Delete(path);
+        //                    }
+        //                    File.Copy(AttachedPhotoPlenka.FullPath, path);
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    alertService.ShowToast(ex.Message, 1);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        alertService.ShowToast("Такой позиции нет в заказе...", 1);
+        //    }
+        //}
 
-        public async void CreatePhotoPlenka()
-        {
-            if (IsPlenka)
-            {
-                try
-                {
-                    var result = await MediaPicker.CapturePhotoAsync();
-                    if (result != null)
-                    {
-                        var stream = await result.OpenReadAsync();
-                        if (stream != null)
-                        {
-                            try
-                            {
-                                PlenkaPhoto = ImageSource.FromStream(() => stream);
-                                AttachedPhotoPlenka = result;
-                                var path = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png";
-                                if (File.Exists(path))
-                                {
-                                    File.Delete(path);
-                                }
-                                File.Copy(AttachedPhotoPlenka.FullPath, path);
-                            }
-                            catch (Exception ex)
-                            {
-                                alertService.ShowToast(ex.Message, 1);
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    await alertService.ShowMessage("Фото", ex.Message);
-                }
-            }
-            else
-            {
-                alertService.ShowToast("Такой позиции нет в заказе...", 1);
-            }
-        }
-
-
-
-
-        public async void TakePhotoCarton()
-        {
-            if (IsCarton)
-            {
-                var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions()
-                {
-                    Title = "Выберите фотографию Картона"
-                });
-                if (result != null)
-                {
-                    var stream = await result.OpenReadAsync();
-                    if (stream != null)
-                    {
-                        CartonPhoto = ImageSource.FromStream(() => stream);
-                        AttachedPhotoCarton = result;
-                        var path = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png";
-                        if (File.Exists(path))
-                        {
-                            File.Delete(path);
-                        }
-                        File.Copy(AttachedPhotoCarton.FullPath, path);
-                    }
-                }
-            }
-            else
-            {
-                alertService.ShowToast("Такой позиции нет в заказе...", 1);
-            }
-        }
-
-        public async void CreatePhotoCarton()
-        {
-            if (IsCarton)
-            {
-                try
-                {
-                    var result = await MediaPicker.CapturePhotoAsync();
-                    if (result != null)
-                    {
-                        var stream = await result.OpenReadAsync();
-                        if (stream != null)
-                        {
-                            CartonPhoto = ImageSource.FromStream(() => stream);
-                            AttachedPhotoCarton = result;
-                            var path = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png";
-                            if (File.Exists(path))
-                            {
-                                File.Delete(path);
-                            }
-                            File.Copy(AttachedPhotoCarton.FullPath, path);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    await alertService.ShowMessage("Фото", ex.Message);
-                }
-            }
-            else
-            {
-                alertService.ShowToast("Такой позиции нет в заказе...", 1);
-            }
-        }
+        //public async void CreatePhotoPlenka()
+        //{
+        //    if (IsPlenka)
+        //    {
+        //        try
+        //        {
+        //            var result = await MediaPicker.CapturePhotoAsync();
+        //            if (result != null)
+        //            {
+        //                var stream = await result.OpenReadAsync();
+        //                if (stream != null)
+        //                {
+        //                    try
+        //                    {
+        //                        PlenkaPhoto = ImageSource.FromStream(() => stream);
+        //                        AttachedPhotoPlenka = result;
+        //                        var path = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png";
+        //                        if (File.Exists(path))
+        //                        {
+        //                            File.Delete(path);
+        //                        }
+        //                        File.Copy(AttachedPhotoPlenka.FullPath, path);
+        //                    }
+        //                    catch (Exception ex)
+        //                    {
+        //                        alertService.ShowToast(ex.Message, 1);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            await alertService.ShowMessage("Фото", ex.Message);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        alertService.ShowToast("Такой позиции нет в заказе...", 1);
+        //    }
+        //}
 
 
 
-        public async void TakePhotoPoddon()
-        {
-            if (IsPoddon)
-            {
-                var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions()
-                {
-                    Title = "Выберите фотографию Поддонов"
-                });
-                if (result != null)
-                {
-                    var stream = await result.OpenReadAsync();
-                    if (stream != null)
-                    {
-                        PoddonPhoto = ImageSource.FromStream(() => stream);
-                        AttachedPhotoPoddon = result;
-                        var path = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png";
-                        if (File.Exists(path))
-                        {
-                            File.Delete(path);
-                        }
-                        File.Copy(AttachedPhotoPoddon.FullPath, path);
-                    }
-                }
-            }
-            else
-            {
-                alertService.ShowToast("Такой позиции нет в заказе...", 1);
-            }
-        }
 
-       public async void CreatePhotoPoddon()
-        {
-            if (IsPoddon)
-            {
-                try
-                {
-                    var result = await MediaPicker.CapturePhotoAsync();
-                    if (result != null)
-                    {
-                        var stream = await result.OpenReadAsync();
-                        if (stream != null)
-                        {
-                            PoddonPhoto = ImageSource.FromStream(() => stream);
-                            AttachedPhotoPoddon = result;
-                            var path = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png";
-                            if (File.Exists(path))
-                            {
-                                File.Delete(path);
-                            }
-                            File.Copy(AttachedPhotoPoddon.FullPath, path);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    await alertService.ShowMessage("Фото", ex.Message);
-                }
-            }
-            else
-            {
-                alertService.ShowToast("Такой позиции нет в заказе...", 1);
-            }
-        }
+        //public async void TakePhotoCarton()
+        //{
+        //    if (IsCarton)
+        //    {
+        //        var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions()
+        //        {
+        //            Title = "Выберите фотографию Картона"
+        //        });
+        //        if (result != null)
+        //        {
+        //            var stream = await result.OpenReadAsync();
+        //            if (stream != null)
+        //            {
+        //                CartonPhoto = ImageSource.FromStream(() => stream);
+        //                AttachedPhotoCarton = result;
+        //                var path = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png";
+        //                if (File.Exists(path))
+        //                {
+        //                    File.Delete(path);
+        //                }
+        //                File.Copy(AttachedPhotoCarton.FullPath, path);
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        alertService.ShowToast("Такой позиции нет в заказе...", 1);
+        //    }
+        //}
+
+       // public async void CreatePhotoCarton()
+       // {
+       //     if (IsCarton)
+       //     {
+       //         try
+       //         {
+       //             var result = await MediaPicker.CapturePhotoAsync();
+       //             if (result != null)
+       //             {
+       //                 var stream = await result.OpenReadAsync();
+       //                 if (stream != null)
+       //                 {
+       //                     CartonPhoto = ImageSource.FromStream(() => stream);
+       //                     AttachedPhotoCarton = result;
+       //                     var path = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png";
+       //                     if (File.Exists(path))
+       //                     {
+       //                         File.Delete(path);
+       //                     }
+       //                     File.Copy(AttachedPhotoCarton.FullPath, path);
+       //                 }
+       //             }
+       //         }
+       //         catch (Exception ex)
+       //         {
+       //             await alertService.ShowMessage("Фото", ex.Message);
+       //         }
+       //     }
+       //     else
+       //     {
+       //         alertService.ShowToast("Такой позиции нет в заказе...", 1);
+       //     }
+       // }
+
+
+
+       // public async void TakePhotoPoddon()
+       // {
+       //     if (IsPoddon)
+       //     {
+       //         var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions()
+       //         {
+       //             Title = "Выберите фотографию Поддонов"
+       //         });
+       //         if (result != null)
+       //         {
+       //             var stream = await result.OpenReadAsync();
+       //             if (stream != null)
+       //             {
+       //                 PoddonPhoto = ImageSource.FromStream(() => stream);
+       //                 AttachedPhotoPoddon = result;
+       //                 var path = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png";
+       //                 if (File.Exists(path))
+       //                 {
+       //                     File.Delete(path);
+       //                 }
+       //                 File.Copy(AttachedPhotoPoddon.FullPath, path);
+       //             }
+       //         }
+       //     }
+       //     else
+       //     {
+       //         alertService.ShowToast("Такой позиции нет в заказе...", 1);
+       //     }
+       // }
+
+       //public async void CreatePhotoPoddon()
+       // {
+       //     if (IsPoddon)
+       //     {
+       //         try
+       //         {
+       //             var result = await MediaPicker.CapturePhotoAsync();
+       //             if (result != null)
+       //             {
+       //                 var stream = await result.OpenReadAsync();
+       //                 if (stream != null)
+       //                 {
+       //                     PoddonPhoto = ImageSource.FromStream(() => stream);
+       //                     AttachedPhotoPoddon = result;
+       //                     var path = DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png";
+       //                     if (File.Exists(path))
+       //                     {
+       //                         File.Delete(path);
+       //                     }
+       //                     File.Copy(AttachedPhotoPoddon.FullPath, path);
+       //                 }
+       //             }
+       //         }
+       //         catch (Exception ex)
+       //         {
+       //             await alertService.ShowMessage("Фото", ex.Message);
+       //         }
+       //     }
+       //     else
+       //     {
+       //         alertService.ShowToast("Такой позиции нет в заказе...", 1);
+       //     }
+       // }
 
         internal void OnAppear()
         {
@@ -979,17 +1209,17 @@ namespace VLDonFeedStockApp.ViewModels
             
             if (indications.State.Length == "created".Length && (User.Role.Length == "admin".Length || User.Role.Length == "root".Length))
             {
-                await UploadPhotos();
+                //await UploadPhotos();
                 return await ChangeData(indications);
             }
             if (indications.State.Length == "actual".Length && (User.Role.Length == "employeе".Length || User.Role.Length == "root".Length))
             {
-                await UploadPhotos();
+                //await UploadPhotos();
                 return await ChangeData(indications);
             }
             if ((indications.State.Length == "weighted".Length || indications.State.Length == "finished".Length) && User.Role.Length == "root".Length)
             {
-                await UploadPhotos();
+                //await UploadPhotos();
                 return await ChangeData(indications);
             }
            
@@ -1001,39 +1231,39 @@ namespace VLDonFeedStockApp.ViewModels
             
         }
 
-        private async Task UploadPhotos()
-        {
-            FilesValidator();
-            if (IsPoddon && File.Exists(AttachedPhotoPoddon.FullPath))
-            {
-                await UploadPhotoToServer(AttachedPhotoPoddon, "Poddon");
-            }
-            if (IsCarton && File.Exists(AttachedPhotoCarton.FullPath))
-            {
-                await UploadPhotoToServer(AttachedPhotoCarton, "Carton");
-            }
-            if (IsPlenka && File.Exists(AttachedPhotoPlenka.FullPath))
-            {
-                await UploadPhotoToServer(AttachedPhotoPlenka, "Plenka");
-            }
-        }
+        //private async Task UploadPhotos()
+        //{
+        //    FilesValidator();
+        //    //if (IsPoddon && File.Exists(AttachedPhotoPoddon.FullPath))
+        //    //{
+        //    //    await UploadPhotoToServer(AttachedPhotoPoddon, "Poddon");
+        //    //}
+        //    //if (IsCarton && File.Exists(AttachedPhotoCarton.FullPath))
+        //    //{
+        //    //    await UploadPhotoToServer(AttachedPhotoCarton, "Carton");
+        //    //}
+        //    //if (IsPlenka && File.Exists(AttachedPhotoPlenka.FullPath))
+        //    //{
+        //    //    await UploadPhotoToServer(AttachedPhotoPlenka, "Plenka");
+        //    //}
+        //}
 
         private void FilesValidator()
         {
             try
             {
-                if (AttachedPhotoPoddon == null)
-                {
-                    AttachedPhotoPoddon = new FileResult(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png");
-                }
-                if (AttachedPhotoCarton == null)
-                {
-                    AttachedPhotoCarton = new FileResult(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png");
-                }
-                if (AttachedPhotoPlenka == null)
-                {
-                    AttachedPhotoPlenka = new FileResult(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png");
-                }
+                //if (AttachedPhotoPoddon == null)
+                //{
+                //    AttachedPhotoPoddon = new FileResult(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Poddon.png");
+                //}
+                //if (AttachedPhotoCarton == null)
+                //{
+                //    AttachedPhotoCarton = new FileResult(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Carton.png");
+                //}
+                //if (AttachedPhotoPlenka == null)
+                //{
+                //    AttachedPhotoPlenka = new FileResult(DependencyService.Resolve<IFileService>().GetRootPath() + $"/{Request.Id}_{Request.Address}_Plenka.png");
+                //}
             }
             catch (Exception ex)
             {
@@ -1041,28 +1271,41 @@ namespace VLDonFeedStockApp.ViewModels
             }
         }
 
-        public async Task<bool> UploadPhotoToServer(FileResult file, string material)
+        public async Task UploadPhotoToServer(FileResult file, string material)
         {
-            if (file != null && File.Exists(file.FullPath))
+            //Path.Combine(FileSystem.CacheDirectory, photo.FileName);
+            
+            if (file != null && (File.Exists(file.FullPath) || File.Exists(Path.Combine(FileSystem.CacheDirectory, file.FileName))))
             {
+                IsLoading = true;
+                LoadingState = false;
+                LoadingItems = 0;
+                LoadingRow = new GridLength(1, GridUnitType.Star);
                 var content = new MultipartFormDataContent();
-                content.Add(new StreamContent(await file.OpenReadAsync()), "photos", $"{Request.Id.ToString()}_{Request.Address}_{material}.png");
+                content.Add(new StreamContent(await file.OpenReadAsync()), "photos",file.FileName);
                 var httpClient = new HttpClient();
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
                 var res = await httpClient.PostAsync($"{GlobalSettings.HostUrl}api/order/UploadPhoto/{Request.Id}/{material}", content);
                 if (res.IsSuccessStatusCode)
                 {
-                    return true;
+                    await CheckListOfAttachedFiles();
                 }
                 else
                 {
-                    return false;
+                    await alertService.ShowMessage("Загрузка", "Ошибка при загрузке...");
+                    IsLoading = false;
+                    LoadingState = true;
+                    LoadingRow = 0;
+                    LoadingItems = new GridLength(1, GridUnitType.Star);
                 }
             }
             else
             {
-                await alertService.ShowMessage("Загрузка", "Фотография повреждена...");
-                return false;
+                await alertService.ShowMessage("Загрузка", "Ошибка при загрузке...");
+                IsLoading = false;
+                LoadingState = true;
+                LoadingRow = 0;
+                LoadingItems = new GridLength(1, GridUnitType.Star);
             }
         }
 
@@ -1289,6 +1532,7 @@ namespace VLDonFeedStockApp.ViewModels
                                            OldCartonPrice = res.Result.OldCartonPrice,
                                             OldPlenkaPrice = res.Result.OldPlenkaPrice,
                                              OldPoddonPrice = res.Result.OldPoddonPrice,
+                                              Mark = res.Result.Mark 
                     };
 
                      CheckUserRights();

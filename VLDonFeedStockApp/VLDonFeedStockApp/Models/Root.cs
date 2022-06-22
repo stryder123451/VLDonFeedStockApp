@@ -18,5 +18,6 @@ namespace VLDonFeedStockApp.Models
         public int CreationOptions { get; set; }
         public object AsyncState { get; set; }
         public bool IsFaulted { get; set; }
+
     }
 }
