@@ -127,22 +127,22 @@
                                         <ColumnDefinition></ColumnDefinition>
                                         <ColumnDefinition></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
-                                    <ImageButton Scale="1" BackgroundColor="Transparent" Source="like" Command="{Binding MakeVideo}"></ImageButton>
-                                    <ImageButton Grid.Column="1" Scale="1" BackgroundColor="Transparent" Source="dislike" Command="{Binding MakeVideo}"></ImageButton>
+                                    <ImageButton Scale="1" BackgroundColor="{Binding LikeColor}" Source="like" Command="{Binding SetLike}" CommandParameter="like"></ImageButton>
+                                    <ImageButton Grid.Column="1" Scale="1" BackgroundColor="{Binding DislikeColor}" Source="dislike" Command="{Binding SetDislike}" CommandParameter="dislike"></ImageButton>
                                 </Grid>
                                 
                             </Frame>
                             <Label FontFamily="DeusEx" TextColor="Black" Text="ID заказа:" FontSize="Medium"/>
 
-                        <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Green" CornerRadius="5">
-                            <Frame.Background>
-                                <LinearGradientBrush EndPoint="1,0">
-                                    <GradientStop Color="White" Offset="0.1" />
-                                    <GradientStop Color="LightBlue" Offset="1" />
-                                </LinearGradientBrush>
-                            </Frame.Background>
+                            <Frame Grid.Column="2"  Grid.Row="2" BorderColor="Green" CornerRadius="5">
+                                <Frame.Background>
+                                    <LinearGradientBrush EndPoint="1,0">
+                                        <GradientStop Color="White" Offset="0.1" />
+                                        <GradientStop Color="LightBlue" Offset="1" />
+                                    </LinearGradientBrush>
+                                </Frame.Background>
                                 <Entry TextColor="Red" FontFamily="DeusEx" Text="{Binding Request.Id}" IsReadOnly="True" FontSize="Small"/>
-                        </Frame>
+                            </Frame>
 
                             <Label  FontFamily="DeusEx" TextColor="Black" IsVisible="False" Text="Имя заказа:" FontSize="Medium" />
                         <Label FontFamily="DeusEx"  TextColor="Black" Text="Статус заказа:" FontSize="Medium" />
@@ -320,7 +320,7 @@
                                                         <StackLayout>
 
                                                            
-                                                            <Label Text="{Binding Name}"></Label>
+                                                            <Label TextColor="Black" Text="{Binding Name}"></Label>
                                                            
                                                         </StackLayout>
                                                          

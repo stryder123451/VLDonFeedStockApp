@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:VLDonFeedStockApp.ViewModels" xmlns:model="clr-namespace:VLDonFeedStockApp.Models"
+             x:Class="VLDonFeedStockApp.Views.History">
+    <ContentPage.Content>
+        <RefreshView x:DataType="viewmodels:HistoryViewModel" Command="{Binding LoadStoresCommand}"  IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+            <Frame>
+                <Frame.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="White" Offset="0.1" />
+                        <GradientStop Color="LightBlue" Offset="1" />
+                    </LinearGradientBrush>
+                </Frame.Background>
+                <ScrollView>
+                    <ListView x:Name="OrderItems" ItemsSource="{Binding StoresList}" SeparatorVisibility="Default" HasUnevenRows="True" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+
+                                <ViewCell Height="170">
+
+
+                                    <StackLayout   Padding="0"  x:DataType="model:Order">
+                                        <Frame BorderColor="Green">
+                                            <Frame.Background>
+                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                    <GradientStop Color="White" Offset="0.1" />
+                                                    <GradientStop Color="LightBlue" Offset="1" />
+                                                </LinearGradientBrush>
+                                            </Frame.Background>
+
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="1.25*"></ColumnDefinition>
+                                                    <ColumnDefinition ></ColumnDefinition>
+                                                    <ColumnDefinition ></ColumnDefinition>
+                                                    <ColumnDefinition ></ColumnDefinition>
+
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition></RowDefinition>
+                                                    <RowDefinition></RowDefinition>
+                                                    <RowDefinition></RowDefinition>
+                                                    <RowDefinition></RowDefinition>
+                                                    <RowDefinition></RowDefinition>
+                                                    <!--<RowDefinition></RowDefinition>
+                                            <RowDefinition></RowDefinition>-->
+                                                </Grid.RowDefinitions>
+                                                <Label Grid.Row="0" FontFamily="DeusEx"  TextColor="Red" HorizontalOptions="CenterAndExpand" FontAttributes="Bold" Grid.Column="3" Text="{Binding TotalPrice}"></Label>
+                                                <Label Grid.Row="0" FontFamily="DeusEx"  TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="2" FontSize="Caption" Text="Сумма:"></Label>
+                                                <Label Grid.Row="0" FontFamily="DeusEx" TextColor="Green" HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding Id}"></Label>
+                                                <Label Grid.Row="1" FontFamily="DeusEx" TextColor="DarkRed" FontAttributes="Bold" HorizontalOptions="CenterAndExpand" Grid.ColumnSpan="3" Grid.Column="1" Text="{Binding State}"></Label>
+                                                <Grid Grid.Row="2" Grid.RowSpan="2" Grid.ColumnSpan="3"  Grid.Column="1">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition></ColumnDefinition>
+                                                        <ColumnDefinition></ColumnDefinition>
+                                                        <ColumnDefinition></ColumnDefinition>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition></RowDefinition>
+                                                        <RowDefinition></RowDefinition>
+                                                    </Grid.RowDefinitions>
+                                                    <Image Grid.Row="0" HeightRequest="20" WidthRequest="20"  Source="plenka.png"></Image>
+                                                    <Image Grid.Row="0" HeightRequest="20" WidthRequest="20" Grid.Column="1" Source="carton.png"></Image>
+                                                    <Image Grid.Row="0" HeightRequest="20" WidthRequest="20" Grid.Column="2" Source="poddon.png"></Image>
+                                                    <!--<Label Grid.Row="0" TextColor="Black" FontFamily="DeusEx"  HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Пленка:"></Label>-->
+                                                    <!--<Label Grid.Row="0" TextColor="Black" FontFamily="DeusEx" HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="Картон:"></Label>
+                                                    <Label Grid.Row="0" TextColor="Black" FontFamily="DeusEx" HorizontalOptions="CenterAndExpand" Grid.Column="2" Text="Поддоны:"></Label>-->
+                                                    <CheckBox Grid.Row="1"  IsEnabled="False" HorizontalOptions="CenterAndExpand" Grid.Column="0" IsChecked="{Binding Paper}"></CheckBox>
+                                                    <CheckBox Grid.Row="1" IsEnabled="False" HorizontalOptions="CenterAndExpand" Grid.Column="1" IsChecked="{Binding Carton}"></CheckBox>
+                                                    <CheckBox Grid.Row="1" IsEnabled="False" HorizontalOptions="CenterAndExpand" Grid.Column="2" IsChecked="{Binding Poddon}"></CheckBox>
+                                                </Grid>
+                                                <Label Grid.Row="2" TextColor="Black" FontFamily="DeusEx"  HorizontalOptions="CenterAndExpand" Grid.Column="0" FontSize="Caption" Text="Заказ:"></Label>
+                                                <!--<Label Grid.Row="3" IsEnabled="False"  HorizontalOptions="CenterAndExpand" Grid.Column="1" Text="{Binding Description}"></Label>-->
+                                                <Label Grid.Row="4" FontSize="Caption" TextColor="Red"  FontFamily="DeusEx"  HorizontalOptions="CenterAndExpand" Grid.ColumnSpan="3"  Grid.Column="1" Text="{Binding Address}"></Label>
+                                                <StackLayout>
+                                                    <Label Grid.Row="0" TextColor="Black" FontFamily="DeusEx" HorizontalOptions="CenterAndExpand" Grid.Column="0" FontSize="Caption" Text="ID:"></Label>
+                                                </StackLayout>
+                                                <Label Grid.Row="1" FontSize="Caption" TextColor="Black" FontFamily="DeusEx" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Статус:"></Label>
+
+                                                <!--<Label Grid.Row="3" TextColor="Black" HorizontalOptions="CenterAndExpand" Grid.Column="0" Text="Описание:"></Label>-->
+                                                <Label Grid.Row="4" TextColor="Black" FontFamily="DeusEx"  HorizontalOptions="CenterAndExpand" FontSize="Caption" Grid.Column="0" Text="Адрес:"></Label>
+                                                <!--<Label Grid.Row="5" TextColor="Black" FontFamily="DeusEx" HorizontalOptions="CenterAndExpand"  HorizontalTextAlignment="Start" Grid.Column="0" FontSize="Caption" Text="Взвешен:"></Label>-->
+                                                <!--<Label Grid.Row="5" TextColor="Red" FontFamily="DeusEx" HorizontalOptions="CenterAndExpand"   Grid.Column="1" Text="{Binding TakenData}"></Label>-->
+                                                <Label Grid.Row="5" TextColor="Green" FontFamily="DeusEx" HorizontalOptions="CenterAndExpand" Grid.ColumnSpan="2" Grid.Column="1" Text="{Binding FinishedData}"></Label>
+                                                <Label Grid.Row="5" TextColor="Black" FontFamily="DeusEx" HorizontalOptions="CenterAndExpand" FontSize="Caption" Grid.Column="0" Text="Закрыт:"></Label>
+                                            </Grid>
+                                        </Frame>
+                                        <!--<StackLayout.GestureRecognizers>
+                                            <TapGestureRecognizer 
+                                         NumberOfTapsRequired="1"
+                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CreatedOrdersViewModel}}, Path=EditOrder}"		
+                                         CommandParameter="{Binding .}">
+                                            </TapGestureRecognizer>
+                                        </StackLayout.GestureRecognizers>-->
+                                    </StackLayout>
+                                </ViewCell>
+
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </ScrollView>
+            </Frame>
+        </RefreshView>
+    </ContentPage.Content>
+</ContentPage>

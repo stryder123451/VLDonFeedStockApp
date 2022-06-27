@@ -11,10 +11,10 @@ namespace VLDonFeedStockApp.Models
     {
         [JsonProperty("name")]
         public string Name { get; set; }
-        [JsonProperty("relatedrequestid")]
-        public string RelatedRequestID { get; set; }
-        [JsonProperty("data")]
-        public byte[] Data { get; set; }
+        //[JsonProperty("relatedrequestid")]
+        //public string RelatedRequestID { get; set; }
+        //[JsonProperty("data")]
+        //public byte[] Data { get; set; }
        
         //public bool IsLoading { get; set; }
 

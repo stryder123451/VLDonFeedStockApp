@@ -105,6 +105,12 @@
     <FlyoutItem Title="Завершенные заказы" Icon="finished.png">
         <ShellContent Route="FinishedOrdersPage" ContentTemplate="{DataTemplate local:FinishedOrdersPage}" />
     </FlyoutItem>
+    <FlyoutItem Title="Рейтинг" Icon="Star.png">
+        <ShellContent Route="Ratings" ContentTemplate="{DataTemplate local:Ratings}" />
+    </FlyoutItem>
+    <FlyoutItem Title="История" Icon="History.png">
+        <ShellContent Route="History" ContentTemplate="{DataTemplate local:History}" />
+    </FlyoutItem>
     <FlyoutItem Title="О программе" Icon="infoNew.png">
         <ShellContent Route="Organization" ContentTemplate="{DataTemplate local:AboutUs}" />
     </FlyoutItem>

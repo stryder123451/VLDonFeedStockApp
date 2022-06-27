@@ -29,6 +29,8 @@ namespace VLDonFeedStockApp
             Routing.RegisterRoute(nameof(UsersPage), typeof(UsersPage));
             Routing.RegisterRoute(nameof(ContrAgentsPrices), typeof(ContrAgentsPrices));
             Routing.RegisterRoute(nameof(MaterialShow), typeof(MaterialShow));
+            Routing.RegisterRoute(nameof(Ratings), typeof(Ratings));
+            Routing.RegisterRoute(nameof(History), typeof(History));
             
         }
 

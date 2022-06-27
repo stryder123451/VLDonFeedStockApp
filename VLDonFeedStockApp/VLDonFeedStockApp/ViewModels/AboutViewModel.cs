@@ -93,7 +93,11 @@ namespace VLDonFeedStockApp.ViewModels
             {
                 Users.Clear();
                 alertService.ShowToast("Загрузка...", 1f);
-
+                Actual = 0;
+                Weighted = 0;
+                Finished = 0;
+                Created = 0;
+                All = 0;
                 var list = await App.Database.GetUsersAsync();
                 if (list.Count > 0)
                 {
@@ -140,7 +144,7 @@ namespace VLDonFeedStockApp.ViewModels
 
                 try
                 {
-
+                    Orders.Clear();
                     HttpClient _tokenclient = new HttpClient();
                     _tokenclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
                     var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/order/created/{User.Login}/{User.UserToken}");

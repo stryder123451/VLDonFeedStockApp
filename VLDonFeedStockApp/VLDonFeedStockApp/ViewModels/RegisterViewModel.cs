@@ -142,6 +142,10 @@ namespace VLDonFeedStockApp.ViewModels
         public async Task<Workers> AddNewUser(Workers user)
         {
             user.Role = Role;
+            if (String.IsNullOrEmpty(Address))
+            {
+                Address = "test";
+            }
             RegisterModel _registerData = new RegisterModel()
             {
                 Address = Address,
@@ -153,8 +157,9 @@ namespace VLDonFeedStockApp.ViewModels
                       WorkerName  = Name
 
             };
+            
             HttpClient client = new HttpClient();
-            var response = await client.PostAsync($"{GlobalSettings.HostUrl}api/MobileAccount/loginreg/",
+            var response = await client.PostAsync($"{GlobalSettings.HostUrl}api/MobileAccount/loginreg",
                 new StringContent(
                    System.Text.Json.JsonSerializer.Serialize(_registerData),
             Encoding.UTF8, "application/json"));

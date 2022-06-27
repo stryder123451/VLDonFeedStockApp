@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:VLDonFeedStockApp.ViewModels" xmlns:model="clr-namespace:VLDonFeedStockApp.Models"
+             x:Class="VLDonFeedStockApp.Views.Ratings">
+    <ContentPage.Content>
+        <RefreshView x:DataType="viewmodels:RatingsViewModel" Command="{Binding LoadStoresCommand}" IsRefreshing="{Binding IsBusy, Mode=TwoWay}">
+            <Frame>
+                <Frame.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="White" Offset="0.1" />
+                        <GradientStop Color="LightBlue" Offset="1" />
+                    </LinearGradientBrush>
+                </Frame.Background>
+                <ScrollView>
+                    <ListView x:Name="OrderItems" ItemsSource="{Binding StoresList}" SeparatorVisibility="Default" HasUnevenRows="True" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+
+                                <ViewCell Height="50">
+
+                             
+                                    <StackLayout   Padding="0"  x:DataType="model:RatingList">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition></ColumnDefinition>
+                                                <ColumnDefinition Width="8*"></ColumnDefinition>
+                                                <ColumnDefinition></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <Label FontFamily="DeusEx" Grid.Column="1" FontSize="Caption" TextColor="Black" HorizontalOptions="CenterAndExpand"  Text="{Binding Address}"></Label>
+                                            <Label FontFamily="DeusEx" Grid.Column="0" FontSize="Caption" TextColor="Green" HorizontalOptions="CenterAndExpand" Text="{Binding Likes}"></Label>
+                                            <Label FontFamily="DeusEx" Grid.Column="2" FontSize="Caption" TextColor="Red" HorizontalOptions="CenterAndExpand" Text="{Binding Dislikes}"></Label>
+                                        </Grid>
+                                        
+                                    </StackLayout>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </ScrollView>
+            </Frame>
+        </RefreshView>
+    </ContentPage.Content>
+</ContentPage>

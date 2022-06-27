@@ -8,6 +8,7 @@ using Plugin.Media.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -29,12 +30,6 @@ namespace VLDonFeedStockApp.ViewModels
     {
         private int _id;
         private Workers _user;
-        //private ImageSource _poddonOrderPhoto;
-        //private ImageSource _plenkaOrderPhoto;
-        //private ImageSource _cartonOrderPhoto;
-        //private FileResult _attachedPhotoPoddon;
-        //private FileResult _attachedPhotoPlenka;
-        //private FileResult _attachedPhotoCarton;
         private FileResult _uploadedFile;
         private Prices _prices;
         private string _carton;
@@ -60,6 +55,8 @@ namespace VLDonFeedStockApp.ViewModels
         private bool _stateLoading;
         private GridLength _loadingRow;
         private GridLength _loadingItems;
+        private Color _likeColor;
+        private Color _dislikeColor;
         //private bool _poddonPhotoLoaded;
         //private bool _plenkaPhotoLoaded;
         //private bool _cartonPhotoLoaded;
@@ -67,6 +64,7 @@ namespace VLDonFeedStockApp.ViewModels
         public string _address;
         public ObservableCollection<Workers> Users { get; }
         public ObservableCollection<AttachedFiles> RelatedFiles { get; }
+  
         public Command LoadOrdersCommand { get; }
         public Command UpdateOrder { get; }
         public Command ChoosePhoto { get; }
@@ -78,6 +76,8 @@ namespace VLDonFeedStockApp.ViewModels
         public Command UpdateState { get; }
         public Command BackCommand { get; }
         public Command<AttachedFiles> DownloadFile { get; }
+        public Command SetLike { get; }
+        public Command SetDislike { get; }
         public ObservableCollection<Request> Requests { get; }
 
         public DetailOrderViewModel()
@@ -98,7 +98,39 @@ namespace VLDonFeedStockApp.ViewModels
             UpdateState = new Command(OnStateEditClicked);
             BackCommand = new Command(OnCancel);
             DownloadFile = new Command<AttachedFiles>(OnItemSelected);
+            SetLike = new Command(Like);
+            SetDislike = new Command(Dislike);
         }
+
+        private async void Dislike(object obj)
+        {
+            Request.Mark = await SetMark("dislike");
+            CheckLikes();
+        }
+
+        private async void Like(object obj)
+        {
+            Request.Mark = await SetMark("like");
+            CheckLikes();
+        }
+
+        public async Task<string> SetMark(string mark)
+        {
+            HttpClient _tokenclient = new HttpClient();
+            _tokenclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
+            var _responseToken = await _tokenclient.GetAsync($"{GlobalSettings.HostUrl}api/order/setmark/{mark}/{Request.Address}/{DateTime.Now.ToString("MMMM", new System.Globalization.CultureInfo("en-US"))}/{Request.Id}/{User.Login}");
+            if (_responseToken.IsSuccessStatusCode)
+            {
+               // alertService.ShowToast($"{Request.Mark}", 1);
+                return _responseToken.Content.ReadAsStringAsync().Result;
+            }
+            else
+            {
+                alertService.ShowToast($"Ошибка...", 1);
+                return null;
+            }
+        }
+
 
         private async void AttachVideoMethod(object obj)
         {
@@ -145,29 +177,26 @@ namespace VLDonFeedStockApp.ViewModels
 
         private async Task AttachVideoMethodAsync()
         {
-            //var file = await CrossMedia.Current.TakeVideoAsync(new StoreVideoOptions
-            //{
-            //    DesiredLength = TimeSpan.FromSeconds(15),
-            //    SaveToAlbum = true,
-            //    Quality = VideoQuality.High,
-                
-                
-            //});
 
-                var file = await MediaPicker.CaptureVideoAsync();
 
-                if (file == null)
-                {
-                await alertService.ShowMessage("Видео", "Ошибка при записи...");
-                }
-                else
-                {
-               
+            var file = await MediaPicker.CaptureVideoAsync();
+
+            if (file == null)
+            {
+                await alertService.ShowMessage("Error", "Something wrong 0_o");
+            }
+            else
+            {
+
                 UploadedFile = await AttachFile();
                 await UploadPhotoToServer(UploadedFile, "file");
             }
-            }
 
+
+        }
+        
+
+        
 
         private async void AttachFileMethod(object obj)
         {
@@ -246,7 +275,7 @@ namespace VLDonFeedStockApp.ViewModels
             try
             {
                 HttpClient _tokenclient = new HttpClient();
-                _tokenclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
+                _tokenclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
                 var _responseToken = await _tokenclient.GetAsync($"{GlobalSettings.HostUrl}api/order/{Request.Id}/{obj.Name}/get");
                 using (var fs = new FileStream(
                 DependencyService.Resolve<IFileService>().GetRootPath() + $"/{obj.Name}",
@@ -271,6 +300,20 @@ namespace VLDonFeedStockApp.ViewModels
 
             }
         }
+
+        public Color LikeColor
+        {
+            get => _likeColor;
+            set => SetProperty(ref _likeColor, value);
+        }
+
+        public Color DislikeColor
+        {
+            get => _dislikeColor;
+            set => SetProperty(ref _dislikeColor, value);
+        }
+
+
         public FileResult UploadedFile
         {
             get => _uploadedFile;
@@ -536,25 +579,7 @@ namespace VLDonFeedStockApp.ViewModels
                         await alertService.ShowMessage("Статус", "Заказ уже закрыт!!!");
                         break;
                 }
-                //if (Request.Mark == null)
-                //{
-                //    var action = await alertService.ConfirmDialog("Отзыв", "Вам понравилось состояние ", "Да", "Нет");
-                //    if (!action)
-                //    {
-                //        await alertService.ShowMessage("Данные заказа", "Ну бывает...");
-                //    }
-                //    else
-                //    {
-                //        if (Request.State == "actual" && User.Role == "admin")
-                //        {
-                //            await alertService.ShowMessage("Данные заказа", "Директор не может изменять заказ после вывоза!!!");
-                //        }
-                //        else
-                //        {
-                //            await UpdateIndicationsAsync(Request);
-                //        }
-                //    }
-                //}
+              
 
             }
             catch (Exception ex)
@@ -582,31 +607,23 @@ namespace VLDonFeedStockApp.ViewModels
                     User = Users[0];
                 }
                 Requests.Clear();
-                HttpClient _tokenclient = new HttpClient();
-                _tokenclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
-                var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/order/get/{Id}");
-                var _jsonResults = JsonConvert.DeserializeObject<Request>(_responseToken);
-                _jsonResults.RuState = RuState(_jsonResults.State);
+                Request _jsonResults = await CheckDataForRequest();
                 //
-                HttpClient _tokenClientPrice = new HttpClient();
-                _tokenClientPrice.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
-                var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/price/{User.Organization}/{Address}");
-                var _jsonResultsPrice = JsonConvert.DeserializeObject<Prices>(_responseTokenPrice);
-                Prices = _jsonResultsPrice;
+                await CheckPrices();
                 //
                 Requests.Add(_jsonResults);
                 Request = Requests[0];
-                CanEdit = AllowEdit(Request, User);
-                //
-
-
+                CheckLikes();
 
                 GetMaterialsInfo();
                 CheckUserRights();
 
-                CheckPhotos();
-                LoadingRow = 0;
-                LoadingItems = new GridLength(1, GridUnitType.Star);
+                await CheckListOfAttachedFiles();
+
+                CanEdit = AllowEdit(Request, User);
+                //
+
+
                 alertService.ShowToast("Данные получены...", 1f);
 
             }
@@ -620,9 +637,49 @@ namespace VLDonFeedStockApp.ViewModels
             }
         }
 
+        private async Task<Request> CheckDataForRequest()
+        {
+            HttpClient _tokenclient = new HttpClient();
+            _tokenclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
+            var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/order/get/{Id}");
+            var _jsonResults = JsonConvert.DeserializeObject<Request>(_responseToken);
+            _jsonResults.RuState = RuState(_jsonResults.State);
+            return _jsonResults;
+        }
+
+        private async Task CheckPrices()
+        {
+            HttpClient _tokenClientPrice = new HttpClient();
+            _tokenClientPrice.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
+            var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/price/{User.Organization}/{Address}");
+            var _jsonResultsPrice = JsonConvert.DeserializeObject<Prices>(_responseTokenPrice);
+            Prices = _jsonResultsPrice;
+        }
+
+        private void CheckLikes()
+        {
+            
+            switch (Request.Mark)
+            {
+                case "like":
+                    LikeColor = Color.AntiqueWhite;
+                    DislikeColor = Color.Transparent;
+                    break;
+                case "dislike":
+                    LikeColor = Color.Transparent;
+                    DislikeColor = Color.AntiqueWhite;
+                    break;
+                default:
+                    LikeColor = Color.Transparent;
+                    DislikeColor = Color.Transparent;
+                    break;
+            }
+        }
+
         private async void CheckPhotos()
         {
-          await CheckListOfAttachedFiles();
+            
+            await CheckListOfAttachedFiles();
           //  await CheckPhotoCarton();
           // await CheckPhotoPlenka();
           // await CheckPhotoPoddon();
@@ -633,9 +690,14 @@ namespace VLDonFeedStockApp.ViewModels
             
             try
             {
+                IsLoading = true;
+                LoadingState = false;
+                LoadingItems = 0;
+                LoadingRow = new GridLength(1, GridUnitType.Star);
+
                 RelatedFiles.Clear();
                 HttpClient _tokenClientPrice = new HttpClient();
-                _tokenClientPrice.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
+                _tokenClientPrice.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
                 var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/order/{Request.Id}/getFiles");
                 var res = JsonConvert.DeserializeObject<List<AttachedFiles>>(_responseTokenPrice);
                 foreach (var attachedFile in res)
@@ -963,7 +1025,7 @@ namespace VLDonFeedStockApp.ViewModels
                 }
                 else
                 {
-                    await UpdateIndicationsAsync(Request);
+                   Request = await UpdateIndicationsAsync(Request);
                 }
             }
         }
@@ -982,7 +1044,7 @@ namespace VLDonFeedStockApp.ViewModels
                 }
                 else
                 {
-                    await UpdateStateAsync(Request);
+                   Request = await UpdateStateAsync(Request);
                 }
             }
         }
@@ -1206,29 +1268,37 @@ namespace VLDonFeedStockApp.ViewModels
 
         public async Task<Request> UpdateIndicationsAsync(Request indications)
         {
-            
-            if (indications.State.Length == "created".Length && (User.Role.Length == "admin".Length || User.Role.Length == "root".Length))
+            try
             {
-                //await UploadPhotos();
-                return await ChangeData(indications);
+
+                if (indications.State.Length == "created".Length && (User.Role.Length == "admin".Length || User.Role.Length == "root".Length))
+                {
+                    //await UploadPhotos();
+                    return await ChangeData(indications);
+                }
+                if (indications.State.Length == "actual".Length && (User.Role.Length == "employeе".Length || User.Role.Length == "root".Length))
+                {
+                    //await UploadPhotos();
+                    return await ChangeData(indications);
+                }
+                if ((indications.State.Length == "weighted".Length || indications.State.Length == "finished".Length) && User.Role.Length == "root".Length)
+                {
+                    //await UploadPhotos();
+                    return await ChangeData(indications);
+                } 
+
+                else
+                {
+                    alertService.ShowToast("У вас недостаточно прав!!!", 1);
+                    return null;
+                }
+
             }
-            if (indications.State.Length == "actual".Length && (User.Role.Length == "employeе".Length || User.Role.Length == "root".Length))
+            catch (Exception ex)
             {
-                //await UploadPhotos();
-                return await ChangeData(indications);
+                await alertService.ShowMessage("Message", ex.Message);
+                return indications;
             }
-            if ((indications.State.Length == "weighted".Length || indications.State.Length == "finished".Length) && User.Role.Length == "root".Length)
-            {
-                //await UploadPhotos();
-                return await ChangeData(indications);
-            }
-           
-            else
-            {
-                alertService.ShowToast("У вас недостаточно прав!!!", 1);
-                return null;
-            }
-            
         }
 
         //private async Task UploadPhotos()
@@ -1284,7 +1354,7 @@ namespace VLDonFeedStockApp.ViewModels
                 var content = new MultipartFormDataContent();
                 content.Add(new StreamContent(await file.OpenReadAsync()), "photos",file.FileName);
                 var httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
                 var res = await httpClient.PostAsync($"{GlobalSettings.HostUrl}api/order/UploadPhoto/{Request.Id}/{material}", content);
                 if (res.IsSuccessStatusCode)
                 {
@@ -1313,6 +1383,8 @@ namespace VLDonFeedStockApp.ViewModels
 
         private async Task<Request> ChangeData(Request indications)
         {
+            // await Task.Delay(1000);
+            alertService.ShowToast("Изменение данных...", 1);
             if (indications.State == "created")
             {
                 indications.WhoTook = User.Name;
@@ -1342,7 +1414,7 @@ namespace VLDonFeedStockApp.ViewModels
                 indications.OldPoddonPrice = Prices.Poddon;
             }
 
-
+           
 
 
             if (CheckAmount(indications.State, IsPlenka, Plenka, PlenkaAmount) && CheckAmount(indications.State, IsPoddon, Poddon, PoddonAmount)
@@ -1355,7 +1427,7 @@ namespace VLDonFeedStockApp.ViewModels
                     alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
                     IsBusy = true;
                     HttpClient client = new HttpClient();
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
                     var response = await client.PutAsync($"{GlobalSettings.HostUrl}api/order/{User.UserToken}",
                     new StringContent(System.Text.Json.JsonSerializer.Serialize(indications),
                     Encoding.UTF8, "application/json"));
@@ -1369,10 +1441,11 @@ namespace VLDonFeedStockApp.ViewModels
                         var res = JsonConvert.DeserializeObject<Request>(response.Content.ReadAsStringAsync().Result);
                         res.RuState = RuState(res.State);
                         Request = res;
+                        indications = Request;
                         GetMaterialsInfo();
-                        CheckPhotos();
+                        //CheckPhotos();
                     //await Shell.Current.GoToAsync($"//{nameof(LightIndicationsPage)}");
-                    return null;
+                      return indications;
                     }
                 }
             
@@ -1446,57 +1519,75 @@ namespace VLDonFeedStockApp.ViewModels
         }
         public async Task<Request> UpdateStateAsync(Request indications)
         {
+            try
+            {
+                if (indications.OldCartonPrice == null)
+                {
+                    indications.OldCartonPrice = Prices.Carton;
+                }
+                if (indications.OldPlenkaPrice == null)
+                {
+                    indications.OldPlenkaPrice = Prices.Plenka;
+                }
+                if (indications.OldPoddonPrice == null)
+                {
+                    indications.OldPoddonPrice = Prices.Poddon;
+                }
+                indications.LastModified = DateTime.Now.ToString().Split(' ')[0].ToString();
+                if (indications.State.Length == "created".Length)
+                {
+                    
+                   await ChangeState(indications);
+                   return Request;
+                    //Task result = ChangeData(indications).ContinueWith(async x => indications = await ChangeState(indications));
+                    
+                    //var task = ChangeData(indications);
+                    //alertService.ShowToast("Изменение данных...", 1);
+                    //task.Wait();
+                    //alertService.ShowToast("Изменение статуса...", 1);
+                    //return await ChangeState(indications);
+                }
+                if ((indications.State.Length == "actual".Length) && (User.Role.Length == "admin".Length || User.Role.Length == "employee".Length || User.Role.Length == "root".Length))
+                {
+                   await ChangeState(indications);
+                    return Request;
+                }
+                if ((indications.State.Length == "weighted".Length) && (User.Role.Length == "employee".Length || User.Role.Length == "root".Length))
+                {
+                   await ChangeState(indications);
+                    return Request;
+                }
+                else
+                {
+                    alertService.ShowToast("Недостаточно прав!!!", 1);
+                    return indications;
 
-            if (indications.OldCartonPrice == null)
-            {
-                indications.OldCartonPrice = Prices.Carton;
+                }
             }
-            if (indications.OldPlenkaPrice == null)
+            catch (Exception ex)
             {
-                indications.OldPlenkaPrice = Prices.Plenka;
-            }
-            if (indications.OldPoddonPrice == null)
-            {
-                indications.OldPoddonPrice = Prices.Poddon;
-            }
-            indications.LastModified = DateTime.Now.ToString().Split(' ')[0].ToString();
-            if (indications.State.Length == "created".Length)
-            {
-                await ChangeData(indications);
-                return await ChangeState(indications);
-            }
-            if ((indications.State.Length == "actual".Length) && (User.Role.Length=="admin".Length||User.Role.Length == "employee".Length || User.Role.Length == "root".Length))
-            {
-                await ChangeData(indications);
-                return await ChangeState(indications);
-            }
-            if ((indications.State.Length == "weighted".Length) && (User.Role.Length == "employee".Length || User.Role.Length == "root".Length))
-            {
-                await ChangeData(indications);
-                return await ChangeState(indications);
-            }
-            else
-            {
-                alertService.ShowToast("Недостаточно прав!!!", 1);
+                await alertService.ShowMessage("Error",ex.StackTrace);
+                await alertService.ShowMessage("Error",ex.Data.ToString());
+                await alertService.ShowMessage("Error",ex.Message);
                 return indications;
-            }
 
+            }
            
         }
 
         private async Task<Request> ChangeState(Request indications)
         {
-            
 
-
+            //await Task.Delay(1000);
+            alertService.ShowToast("Изменение статуса...", 1);
             if (CheckAmount(indications.State, IsPlenka, Plenka, PlenkaAmount) && CheckAmount(indications.State, IsPoddon, Poddon, PoddonAmount)
                 && CheckAmount(indications.State, IsCarton, Carton, CartonAmount))
             {
                 alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
                 IsBusy = true;
                 HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
-                var response = await client.PostAsync($"{GlobalSettings.HostUrl}api/order/update_state/{indications.Id}",
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
+                var response = await client.PostAsync($"{GlobalSettings.HostUrl}api/order/update_state",
                 new StringContent(System.Text.Json.JsonSerializer.Serialize(indications),
                 Encoding.UTF8, "application/json"));
                 if (response.StatusCode != HttpStatusCode.OK)
@@ -1506,40 +1597,42 @@ namespace VLDonFeedStockApp.ViewModels
                 }
                 else
                 {
-                    var res = JsonConvert.DeserializeObject<Root>(response.Content.ReadAsStringAsync().Result);
+                    var res = JsonConvert.DeserializeObject<Result>(response.Content.ReadAsStringAsync().Result.ToString());
                     
-                    Request = new Request()
+                    var jsonRes = new Request()
                     {
-                        Id = res.Result.Id,
-                         Address = res.Result.Address,
-                          Data = res.Result.Data,
-                           Description = res.Result.Description,
-                            Materials = res.Result.Materials,
-                             Name = res.Result.Name,
-                              Organization = res.Result.Organization,
-                               RelatedOperator = res.Result.RelatedOperator,
-                                RelatedOrganizationId = res.Result.RelatedOrganizationId,
-                                 RuState = RuState(res.Result.State),
-                                  State = res.Result.State,
-                                   TakenData = res.Result.TakenData,
-                                    FinishedData = res.Result.FinishedData,
-                                     LastModified = res.Result.LastModified,
-                                      Price = res.Result.Price,
-                                       WeightData = res.Result.WeightData,
-                                        WhoClosed = res.Result.WhoClosed,
-                                         WhoTook = res.Result.WhoTook,
-                                          WhoWeighed = res.Result.WhoWeighed,
-                                           OldCartonPrice = res.Result.OldCartonPrice,
-                                            OldPlenkaPrice = res.Result.OldPlenkaPrice,
-                                             OldPoddonPrice = res.Result.OldPoddonPrice,
-                                              Mark = res.Result.Mark 
+                        Id = res.Id,
+                         Address = res.Address,
+                          Data = res.Data,
+                           Description = res.Description,
+                            Materials = res.Materials,
+                             Name = res.Name,
+                              Organization = res.Organization,
+                               RelatedOperator = res.RelatedOperator,
+                                RelatedOrganizationId = res.RelatedOrganizationId,
+                                 RuState = RuState(res.State),
+                                  State = res.State,
+                                   TakenData = res.TakenData,
+                                    FinishedData = res.FinishedData,
+                                     LastModified = res.LastModified,
+                                      Price = res.Price,
+                                       WeightData = res.WeightData,
+                                        WhoClosed = res.WhoClosed,
+                                         WhoTook = res.WhoTook,
+                                          WhoWeighed = res.WhoWeighed,
+                                           OldCartonPrice = res.OldCartonPrice,
+                                            OldPlenkaPrice = res.OldPlenkaPrice,
+                                             OldPoddonPrice = res.OldPoddonPrice,
+                                              Mark = res.Mark 
                     };
 
-                     CheckUserRights();
-                     CheckPhotos();
-                    
+                   
+                     
+                     Request = jsonRes;
+                   
+                    CheckUserRights();
                     //await Shell.Current.GoToAsync($"//{nameof(LightIndicationsPage)}");
-                    return null;
+                    return Request;
                 }
             }
             else
