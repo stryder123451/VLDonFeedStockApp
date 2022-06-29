@@ -117,88 +117,97 @@ namespace VLDonFeedStockApp.ViewModels
                     }
                     HttpClient _tokenClientPrice = new HttpClient();
                     _tokenClientPrice.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer",User.Token);
-                    var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/price/ИП Середич Роман Александрович");
+                    var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/price/Version");
                     var _jsonResultsPrice = JsonConvert.DeserializeObject<Prices>(_responseTokenPrice);
                     Version = $"Версия приложения: {_jsonResultsPrice.Version}";
+                    if (decimal.Parse(_jsonResultsPrice.Version.Replace('.', ',')) != decimal.Parse(GlobalSettings.Version.Replace('.', ',')))
+                    {
+                        await alertService.ShowMessage("Версия", "Обновите приложения до актуальной версии!!!");
+                        await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
+                    }
+                    else
+                    {
+                        alertService.ShowToast($"Здравствуйте, {Users[0].Name}!!!", 1f);
+                        switch (User.RuRole)
+                        {
+                            case "Директор":
+                                await DirectorLogin();
+
+                                break;
+                            case "КонтрАгент":
+                                await ContrAgentLogin();
+
+                                break;
+                            case "Администратор":
+                                await RootLogin();
+                                break;
+                        }
+
+                        try
+                        {
+                            Orders.Clear();
+                            HttpClient _tokenclient = new HttpClient();
+                            _tokenclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
+                            var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/order/created/{User.Login}/{User.UserToken}");
+                            var _jsonResults = JsonConvert.DeserializeObject<List<Order>>(_responseToken);
+                            foreach (var x in _jsonResults)
+                            {
+                                Orders.Add(x);
+                            }
+
+                            Created = Orders.Count;
+
+                            Orders.Clear();
+
+                            HttpClient _tokenclientActual = new HttpClient();
+                            _tokenclientActual.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
+                            var _responseTokenActual = await _tokenclientActual.GetStringAsync($"{GlobalSettings.HostUrl}api/order/active/{User.Login}/{User.UserToken}");
+                            var _jsonResultsActual = JsonConvert.DeserializeObject<List<Order>>(_responseTokenActual);
+                            foreach (var x in _jsonResultsActual)
+                            {
+                                Orders.Add(x);
+                            }
+                            Actual = Orders.Count;
+
+                            Orders.Clear();
+
+                            HttpClient _tokenclientWeighted = new HttpClient();
+                            _tokenclientWeighted.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
+                            var _responseTokenWeighted = await _tokenclientWeighted.GetStringAsync($"{GlobalSettings.HostUrl}api/order/weighted/{User.Login}/{User.UserToken}");
+                            var _jsonResultsWeighted = JsonConvert.DeserializeObject<List<Order>>(_responseTokenWeighted);
+                            foreach (var x in _jsonResultsWeighted)
+                            {
+                                Orders.Add(x);
+                            }
+                            Weighted = Orders.Count;
+
+
+                            Orders.Clear();
+
+                            HttpClient _tokenclientFinished = new HttpClient();
+                            _tokenclientFinished.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
+                            var _responseTokenFinished = await _tokenclientWeighted.GetStringAsync($"{GlobalSettings.HostUrl}api/order/finished/{User.Login}/{User.UserToken}");
+                            var _jsonResultsFinished = JsonConvert.DeserializeObject<List<Order>>(_responseTokenFinished);
+                            foreach (var x in _jsonResultsFinished)
+                            {
+                                Orders.Add(x);
+                            }
+                            Finished = Orders.Count;
+
+                            All = Created + Actual + Finished + Weighted;
+                        }
+                        catch (Exception ex)
+                        {
+                            await alertService.ShowMessage("Регистрация", "Ваша учетная запись не подтверждена,обратитесь к администратору!!!");
+                        }
+                    }
                 }
 
                 else
                 {
                     await Shell.Current.GoToAsync($"//{nameof(LoginPage)}");
                 }
-                alertService.ShowToast($"Здравствуйте, {Users[0].Name}!!!", 1f);
-                switch (User.RuRole)
-                {
-                    case "Директор":
-                        await DirectorLogin();
-                       
-                        break;
-                    case "КонтрАгент":
-                        await ContrAgentLogin();
-                      
-                        break;
-                    case "Администратор":
-                        await RootLogin();
-                        break;
-                }
-
-                try
-                {
-                    Orders.Clear();
-                    HttpClient _tokenclient = new HttpClient();
-                    _tokenclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
-                    var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/order/created/{User.Login}/{User.UserToken}");
-                    var _jsonResults = JsonConvert.DeserializeObject<List<Order>>(_responseToken);
-                    foreach (var x in _jsonResults)
-                    {
-                        Orders.Add(x);
-                    }
-
-                    Created = Orders.Count;
-
-                    Orders.Clear();
-
-                    HttpClient _tokenclientActual = new HttpClient();
-                    _tokenclientActual.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
-                    var _responseTokenActual = await _tokenclientActual.GetStringAsync($"{GlobalSettings.HostUrl}api/order/active/{User.Login}/{User.UserToken}");
-                    var _jsonResultsActual = JsonConvert.DeserializeObject<List<Order>>(_responseTokenActual);
-                    foreach (var x in _jsonResultsActual)
-                    {
-                        Orders.Add(x);
-                    }
-                    Actual = Orders.Count;
-
-                    Orders.Clear();
-
-                    HttpClient _tokenclientWeighted = new HttpClient();
-                    _tokenclientWeighted.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
-                    var _responseTokenWeighted = await _tokenclientWeighted.GetStringAsync($"{GlobalSettings.HostUrl}api/order/weighted/{User.Login}/{User.UserToken}");
-                    var _jsonResultsWeighted = JsonConvert.DeserializeObject<List<Order>>(_responseTokenWeighted);
-                    foreach (var x in _jsonResultsWeighted)
-                    {
-                        Orders.Add(x);
-                    }
-                    Weighted = Orders.Count;
-
-
-                    Orders.Clear();
-
-                    HttpClient _tokenclientFinished = new HttpClient();
-                    _tokenclientFinished.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
-                    var _responseTokenFinished = await _tokenclientWeighted.GetStringAsync($"{GlobalSettings.HostUrl}api/order/finished/{User.Login}/{User.UserToken}");
-                    var _jsonResultsFinished = JsonConvert.DeserializeObject<List<Order>>(_responseTokenFinished);
-                    foreach (var x in _jsonResultsFinished)
-                    {
-                        Orders.Add(x);
-                    }
-                    Finished = Orders.Count;
-
-                    All = Created + Actual + Finished + Weighted;
-                }
-                catch (Exception ex)
-                {
-                    await alertService.ShowMessage("Регистрация", "Ваша учетная запись не подтверждена,обратитесь к администратору!!!");
-                }
+                
                 //MessagingCenter.Subscribe<LoginViewModel>(this, "root", (sender) =>
                 //{
                 //    IsAdmin = true;

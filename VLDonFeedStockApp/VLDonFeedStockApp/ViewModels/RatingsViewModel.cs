@@ -46,6 +46,7 @@ namespace VLDonFeedStockApp.ViewModels
                     {
                         WorkersList.Add(user);
                     }
+     
                     HttpClient _tokenclient = new HttpClient();
                     _tokenclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", WorkersList[0].Token);
                     var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/order/{WorkersList[0].Login}/{WorkersList[0].UserToken}/{DateTime.Now.ToString("MMMM", new System.Globalization.CultureInfo("en-US"))}/rating");

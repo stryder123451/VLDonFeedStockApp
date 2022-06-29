@@ -117,7 +117,12 @@ namespace VLDonFeedStockApp.ViewModels
                                         var _jsonResults = JsonConvert.DeserializeObject<Workers>(_responseTokenLogin);
 
                                         //
-                                        await App.Database.Login(_jsonResults, _jwtToken);
+                                        //HttpClient _tokenClientPrice = new HttpClient();
+                                        //_tokenClientPrice.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwtToken);
+                                        //var _responseTokenPrice = await _tokenClientPrice.GetStringAsync($"{GlobalSettings.HostUrl}api/price/ИП Леза Александр Владимирович");
+                                        //var _jsonResultsPrice = JsonConvert.DeserializeObject<Prices>(_responseTokenPrice);
+                                        //
+                                        await App.Database.Login(_jsonResults, _jwtToken,GlobalSettings.Version);
                                         IsLoggedIn = false;
                                         IsLogging = true;
                                         //if (_jsonResults.Role == "root")

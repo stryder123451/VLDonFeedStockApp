@@ -44,16 +44,18 @@ namespace VLDonFeedStockApp.Services
 
 
 
-        public async Task Login(Workers _user, string _jwtToken)
+        public async Task Login(Workers _user, string _jwtToken,string _version)
         {
 
             if (_database.Table<Workers>().CountAsync().Result == 0)
             {
+                _user.Version = _version;
                 _user.Token = _jwtToken;
                 await SaveUserAsync(_user);
             }
             else
             {
+                _user.Version = _version;
                 _user.Token = _jwtToken;
                 await UpdateUserAsync(_user);
             }

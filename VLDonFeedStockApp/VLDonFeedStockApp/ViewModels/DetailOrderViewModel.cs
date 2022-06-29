@@ -104,14 +104,29 @@ namespace VLDonFeedStockApp.ViewModels
 
         private async void Dislike(object obj)
         {
-            Request.Mark = await SetMark("dislike");
-            CheckLikes();
+            if (User.Role == "admin")
+            {
+                await alertService.ShowMessage("Рейтинг", "А зачем вы ставите себе дизлайк? 0_о");
+            }
+            else
+            {
+                Request.Mark = await SetMark("dislike");
+                CheckLikes();
+            }
+           
         }
 
         private async void Like(object obj)
         {
-            Request.Mark = await SetMark("like");
-            CheckLikes();
+            if (User.Role == "admin")
+            {
+                await alertService.ShowMessage("Рейтинг", "А директор не может ставить себе лайк ;)");
+            }
+            else
+            {
+                Request.Mark = await SetMark("like");
+                CheckLikes();
+            }
         }
 
         public async Task<string> SetMark(string mark)
@@ -134,7 +149,8 @@ namespace VLDonFeedStockApp.ViewModels
 
         private async void AttachVideoMethod(object obj)
         {
-            await AttachVideoMethodAsync();
+            await alertService.ShowMessage("Видеозапись", "Функция временно недоступна... Пожалуйста используйте внешнее приложения для записи :с");
+            //await AttachVideoMethodAsync();
             //await UploadPhotoToServer(UploadedFile, "file");
         }
 
@@ -1583,6 +1599,7 @@ namespace VLDonFeedStockApp.ViewModels
             if (CheckAmount(indications.State, IsPlenka, Plenka, PlenkaAmount) && CheckAmount(indications.State, IsPoddon, Poddon, PoddonAmount)
                 && CheckAmount(indications.State, IsCarton, Carton, CartonAmount))
             {
+                indications.Materials = $"{Validator(Plenka, PlenkaAmount)}{Validator(Carton, CartonAmount)}{Validator(Poddon, PoddonAmount)}";
                 alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
                 IsBusy = true;
                 HttpClient client = new HttpClient();
@@ -1629,7 +1646,7 @@ namespace VLDonFeedStockApp.ViewModels
                    
                      
                      Request = jsonRes;
-                   
+                    GetMaterialsInfo();
                     CheckUserRights();
                     //await Shell.Current.GoToAsync($"//{nameof(LightIndicationsPage)}");
                     return Request;

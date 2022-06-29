@@ -67,7 +67,7 @@ namespace VLDonFeedStockApp.ViewModels
             alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
             IsBusy = true;
             HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
             var response = await client.PutAsync($"{GlobalSettings.HostUrl}api/store/{User.Login}/{User.UserToken}",
             new StringContent(System.Text.Json.JsonSerializer.Serialize(request),
             Encoding.UTF8, "application/json"));
@@ -133,7 +133,7 @@ namespace VLDonFeedStockApp.ViewModels
                     ContrAgents.Add(item);
                 }
                 HttpClient _tokenclient = new HttpClient();
-                _tokenclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
+                _tokenclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
                 var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/store/root_get_stores/store/{Id}/{User.Login}/{User.UserToken}");
                 var _jsonResults = JsonConvert.DeserializeObject<Stores>(_responseToken);
                 
@@ -159,7 +159,7 @@ namespace VLDonFeedStockApp.ViewModels
             {
 
                 HttpClient _tokenclient = new HttpClient();
-                _tokenclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
+                _tokenclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
                 var url = $"{GlobalSettings.HostUrl}api/store/root_get_stores/agents/{Id}/{User.Login}/{User.UserToken}";
                 var _responseToken = await _tokenclient.GetStringAsync(url);
                 var _jsonResults = JsonConvert.DeserializeObject<List<string>>(_responseToken);

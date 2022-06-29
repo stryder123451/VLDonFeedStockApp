@@ -33,6 +33,7 @@ namespace VLDonFeedStockApp.Models
         public bool IsAccepted { get; set; }
         public string Token { get; set; }
         public string RuRole { get; set; }
+        public string Version { get; set; }
         public string OrganizationCodeTopic { get; set; }
     }
 }
