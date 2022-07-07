@@ -26,7 +26,7 @@
                         <GradientStop Color="LightBlue" Offset="1" />
                     </LinearGradientBrush>
                 </Frame.Background>
-                <ScrollView>
+                <!--<ScrollView>-->
                     <ListView x:Name="OrderItems" ItemsSource="{Binding EasyOrdersList}" SeparatorVisibility="Default" HasUnevenRows="True" HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand">
                         <ListView.ItemTemplate>
                             <DataTemplate>
@@ -113,7 +113,7 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
-                </ScrollView>
+                <!--</ScrollView>-->
             </Frame>
         </RefreshView>
     </ContentPage.Content>

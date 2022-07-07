@@ -77,7 +77,6 @@ namespace VLDonFeedStockApp.ViewModels
         {
 
             alertService.ShowToast("Идет обновление... Пожалуйста, подождите...", 1);
-            IsBusy = true;
             HttpClient client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Users[0].Token);
             var response = await client.PutAsync($"{GlobalSettings.HostUrl}api/price",

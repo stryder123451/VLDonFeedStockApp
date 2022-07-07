@@ -149,8 +149,8 @@ namespace VLDonFeedStockApp.ViewModels
 
         private async void AttachVideoMethod(object obj)
         {
-            await alertService.ShowMessage("Видеозапись", "Функция временно недоступна... Пожалуйста используйте внешнее приложения для записи :с");
-            //await AttachVideoMethodAsync();
+            //await alertService.ShowMessage("Видеозапись","Функция временно недоступна... Пожалуйста используйте внешнее приложения для записи :с");
+            await AttachVideoMethodAsync();
             //await UploadPhotoToServer(UploadedFile, "file");
         }
 
@@ -203,7 +203,7 @@ namespace VLDonFeedStockApp.ViewModels
             }
             else
             {
-
+               
                 UploadedFile = await AttachFile();
                 await UploadPhotoToServer(UploadedFile, "file");
             }

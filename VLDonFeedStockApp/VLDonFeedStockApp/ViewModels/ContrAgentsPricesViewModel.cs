@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using VLDonFeedStockApp.Models;
@@ -77,6 +78,7 @@ namespace VLDonFeedStockApp.ViewModels
                         WorkersList.Add(user);
                     }
                     HttpClient _tokenclient = new HttpClient();
+                    _tokenclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", WorkersList[0].Token);
                     var _responseToken = await _tokenclient.GetStringAsync($"{GlobalSettings.HostUrl}api/price/full/{WorkersList[0].Login}/{WorkersList[0].UserToken}");
                     var _jsonResults = JsonConvert.DeserializeObject<List<Prices>>(_responseToken);
                     foreach (var x in _jsonResults)
