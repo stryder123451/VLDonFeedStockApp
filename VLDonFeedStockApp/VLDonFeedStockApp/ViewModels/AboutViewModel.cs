@@ -195,6 +195,8 @@ namespace VLDonFeedStockApp.ViewModels
                             Finished = Orders.Count;
 
                             All = Created + Actual + Finished + Weighted;
+                            User.OrdersAmount = All.ToString();
+                            await App.Database.UpdateOrdersAmount(User);
                         }
                         catch (Exception ex)
                         {
@@ -276,14 +278,7 @@ namespace VLDonFeedStockApp.ViewModels
             {
                 CrossFirebasePushNotification.Current.UnsubscribeAll();
                 CrossFirebasePushNotification.Current.Subscribe($"{_responseTokenDiff}");
-                if (User.RuRole == "Директор")
-                {
-                    CrossFirebasePushNotification.Current.Subscribe($"{_responseTokenDiff}_weighted");
-                }
-                if (CrossFirebasePushNotification.Current.SubscribedTopics.Length == 0)
-                {
-                    CrossFirebasePushNotification.Current.Subscribe(_responseTokenDiff);
-                }
+                CrossFirebasePushNotification.Current.Subscribe($"{_responseTokenDiff}_weighted");
                 CrossFirebasePushNotification.Current.Subscribe($"{User.Login}");
             }
         }

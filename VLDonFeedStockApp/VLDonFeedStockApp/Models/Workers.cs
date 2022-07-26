@@ -34,6 +34,7 @@ namespace VLDonFeedStockApp.Models
         public string Token { get; set; }
         public string RuRole { get; set; }
         public string Version { get; set; }
+        public string OrdersAmount { get; set; }
         public string OrganizationCodeTopic { get; set; }
     }
 }

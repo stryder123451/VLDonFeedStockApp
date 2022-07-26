@@ -1604,7 +1604,7 @@ namespace VLDonFeedStockApp.ViewModels
                 IsBusy = true;
                 HttpClient client = new HttpClient();
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", User.Token);
-                var response = await client.PostAsync($"{GlobalSettings.HostUrl}api/order/update_state",
+                var response = await client.PostAsync($"{GlobalSettings.HostUrl}api/order/update_state/{User.UserToken}",
                 new StringContent(System.Text.Json.JsonSerializer.Serialize(indications),
                 Encoding.UTF8, "application/json"));
                 if (response.StatusCode != HttpStatusCode.OK)

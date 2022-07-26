@@ -43,6 +43,12 @@ namespace VLDonFeedStockApp.Services
         }
 
 
+        public async Task UpdateOrdersAmount(Workers workers)
+        {
+            await UpdateUserAsync(workers);
+        }
+
+
 
         public async Task Login(Workers _user, string _jwtToken,string _version)
         {

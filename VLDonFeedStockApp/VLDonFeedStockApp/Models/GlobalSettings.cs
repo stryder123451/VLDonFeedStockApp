@@ -10,7 +10,7 @@ namespace VLDonFeedStockApp.Models
     {
         public static string HostUrlSSL { get; set; } = "https://194.87.236.55:44301/";
         public static string HostUrl { get; set; } = "http://194.87.236.55:8081/";
-        public static string Version { get; set; } = "0.2";
+        public static string Version { get; set; } = "0.3";
 
     }
 }

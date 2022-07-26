@@ -215,10 +215,16 @@ namespace VLDonFeedStockApp.ViewModels
             }
         }
 
-        public void CreateRequest(Request indications)
+        public async void CreateRequest(Request indications)
         {
-            Task result = CheckForRequestAsync().ContinueWith(async x=>indications = await Create(indications));
-            
+            if (User.Role.Length != "root".Length)
+            {
+                Task result = CheckForRequestAsync().ContinueWith(async x => indications = await Create(indications));
+            }
+            else
+            {
+                indications = await Create(indications);
+            }
         }
 
         private async Task<Request> Create(Request indications)
